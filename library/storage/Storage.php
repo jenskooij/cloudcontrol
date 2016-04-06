@@ -1,6 +1,10 @@
 <?php
 namespace library\storage
 {
+	/**
+	 * Interface Storage
+	 * @package library\storage
+	 */
 	interface Storage
 	{
 		function getApplicationComponents();

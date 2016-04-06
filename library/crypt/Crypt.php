@@ -1,13 +1,15 @@
 <?php
-/**
- * Encryption class
- */
- 
 namespace library\crypt
 {
-	
+	/**
+	 * Class Crypt
+	 * @package library\crypt
+	 */
 	class Crypt
 	{
+		/**
+		 * @var string
+		 */
 		private $lastSalt;
 		
 		/**
@@ -56,12 +58,14 @@ namespace library\crypt
 			
 			return $output;
 		}
-		
+
 		/**
 		 * Generates the salt used for encryption
 		 *
-		 * @param string	$input 			Feed for iteration
-		 * @param int		$iterations		Amount of iterations
+		 * @param string $input      Feed for iteration
+		 * @param int    $iterations Amount of iterations
+		 *
+		 * @return string
 		 */
 		private function getSalt($input, $iterations)
 		{
@@ -106,7 +110,7 @@ namespace library\crypt
 			return $this->lastSalt;
 		}
 		
-		/*
+		/**
 		 * Compare the input with a known hash and salt
 		 *
 		 * @return bool

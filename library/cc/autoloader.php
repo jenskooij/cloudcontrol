@@ -4,10 +4,27 @@ spl_autoload_register("autoloader");
 
 $rootPath = str_replace('\\', '/', realpath(str_replace('\\', '/', dirname(__FILE__)) . '/../../') . '/');
 
+/**
+ * The function to be registered as the default autoload functino
+ * for loading classes
+ *
+ * @param $class
+ *
+ * @throws \Exception
+ */
 function autoloader($class) {
 	autoLoad($class);	
 }
 
+/**
+ * The decoupled autoload function for actually loading the classes
+ *
+ * @param      $class
+ * @param bool $throwException
+ *
+ * @return bool
+ * @throws \Exception
+ */
 function autoLoad($class, $throwException = true)
 {
 	if (class_exists($class, false)) {

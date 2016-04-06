@@ -1,32 +1,45 @@
 <?php
 namespace library\cc
 {
-	use \library\components;
-	
+	/**
+	 * Class Application
+	 * @package library\cc
+	 */
 	class Application
 	{
+		/**
+		 * @var \stdClass
+		 */
 		private $config;
+		/**
+		 * @var \library\storage\Storage $config
+		 */
 		private $storage;
-		
+
+		/**
+		 * @var Request
+		 */
 		private $request;
-		
+
+		/**
+		 * @var array
+		 */
 		private $matchedSitemapItems = array();
-		
+
+		/**
+		 * @var array
+		 */
 		private $applicationComponents = array();
-		
+
+		/**
+		 * Application constructor.
+		 */
 		public function __construct()
 		{
-			/*
-				TODO
-				1. Sitemap matching
-				2. Running the attached components
-				3. attaching the components to the "controller"
-				4. Display the template attached to the sitemapitem
-			*/
 			$this->config();
 			$this->storage();
 			
-			$this->request = new \library\cc\Request();
+			$this->request = new Request();
 			
 			$this->sitemapMatching($this->request);
 			
@@ -37,29 +50,15 @@ namespace library\cc
 			
 			$this->renderApplicationComponents();
 			$this->renderSitemapComponents();
-			
+
 			dump($this);
-			
-			if (preg_match_all('/\\/article\\/\\d+\\/.*/', '/' . $relativeUri, $matches)) {
-				dump($matches);
-			}
-			
-			dump($this->toAscii("hälló hallo metw   01ieﻇﺵﻅ﬩ﬡДЧëma(^&()) h?aha: ﻇﺵﻅ﬩ﬡДЧ"));
 		}
-		
-		function toAscii($str, $replace=array(), $delimiter='-') {
-			if( !empty($replace) ) {
-				$str = str_replace((array)$replace, ' ', $str);
-			}
 
-			$clean = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
-			$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
-			$clean = strtolower(trim($clean, '-'));
-			$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
-
-			return $clean;
-		}
-		
+		/**
+		 * Initialize the config
+		 *
+		 * @throws \Exception
+		 */
 		private function config()
 		{
 			$configPath = __DIR__ . '../../../config.json';
@@ -67,26 +66,39 @@ namespace library\cc
 				$json = file_get_contents($configPath);
 				$this->config = json_decode($json);
 			} else {
-				throw new \Exception('Couldnt find config file in path ' . $configPath);
+				throw new \Exception('Couldn\'t find config file in path ' . $configPath);
 			}
 		}
-		
+
+		/**
+		 * Initialize the storage
+		 */
 		private function storage()
 		{
 			if ($this->getStorageType() == 'json') {
 				$this->storage = new \library\storage\JsonStorage($this->getStoragePath());
 			}
 		}
-		
+
+		/**
+		 * Loop through sitemap items and see if one matches the requestUri.
+		 * If it does, add it tot the matchedSitemapItems array
+		 *
+		 * @param $request
+		 */
 		private function sitemapMatching($request)
 		{
 			$sitemap = $this->storage->getSitemap();
 			$relativeUri = '/' . $request::$relativeUri;
-			
+
 			foreach ($sitemap as $sitemapItem) {
 				if ($sitemapItem->regex) {
+					$matches = array();
 					if (preg_match_all($sitemapItem->url, $relativeUri, $matches)) {
-						$this->matchedSitemapItems[] = $sitemapItem;
+						// Make a clone, so it doesnt add the matches to the original
+						$matchedClone = clone $sitemapItem;
+						$matchedClone->matches = $matches;
+						$this->matchedSitemapItems[] = $matchedClone;
 					}
 				} else {
 					if ($sitemapItem->url == $relativeUri) {
@@ -95,7 +107,12 @@ namespace library\cc
 				}
 			}
 		}
-		
+
+		/**
+		 * Loop through all application components and run them
+		 *
+		 * @throws \Exception
+		 */
 		private function runApplicationComponents()
 		{
 			foreach ($this->applicationComponents as $key => $applicationComponent) {
@@ -105,7 +122,12 @@ namespace library\cc
 				$this->applicationComponents[$key]['object'] = $this->getComponentObject($class, $template, $parameters);
 			}
 		}
-		
+
+		/**
+		 * Loop through all (matched) sitemap components and run them
+		 *
+		 * @throws \Exception
+		 */
 		private function runSitemapComponents()
 		{
 			foreach ($this->matchedSitemapItems as $key => $sitemapItem) {
@@ -118,8 +140,16 @@ namespace library\cc
 				$this->matchedSitemapItems[$key]->object->run($this->storage);
 			}
 		}
-		
-		private function getComponentObject($class, $template, $parameters)
+
+		/**
+		 * @param string $class
+		 * @param string $template
+		 * @param array  $parameters
+		 *
+		 * @return mixed
+		 * @throws \Exception
+		 */
+		private function getComponentObject($class='', $template='', $parameters=array())
 		{
 			$libraryComponentName = '\\library\\components\\' . $class;
 			$userComponentName = '\\components\\' . $class;
@@ -138,14 +168,20 @@ namespace library\cc
 			
 			return $component;
 		}
-		
+
+		/**
+		 * Loop through all application components and render them
+		 */
 		private function renderApplicationComponents()
 		{
 			foreach ($this->applicationComponents as $applicationComponent) {
 				$applicationComponent['object']->render();
 			}
 		}
-		
+
+		/**
+		 * Loop through all (matched) sitemap components and render them
+		 */
 		private function renderSitemapComponents()
 		{
 			foreach ($this->matchedSitemapItems as $sitemapItem) {
@@ -156,17 +192,23 @@ namespace library\cc
 				exit;
 			}
 		}
-		
+
+		/**
+		 * @return string
+		 */
 		public function getStorageType()
 		{
 			return $this->config->storageType;
 		}
-		
+
+		/**
+		 * @return string
+		 */
 		public function getStoragePath()
 		{
 			return $this->config->storagePath;
 		}
-		
+
 		public function getApplicationComponents()
 		{
 			$this->applicationComponents = $this->storage->getApplicationComponents();

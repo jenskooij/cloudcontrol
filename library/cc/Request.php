@@ -1,18 +1,48 @@
 <?php
 namespace library\cc
 {
+	/**
+	 * Class Request
+	 * @package library\cc
+	 */
 	class Request {
-		
+
+		/**
+		 * @var string
+		 */
 		public static $subfolders;
+		/**
+		 * @var string
+		 */
 		public static $requestUri;
+		/**
+		 * @var string
+		 */
 		public static $relativeUri;
+		/**
+		 * @var string
+		 */
 		public static $queryString;
+		/**
+		 * @var array
+		 */
 		public static $requestParameters;
+		/**
+		 * @var array
+		 */
 		public static $post = array();
+		/**
+		 * @var array
+		 */
 		public static $get = array();
-		
+		/**
+		 * @var array
+		 */
 		private $statics = array();
-		
+
+		/**
+		 * Request constructor.
+		 */
 		public function __construct() 
 		{
 			global $rootPath;

@@ -1,6 +1,10 @@
 <?php
 namespace library\storage
 {
+	/**
+	 * Class JsonStorage
+	 * @package library\storage
+	 */
 	class JsonStorage implements Storage
 	{
 		private $storagePath;

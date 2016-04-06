@@ -3,14 +3,32 @@ set_exception_handler('exceptionHandler');
 set_error_handler('errorHandler');
 register_shutdown_function('shutdownHandler');
 
+/**
+ * An uncaught exception will result in the rendering
+ * of the exception as though it were an error
+ *
+ * @param $e
+ */
 function exceptionHandler ($e) {
 	renderError($e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode(),$e->getTrace());
 }
 
+/**
+ * When an error occures, render it properly.
+ *
+ * @param $errno
+ * @param $errstr
+ * @param $errfile
+ * @param $errline
+ */
 function errorHandler ($errno, $errstr, $errfile, $errline) {
 	renderError($errstr,$errfile,$errline,$errno,debug_backtrace());
 }
 
+/**
+ * When an error occurs that kills the process, still try
+ * to show it using a shutdownHandler.
+ */
 function shutdownHandler () {
 	$error = error_get_last(); 
     if (isset($error['type'], $error['message'], $error['file'], $error['line'])) { 
@@ -20,6 +38,12 @@ function shutdownHandler () {
     }
 }
 
+/**
+ * Error handler specificly for json errors
+ *
+ * @param $file
+ * @param $line
+ */
 function handleJsonError($file, $line) 
 {
 	$jsonErrorNr = json_last_error();
@@ -50,7 +74,17 @@ function handleJsonError($file, $line)
 	errorHandler ($jsonErrorNr, $errstr, $file, $line);
 }
 
-function renderError ($message, $file, $line, $code, $trace, $httpHeader = 'HTTP/1.0 500 Internal Server Error') {
+/**
+ * Displays the error in a human readable fashion for developers.
+ *
+ * @param string $message
+ * @param string $file
+ * @param string $line
+ * @param int    $code
+ * @param array  $trace
+ * @param string $httpHeader
+ */
+function renderError ($message='', $file='', $line='', $code=0, $trace=array(), $httpHeader = 'HTTP/1.0 500 Internal Server Error') {
 	$file_lines = file_exists($file) ? file($file) : array();
     $range = ($line - 15) < 0 ? range(1, 30) : range($line - 15, $line + 15);
     $lines = array();

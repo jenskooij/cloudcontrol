@@ -1,19 +1,37 @@
 <?php
 namespace library\components
 {
+
+	use library\storage\Storage;
+
 	class CmsComponent extends BaseComponent
 	{
+		/**
+		 * @var \library\storage\Storage
+		 */
 		protected $storage;
+		/**
+		 * @var string
+		 */
 		protected $invalidCredentialsMsg = 'Invalid username / password combination';
-		
-		public function run(\library\storage\Storage $storage)
+
+		/**
+		 * @param \library\storage\Storage $storage
+		 */
+		public function run(Storage $storage)
 		{
 			$this->parameters['mainNavClass'] = 'default';
 			$this->storage = $storage;
 			$this->checkLogin();
 			$this->routing();
 		}
-		
+
+		/**
+		 * See if a user is logged or wants to log in and
+		 * takes appropriate actions.
+		 *
+		 * @throws \Exception
+		 */
 		protected function checkLogin()
 		{
 			$request = $this->request;
@@ -44,7 +62,13 @@ namespace library\components
 				}
 			}
 		}
-		
+
+		/**
+		 * Overrides normal behaviour and only renders the
+		 * login screen
+		 *
+		 * @throws \Exception
+		 */
 		protected function showLogin()
 		{
 			$loginTemplatePath = __DIR__ . '../../../templates/cms/login.php';
@@ -58,7 +82,13 @@ namespace library\components
 				throw new \Exception('Cannot load login template ' . $loginTemplatePath);
 			}
 		}
-		
+
+		/**
+		 * As an exception, to keep the initial file structure simple
+		 * the cms implements it's own routing, apart from the regular sitemap functionality
+		 *
+		 * @throws \Exception
+		 */
 		protected function routing()
 		{
 			$request = $this->request;
