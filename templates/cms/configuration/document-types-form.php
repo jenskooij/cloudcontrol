@@ -10,12 +10,37 @@
 	<form method="post" class="panel" id="documentTypesForm">
 		<div class="form-element">
 			<label for="title">Title</label>
-			<input required="required" id="title" type="text" name="title" placeholder="Title" value="<?=isset($sitemapItem) ? $sitemapItem->title : '' ?>" />
+			<input required="required" id="title" type="text" name="title" placeholder="Title" value="<?=isset($documentType) ? $documentType->title : '' ?>" />
 		</div>
 		<div class="form-element">
 			<label for="title">Fields</label>
 			<ul id="dropZone" class="sortable">
-			
+			<? if (isset($documentType)) : ?>
+				<? foreach ($documentType->fields as $field) : ?>
+					<li class="form-element fields">
+						<input type="text" required="required" name="fieldTitles[]" placeholder="Field Title" value="<?=$field->title?>" />
+						<select name="fieldTypes[]">
+							<option<?=$field->type == 'String' ? ' selected="selected"' : '' ?>>String</option>
+							<option<?=$field->type == 'Text' ? ' selected="selected"' : '' ?>>Text</option>
+							<option<?=$field->type == 'Rich Text' ? ' selected="selected"' : '' ?>>Rich Text</option>
+							<option<?=$field->type == 'Boolean' ? ' selected="selected"' : '' ?>>Boolean</option>		
+							<option<?=$field->type == 'Image' ? ' selected="selected"' : '' ?>>Image</option>		
+							<option<?=$field->type == 'File' ? ' selected="selected"' : '' ?>>File</option>		
+							<option<?=$field->type == 'Document' ? ' selected="selected"' : '' ?>>Document</option>		
+						</select>
+						<select name="fieldRequired[]">
+							<option<?=$field->required ? '' : ' selected="selected"' ?> value="false">Not Required</option>
+							<option<?=$field->required ? ' selected="selected"' : '' ?> value="true">Required</option>
+						</select>
+						<select name="fieldMultiple[]">
+							<option<?=$field->multiple ? '' : ' selected="selected"' ?> value="false">Not Multiple</option>
+							<option<?=$field->multiple ? ' selected="selected"' : '' ?> value="true">Multiple</option>
+						</select>
+						<a class="btn error" id="sitemap_remove_parameter">x</a>
+						<a class="btn move"><i class="fa fa-arrows-v"></i></a>
+					</li>
+				<? endforeach ?>
+			<? endif ?>
 			</ul>
 			<a class="btn add-parameter" id="sitemap_add_parameter">+</a>
 		</div>

@@ -192,6 +192,30 @@ namespace library\storage
 		}
 		
 		
+		public function getDocumentTypeBySlug($slug)
+		{
+			$documentTypes = $this->repository->documentTypes;
+			foreach ($documentTypes as $documentType) {
+				if ($documentType->slug == $slug) {
+					return $documentType;
+				}
+			}
+		}
+		
+		public function saveDocumentType($slug, $postValues)
+		{
+			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
+			
+			$documentTypes = $this->repository->documentTypes;
+			foreach ($documentTypes as $key => $documentType) {
+				if ($documentType->slug == $slug) {
+					$documentTypes[$key] = $documentTypeObject;
+				}
+			}
+			$this->repository->documentTypes = $documentTypes;
+			$this->save();
+		}
+		
 		/*
 		 * 
 		 * Misc

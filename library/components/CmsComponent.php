@@ -116,6 +116,16 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
 					exit;
 				}
+			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug'])) {
+				$template = 'cms/configuration/document-types-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug']);
+				if (isset($request::$post['title'])) {
+					$this->storage->saveDocumentType($request::$get['slug'], $request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
+					exit;
+				}
+				$this->parameters['documentType'] = $documentType;
 			} elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get['slug'])) {
 				$this->storage->deleteDocumentTypeBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');

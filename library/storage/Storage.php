@@ -17,5 +17,7 @@ namespace library\storage
 		function getDocumentTypes();
 		function addDocumentType($postValues);
 		function deleteDocumentTypeBySlug($slug);
+		function getDocumentTypeBySlug($slug);
+		function saveDocumentType($slug, $postValues);
 	}
 }
