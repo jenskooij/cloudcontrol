@@ -110,7 +110,7 @@
 	<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 </li>
 <script id="jqueryScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
 <script>
 $(function() {
 	"use strict";
