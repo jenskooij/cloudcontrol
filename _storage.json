@@ -19,7 +19,9 @@
          "template":"cms",
          "regex":true,
          "parameters":{
-            "cmsPrefix":"cms"
+            "cmsPrefix":"cms",
+            "whitelistIps" : "localhost, ::1, 127.0.0.1",
+            "blacklistIps" : "222.227.164.73"
          }
       }
    ],

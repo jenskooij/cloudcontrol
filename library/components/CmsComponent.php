@@ -17,12 +17,20 @@ namespace library\components
 
 		/**
 		 * @param \library\storage\Storage $storage
+		 *
+		 * @return void
 		 */
 		public function run(Storage $storage)
 		{
 			$this->parameters['mainNavClass'] = 'default';
 			$this->storage = $storage;
+
+			$remoteAddress = $_SERVER['REMOTE_ADDR'];
+			$this->checkWhiteList($remoteAddress);
+			$this->checkBlackList($remoteAddress);
+
 			$this->checkLogin();
+
 			$this->routing();
 		}
 
@@ -200,6 +208,28 @@ namespace library\components
 			if ($template != null) {
 				$this->parameters['body'] = $this->renderTemplate($template);
 			}			
+		}
+
+		private function checkWhiteList($remoteAddress)
+		{
+			if (isset($this->parameters['whitelistIps'])) {
+				$whitelistIps = explode(',', $this->parameters['whitelistIps']);
+				$whitelistIps = array_map("trim", $whitelistIps);
+				if (!in_array($remoteAddress, $whitelistIps)) {
+					throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
+				}
+			}
+		}
+
+		private function checkBlackList($remoteAddress)
+		{
+			if (isset($this->parameters['blacklistIps'])) {
+				$blacklistIps = explode(',', $this->parameters['blacklistIps']);
+				$blacklistIps = array_map("trim", $blacklistIps);
+				if (in_array($remoteAddress, $blacklistIps)) {
+					throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
+				}
+			}
 		}
 	}
 }
