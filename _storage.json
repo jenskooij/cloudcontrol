@@ -1,0 +1,58 @@
+{
+	"sitemap":[
+		{
+			"title":		"root",
+			"slug":			"root",
+			"url":			"/",
+			"regex":		false,
+			"component":	"BaseComponent",
+			"template":		"base",
+			"parameters":	{}
+		},
+		{
+			"title":		"cms",
+			"slug":			"cms",
+			"url":			"/\\/cms\\.*/",
+			"regex":		true,
+			"component":	"CmsComponent",
+			"template":		"cms",
+			"parameters":	{
+				"cmsPrefix":	"cms"
+			}
+		}
+	],
+	"applicationComponents":[],
+	"documents":[],
+	"documentTypes":[
+	{
+		"title":	"Default Document",
+		"slug": 	"default-document",
+		"fields": 	[{
+			"title": "Content",
+			"slug": "content",
+			"type": "String",
+			"multiple": true,
+			"required": false
+		}]
+	}
+	],
+	"bricks":[{
+		"title":	"Default Brick",
+		"slug": 	"default-brick",
+		"fields": 	[{
+			"title": "Content",
+			"slug": "content",
+			"type": "String",
+			"multiple": true,
+			"required": false
+		}],
+	"images":[],
+	"files":[],
+	"users":[
+		{
+			"username":	"admin",
+			"password":	"$2a$16$58fnnoHshwN74KkemWkuIeGUbOQ0Rko0pyC3e/rIIhAvL9v89Qc22",
+			"salt": 	"$2a$16$58fnnoHshwN74KkemWkuIe"
+		}
+	]
+}

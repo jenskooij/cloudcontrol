@@ -1,0 +1,6 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+# Rewrite all requests to the www folder
+RewriteCond %{REQUEST_URI} !^/www/.*$
+RewriteRule ^(.*)$ www/$1 [L]
