@@ -47,7 +47,7 @@ namespace library\cc
 			
 			$this->runApplicationComponents();
 			$this->runSitemapComponents();
-			
+
 			$this->renderApplicationComponents();
 			$this->renderSitemapComponents();
 

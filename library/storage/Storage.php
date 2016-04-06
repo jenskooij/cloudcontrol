@@ -10,7 +10,9 @@ namespace library\storage
 		function getApplicationComponents();
 		
 		function getUserByUsername($username);
-		
+
+		function getDocuments();
+
 		function getSitemap();
 		function addSitemapItem($postValues);
 		function saveSitemapItem($slug, $postValues);

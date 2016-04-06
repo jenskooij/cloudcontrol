@@ -46,7 +46,20 @@ namespace library\storage
 			
 			return $return;
 		}
-		
+		/*
+		 *
+		 * Documents
+		 *
+		 */
+		/**
+		 * Get documents
+		 */
+		function getDocuments()
+		{
+			return $this->repository->documents;
+		}
+
+
 		/*
 		 * 
 		 * Sitemap

@@ -2,6 +2,7 @@
 namespace library\components
 {
 
+	use library\crypt\Crypt;
 	use library\storage\Storage;
 
 	class CmsComponent extends BaseComponent
@@ -47,7 +48,7 @@ namespace library\components
 			if (!isset($_SESSION['cloudcontrol'])) {
 				if (isset($request::$post['username'], $request::$post['password'])) {
 					$user = $this->storage->getUserByUsername($request::$post['username']);
-					$crypt = new \library\crypt\Crypt();
+					$crypt = new Crypt();
 					if (empty($user)) {
 						$crypt->encrypt($request::$post['password'], 16); // Buy time, to avoid brute forcing
 						$this->parameters['errorMsg'] = $this->invalidCredentialsMsg;
@@ -100,7 +101,8 @@ namespace library\components
 		protected function routing()
 		{
 			$request = $this->request;
-			
+
+			// TODO Use regex match parameter instead of calculating relative uri
 			$pos = strpos($request::$relativeUri, $this->parameters['cmsPrefix']);
 			if ($pos !== false) {
 				$relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters['cmsPrefix']));
@@ -110,6 +112,10 @@ namespace library\components
 			
 			if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
 				$template = 'cms/dashboard';
+			} elseif ($relativeCmsUri == '/documents') {
+				$template = 'cms/documents';
+				$this->parameters['documents'] = $this->storage->getDocuments();
+				$this->parameters['mainNavClass'] = 'documents';
 			} elseif ($relativeCmsUri == '/sitemap') {
 				$template = 'cms/sitemap';
 				if (isset($request::$post['save'])) {					
