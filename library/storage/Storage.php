@@ -19,5 +19,11 @@ namespace library\storage
 		function deleteDocumentTypeBySlug($slug);
 		function getDocumentTypeBySlug($slug);
 		function saveDocumentType($slug, $postValues);
+		
+		function getBricks();
+		function addBrick($postValues);
+		function getBrickBySlug($slug);
+		function saveBrick($slug, $postValues);
+		function deleteBrickBySlug($slug);
 	}
 }

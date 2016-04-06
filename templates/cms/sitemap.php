@@ -16,7 +16,7 @@
 				<h3><?=$sitemapItem->title?></h3>
 				<span class="url"><?=$sitemapItem->url?></span>
 				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/edit?slug=<?=$sitemapItem->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-				<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/delete?slug=<?=$sitemapItem->slug?>" title="Delete">x</a>
+				<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/delete?slug=<?=$sitemapItem->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 				<textarea name="sitemapitem[]"><?=json_encode($sitemapItem)?></textarea>
 			</li>
 		<? endforeach ?>

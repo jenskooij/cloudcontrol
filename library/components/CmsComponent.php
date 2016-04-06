@@ -111,24 +111,54 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/configuration/document-types/new') {
 				$template = 'cms/configuration/document-types-form';
 				$this->parameters['mainNavClass'] = 'configuration';
+				$bricks = $this->storage->getBricks();
 				if (isset($request::$post['title'])) {
 					$this->storage->addDocumentType($request::$post);
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
 					exit;
 				}
+				$this->parameters['bricks'] = $bricks;
 			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug'])) {
 				$template = 'cms/configuration/document-types-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug']);
+				$bricks = $this->storage->getBricks();
 				if (isset($request::$post['title'])) {
 					$this->storage->saveDocumentType($request::$get['slug'], $request::$post);
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
 					exit;
 				}
 				$this->parameters['documentType'] = $documentType;
+				$this->parameters['bricks'] = $bricks;
 			} elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get['slug'])) {
 				$this->storage->deleteDocumentTypeBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
+				exit;
+			} elseif ($relativeCmsUri == '/configuration/bricks') {
+				$template = 'cms/configuration/bricks';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$this->parameters['bricks'] = $this->storage->getBricks();
+			} elseif ($relativeCmsUri == '/configuration/bricks/new') {
+				$template = 'cms/configuration/bricks-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				if (isset($request::$post['title'])) {
+					$this->storage->addBrick($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get['slug'])) {
+				$template = 'cms/configuration/bricks-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$brick = $this->storage->getBrickBySlug($request::$get['slug']);
+				if (isset($request::$post['title'])) {
+					$this->storage->saveBrick($request::$get['slug'], $request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
+					exit;
+				}
+				$this->parameters['brick'] = $brick;
+			} elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get['slug'])) {
+				$this->storage->deleteBrickBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
 				exit;
 			} elseif ($relativeCmsUri == '/log-off') {
 				$_SESSION['cloudcontrol'] = null;

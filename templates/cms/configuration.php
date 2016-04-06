@@ -14,6 +14,12 @@
 					Document Types
 				</a>
 			</li>
+			<li class="tile grid-box-3">
+				<a class="btn configuration" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/bricks">
+					<i class="fa fa-cubes"></i>
+					Bricks
+				</a>
+			</li>
 		</ul>
 	</nav>
 </section>

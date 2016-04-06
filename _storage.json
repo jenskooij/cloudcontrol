@@ -45,7 +45,9 @@
 			"type": "String",
 			"multiple": true,
 			"required": false
-		}],
+		}]
+	}
+	],
 	"images":[],
 	"files":[],
 	"users":[

@@ -84,6 +84,7 @@ namespace library\storage
 					unset($sitemap[$key]);
 				}
 			}
+			$sitemap = array_values($sitemap);
 			$this->repository->sitemap = $sitemap;
 			$this->save();
 		}
@@ -161,6 +162,8 @@ namespace library\storage
 				$documentTypeObject->title = $postValues['title'];
 				$documentTypeObject->slug = $this->slugify($postValues['title']);
 				$documentTypeObject->fields = array();
+				$documentTypeObject->bricks = array();
+				$documentTypeObject->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks'] : array();
 				if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
 					foreach ($postValues['fieldTitles'] as $key => $value) {
 						$fieldObject = new \stdClass();
@@ -171,6 +174,15 @@ namespace library\storage
 						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
 						
 						$documentTypeObject->fields[] = $fieldObject;
+					}
+				}
+				if (isset($postValues['brickTitles'], $postValues['brickBricks'])) {
+					foreach ($postValues['brickTitles'] as $key => $value) {
+						$brickObject = new \stdClass();
+						$brickObject->title = $value;
+						$brickObject->brickSlug = $postValues['brickBricks'][$key];
+						
+						$documentTypeObject->bricks[] = $brickObject;
 					}
 				}
 				return $documentTypeObject;
@@ -187,6 +199,7 @@ namespace library\storage
 					unset($documentTypes[$key]);
 				}
 			}
+			$documentTypes = array_values($documentTypes);
 			$this->repository->documentTypes = $documentTypes;
 			$this->save();
 		}
@@ -213,6 +226,87 @@ namespace library\storage
 				}
 			}
 			$this->repository->documentTypes = $documentTypes;
+			$this->save();
+		}
+		
+		/*
+		 *
+		 * Bricks
+		 *
+		 */
+		public function getBricks()
+		{
+			return $this->repository->bricks;
+		}
+		
+		public function addBrick($postValues)
+		{
+			$brickObject = $this->createBrickFromPostValues($postValues);
+			
+			$this->repository->bricks[] = $brickObject;
+			$this->save();
+		}
+		
+		public function createBrickFromPostValues($postValues)
+		{
+			if (isset($postValues['title'])) {
+				$brickObject = new \stdClass();
+				$brickObject->title = $postValues['title'];
+				$brickObject->slug = $this->slugify($postValues['title']);
+				$brickObject->fields = array();
+				if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
+					foreach ($postValues['fieldTitles'] as $key => $value) {
+						$fieldObject = new \stdClass();
+						$fieldObject->title = $value;
+						$fieldObject->slug = $this->slugify($value);
+						$fieldObject->type = $postValues['fieldTypes'][$key];
+						$fieldObject->required = ($postValues['fieldRequired'][$key] === 'true');
+						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
+						
+						$brickObject->fields[] = $fieldObject;
+					}
+				}
+				return $brickObject;
+			} else {
+				throw new \Exception('Trying to create document type with invalid data.');
+			}
+		}
+		
+		public function getBrickBySlug($slug)
+		{
+			$bricks = $this->repository->bricks;
+			foreach ($bricks as $brick) {
+				if ($brick->slug == $slug) {
+					return $brick;
+				}
+			}
+		}
+		
+		public function saveBrick($slug, $postValues)
+		{
+			$brickObject = $this->createBrickFromPostValues($postValues);
+			
+			$bricks = $this->repository->bricks;
+			foreach ($bricks as $key => $brick) {
+				if ($brick->slug == $slug) {
+					$bricks[$key] = $brickObject;
+				}
+			}
+			$this->repository->bricks = $bricks;
+			$this->save();
+		}
+		
+		public function deleteBrickBySlug($slug)
+		{
+			$bricks = $this->repository->bricks;
+			foreach ($bricks as $key => $brickObject) {
+				if ($brickObject->slug == $slug) {
+					unset($bricks[$key]);
+				}
+			}
+			
+			$bricks = array_values($bricks);
+			$this->repository->bricks = $bricks;
 			$this->save();
 		}
 		

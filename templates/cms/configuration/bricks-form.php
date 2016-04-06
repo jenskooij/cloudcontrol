@@ -1,22 +1,22 @@
 <section class="dashboard configuration">
-	<h2><i class="fa fa-cogs"></i> <a href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration">Configuration</a> &raquo; Document Types</h2>
+	<h2><i class="fa fa-cogs"></i> <a href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration">Configuration</a> &raquo; Bricks</h2>
 	<nav class="actions">
 		<ul>
 			<li>
-				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/document-types" title="Back">Back</a>
+				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/bricks" title="Back">Back</a>
 			</li>
 		</ul>
 	</nav>
-	<form method="post" class="panel" id="documentTypesForm">
+	<form method="post" class="panel" id="bricksForm">
 		<div class="form-element">
 			<label for="title">Title</label>
-			<input required="required" id="title" type="text" name="title" placeholder="Title" value="<?=isset($documentType) ? $documentType->title : '' ?>" />
+			<input required="required" id="title" type="text" name="title" placeholder="Title" value="<?=isset($brick) ? $brick->title : '' ?>" />
 		</div>
 		<div class="form-element">
-			<label>Fields</label>
+			<label for="title">Fields</label>
 			<ul id="dropZone" class="sortable">
-			<? if (isset($documentType)) : ?>
-				<? foreach ($documentType->fields as $field) : ?>
+			<? if (isset($brick)) : ?>
+				<? foreach ($brick->fields as $field) : ?>
 					<li class="form-element fields">
 						<input type="text" required="required" name="fieldTitles[]" placeholder="Field Title" value="<?=$field->title?>" />
 						<select name="fieldTypes[]">
@@ -42,36 +42,8 @@
 				<? endforeach ?>
 			<? endif ?>
 			</ul>
-			<a class="btn add-parameter" id="documentTypes_add_field">+</a>
+			<a class="btn add-parameter" id="bricks_add_field">+</a>
 		</div>
-		<? if (count($bricks) > 0) : ?>
-		<div class="form-element">
-			<label>Bricks</label>
-			<ul id="brickDropZone" class="sortable">
-			<? foreach ($documentType->bricks as $myBrick) : ?>
-			<li class="form-element bricks">
-				<input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" value="<?=$myBrick->title?>" />
-				<select name="brickBricks[]">
-					<? foreach ($bricks as $brick) : ?>
-					<option<?=$myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
-					<? endforeach ?>
-				</select>
-				<a class="btn error"><i class="fa fa-times"></i></a>
-				<a class="btn move"><i class="fa fa-arrows-v"></i></a>
-			</li>
-			<? endforeach ?>
-			</ul>
-			<a class="btn add-parameter" id="documentTypes_add_brick">+</a>
-		</div>
-		<div class="form-element">
-			<label>Dynamic Bricks</label>
-			<select name="dynamicBricks[]" multiple="multiple">
-				<? foreach ($bricks as $brick) : ?>
-				<option<?=in_array($brick->slug, $documentType->dynamicBricks) ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
-				<? endforeach ?>
-			</select>
-		</div>
-		<? endif ?>
 		<div class="form-element">
 			<input onmousedown="window.onbeforeunload=null;" class="btn" type="submit" value="Save" />
 		</div>
@@ -99,16 +71,6 @@
 	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
 	<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 </li>
-<li class="form-element bricks" id="bricksPlaceholder" style="display:none;">
-	<input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" />
-	<select name="brickBricks[]">
-		<? foreach ($bricks as $brick) : ?>
-		<option value="<?=$brick->slug?>"><?=$brick->title?></option>
-		<? endforeach ?>
-	</select>
-	<a class="btn error"><i class="fa fa-times"></i></a>
-	<a class="btn move"><i class="fa fa-arrows-v"></i></a>
-</li>
 <script id="jqueryScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script>
@@ -127,7 +89,6 @@ $(function() {
 		}
 	});
 	$( ".sortable" ).disableSelection();
-	createCloneable('documentTypes_add_field', 'fieldPlaceholder', 'dropZone');
-	createCloneable('documentTypes_add_brick', 'bricksPlaceholder', 'brickDropZone');
+	createCloneable('bricks_add_field', 'fieldPlaceholder', 'dropZone');
 });
 </script>
