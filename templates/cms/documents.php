@@ -34,15 +34,24 @@
 	<? endif ?>
 </section>
 <? function renderDocument($document, $cmsPrefix, $slugPrefix = '') {?>
-<div class="grid-box-8">
+<div class="grid-box-10">
 	<h3>
 		<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit?slug=<?=$slugPrefix . $document->slug?>" title="Edit">
 			<i class="fa fa-file-text-o"></i> <?=$document->title?>
 		</a>
-		<small><?=$document->documentType?></small>
+		<small class="small state <?=strtolower($document->state)?>"><?=ucfirst($document->state)?></small>
+		<small class="small documentType"><?=$document->documentType?></small>
+		<small class="small lastModified">
+			<span class="label">Modified:</span>
+			<?=timeElapsedString($document->lastModificationDate)?>
+		</small>
+		<small class="small lastModifiedBy">
+			<span class="label">By:</span>
+			<?=$document->lastModifiedBy?>
+		</small>
 	</h3>
 </div>
-<div class="documentActions grid-box-4">
+<div class="documentActions grid-box-2">
 	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
 	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 </div>
