@@ -48,18 +48,20 @@
 		<div class="form-element">
 			<label>Bricks</label>
 			<ul id="brickDropZone" class="sortable">
-			<? foreach ($documentType->bricks as $myBrick) : ?>
-			<li class="form-element bricks">
-				<input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" value="<?=$myBrick->title?>" />
-				<select name="brickBricks[]">
-					<? foreach ($bricks as $brick) : ?>
-					<option<?=$myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
-					<? endforeach ?>
-				</select>
-				<a class="btn error"><i class="fa fa-times"></i></a>
-				<a class="btn move"><i class="fa fa-arrows-v"></i></a>
-			</li>
-			<? endforeach ?>
+			<? if (isset($documentType)) : ?>
+				<? foreach ($documentType->bricks as $myBrick) : ?>
+				<li class="form-element bricks">
+					<input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" value="<?=$myBrick->title?>" />
+					<select name="brickBricks[]">
+						<? foreach ($bricks as $brick) : ?>
+						<option<?=$myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
+						<? endforeach ?>
+					</select>
+					<a class="btn error"><i class="fa fa-times"></i></a>
+					<a class="btn move"><i class="fa fa-arrows-v"></i></a>
+				</li>
+				<? endforeach ?>
+			<? endif ?>
 			</ul>
 			<a class="btn add-parameter" id="documentTypes_add_brick">+</a>
 		</div>
@@ -67,7 +69,7 @@
 			<label>Dynamic Bricks</label>
 			<select name="dynamicBricks[]" multiple="multiple">
 				<? foreach ($bricks as $brick) : ?>
-				<option<?=in_array($brick->slug, $documentType->dynamicBricks) ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
+				<option<?=isset($documentType) && in_array($brick->slug, $documentType->dynamicBricks) ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
 				<? endforeach ?>
 			</select>
 		</div>

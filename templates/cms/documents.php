@@ -42,7 +42,7 @@
 		</a>
 		<small class="small state <?=strtolower($document->state)?>"><?=ucfirst($document->state)?></small>
 		<small class="small documentType"><?=$document->documentType?></small>
-		<small class="small lastModified">
+		<small class="small lastModified" title="<?=date('r', $document->lastModificationDate)?>">
 			<span class="label">Modified:</span>
 			<?=timeElapsedString($document->lastModificationDate)?>
 		</small>
