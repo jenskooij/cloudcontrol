@@ -119,6 +119,7 @@ $(function() {
 		axis: "y",
 		forcePlaceholderSize: true,
 		tolerance: "pointer",
+		handle: "a.move",
 		stop: function( event, ui ) {
 			$('#save').show();
 			window.onbeforeunload = function(e) {
