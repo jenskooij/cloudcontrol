@@ -85,6 +85,7 @@ namespace library\components
 			$templatePath = __DIR__ . '../../../templates/' . $template . '.php';
 			if (realpath($templatePath) !== false) {
 				ob_clean();
+				$this->parameters['request'] = $this->request;
 				extract($this->parameters);
 				include($templatePath);
 				return ob_get_contents();

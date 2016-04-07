@@ -26,7 +26,26 @@
       }
    ],
    "applicationComponents":[],
-   "documents":[],
+   "documents":[{
+      "title" : "My Document",
+      "slug" : "my-document",
+      "type" : "document",
+      "documentType" : "Default Document",
+      "documentTypeSlug" : "default-document",
+      "lastModifiedBy" : "admin",
+      "state" : "unpublished",
+      "lastModificationDate" : "1460029803",
+      "creationDate" : "0",
+      "fields" :
+      [
+      ],
+      "bricks" :
+      [
+      ],
+      "dynamicBricks" :
+      [
+      ]
+   }],
    "documentTypes":[],
    "bricks":[],
    "images":[],

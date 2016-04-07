@@ -12,6 +12,10 @@ namespace library\storage
 		function getUserByUsername($username);
 
 		function getDocuments();
+		function addDocumentFolder($postValues);
+		function deleteDocumentFolderBySlug($slug);
+		function getDocumentFolderBySlug($slug);
+		function saveDocumentFolder($postValues);
 
 		function getSitemap();
 		function addSitemapItem($postValues);

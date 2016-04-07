@@ -1,3 +1,4 @@
+<script>window.onload=function(){History.init();History.replaceState(null, 'Title', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');};</script>
 <section class="documents">
 	<h2><i class="fa fa-file-text-o"></i> Documents</h2>
 	<nav class="actions">
@@ -65,8 +66,8 @@
 	</h3>
 </div>
 <div class="documentActions grid-box-4">
-	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
+	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-folder?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
+	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete-folder?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 </div>
 <ul class="documents grid-wrapper nested<?=$root ? ' root' : '' ?>">
 	<? foreach ($document->content as $subDocument) : ?>

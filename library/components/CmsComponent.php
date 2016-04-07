@@ -116,6 +116,38 @@ namespace library\components
 				$template = 'cms/documents';
 				$this->parameters['documents'] = $this->storage->getDocuments();
 				$this->parameters['mainNavClass'] = 'documents';
+			} elseif ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path'])) {
+				$template = 'cms/documents/folder-form';
+				$this->parameters['mainNavClass'] = 'documents';
+				if (isset($request::$post['title'], $request::$post['path'])) {
+					$this->storage->addDocumentFolder($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+					exit;
+				}
+			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
+
+				$template = 'cms/documents/folder-form';
+				$folder = $this->storage->getDocumentFolderBySlug($request::$get['slug']);
+
+				$path = $request::$get['slug'];
+				$path = explode('/', $path);
+				array_pop($path);
+				$path = implode('/', $path);
+
+				$request::$get['path'] = '/' . $path;
+
+				if (isset($request::$post['title'], $request::$post['content'])) {
+					$this->storage->saveDocumentFolder($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+					exit;
+				}
+
+				$this->parameters['mainNavClass'] = 'documents';
+				$this->parameters['folder'] = $folder;
+			} else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get['slug'])) {
+				$this->storage->deleteDocumentFolderBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+				exit;
 			} elseif ($relativeCmsUri == '/sitemap') {
 				$template = 'cms/sitemap';
 				if (isset($request::$post['save'])) {					
