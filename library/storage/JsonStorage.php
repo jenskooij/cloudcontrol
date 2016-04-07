@@ -9,13 +9,24 @@ namespace library\storage
 	{
 		private $storagePath;
 		private $repository;
-		
+
+		/**
+		 * JsonStorage constructor.
+		 *
+		 * @param $storagePath
+		 */
 		public function __construct($storagePath)
 		{
 			$this->storagePath = $storagePath;
 			$this->config();
 		}
-		
+
+		/**
+		 * Retrieve the data from the storagepath
+		 * so it can be interacted with
+		 *
+		 * @throws \Exception
+		 */
 		private function config()
 		{
 			$storagePath = __DIR__ . $this->storagePath;
@@ -26,12 +37,22 @@ namespace library\storage
 				throw new \Exception('Couldnt find storagePath ' . $storagePath);
 			}
 		}
-		
+
+		/**
+		 * @return array
+		 */
 		public function getApplicationComponents()
 		{
 			return $this->repository->applicationComponents;
 		}
-		
+
+		/**
+		 * Get user by username
+		 *
+		 * @param $username
+		 *
+		 * @return array
+		 */
 		public function getUserByUsername($username)
 		{
 			$return = array();
@@ -105,6 +126,13 @@ namespace library\storage
 			$this->save();
 		}
 
+		/**
+		 * Delete a folder by its compound slug
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteDocumentFolderBySlug($slug)
 		{
 			$documentContainer = $this->getDocumentContainerByPath($slug);
@@ -132,6 +160,14 @@ namespace library\storage
 			$this->save();
 		}
 
+		/**
+		 * Retrieve a folder by its compound slug
+		 *
+		 * @param $slug
+		 *
+		 * @return mixed
+		 * @throws \Exception
+		 */
 		public function getDocumentFolderBySlug($slug)
 		{
 			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
@@ -151,6 +187,13 @@ namespace library\storage
 			return $folder;
 		}
 
+		/**
+		 * Save changes to folder
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveDocumentFolder($postValues)
 		{
 			$documentFolderObject = $this->createDocumentFolderFromPostValues($postValues);
@@ -250,6 +293,14 @@ namespace library\storage
 			}
 		}
 
+		/**
+		 * Create folder from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @return \stdClass
+		 * @throws \Exception
+		 */
 		private function createDocumentFolderFromPostValues($postValues)
 		{
 			if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
@@ -270,12 +321,21 @@ namespace library\storage
 		 * Sitemap
 		 *
 		 */
-		
+		/**
+		 * @return array
+		 */
 		public function getSitemap()
 		{
 			return $this->repository->sitemap;
 		}
-		
+
+		/**
+		 * Add a sitemap item
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function addSitemapItem($postValues) 
 		{
 			$sitemapObject = $this->createSitemapItemFromPostValues($postValues);
@@ -283,7 +343,15 @@ namespace library\storage
 			$this->repository->sitemap[] = $sitemapObject;
 			$this->save();
 		}
-		
+
+		/**
+		 * Save changes to a sitemap item
+		 *
+		 * @param $slug
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveSitemapItem($slug, $postValues)
 		{
 			$sitemapObject = $this->createSitemapItemFromPostValues($postValues);
@@ -297,7 +365,14 @@ namespace library\storage
 			$this->repository->sitemap = $sitemap;
 			$this->save();
 		}
-		
+
+		/**
+		 * Delete a sitemap item by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteSitemapItemBySlug($slug)
 		{
 			$sitemap = $this->repository->sitemap;
@@ -310,7 +385,15 @@ namespace library\storage
 			$this->repository->sitemap = $sitemap;
 			$this->save();
 		}
-		
+
+		/**
+		 * Create a sitemap item from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @return \stdClass
+		 * @throws \Exception
+		 */
 		private function createSitemapItemFromPostValues($postValues)
 		{
 			if (isset($postValues['title'], $postValues['url'], $postValues['component'], $postValues['template'])) {
@@ -332,7 +415,14 @@ namespace library\storage
 				throw new \Exception('Trying to create sitemap item with invalid data.');
 			}
 		}
-		
+
+		/**
+		 * Save changes to a sitemap item
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveSitemap($postValues)
 		{
 			if (isset($postValues['sitemapitem']) && is_array($postValues['sitemapitem'])) {
@@ -348,7 +438,14 @@ namespace library\storage
 				$this->save();
 			}
 		}
-		
+
+		/**
+		 * Get a sitemap item by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @return mixed
+		 */
 		public function getSitemapItemBySlug($slug)
 		{
 			$sitemap = $this->repository->sitemap;
@@ -364,11 +461,21 @@ namespace library\storage
 		 * Configuration
 		 *
 		 */
+		/**
+		 * @return array
+		 */
 		public function getDocumentTypes()
 		{
 			return $this->repository->documentTypes;
 		}
-		
+
+		/**
+		 * Add a document type from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function addDocumentType($postValues)
 		{
 			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
@@ -376,7 +483,15 @@ namespace library\storage
 			$this->repository->documentTypes[] = $documentTypeObject;
 			$this->save();
 		}
-		
+
+		/**
+		 * Create a document type from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @return \stdClass
+		 * @throws \Exception
+		 */
 		public function createDocumentTypeFromPostValues($postValues)
 		{
 			if (isset($postValues['title'])) {
@@ -412,7 +527,14 @@ namespace library\storage
 				throw new \Exception('Trying to create document type with invalid data.');
 			}
 		}
-		
+
+		/**
+		 * Delete document type
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteDocumentTypeBySlug($slug)
 		{
 			$documentTypes = $this->repository->documentTypes;
@@ -425,8 +547,14 @@ namespace library\storage
 			$this->repository->documentTypes = $documentTypes;
 			$this->save();
 		}
-		
-		
+
+		/**
+		 * Get document type by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @return mixed
+		 */
 		public function getDocumentTypeBySlug($slug)
 		{
 			$documentTypes = $this->repository->documentTypes;
@@ -436,7 +564,15 @@ namespace library\storage
 				}
 			}
 		}
-		
+
+		/**
+		 * Save changes to a document type
+		 *
+		 * @param $slug
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveDocumentType($slug, $postValues)
 		{
 			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
@@ -456,11 +592,21 @@ namespace library\storage
 		 * Bricks
 		 *
 		 */
+		/**
+		 * @return array
+		 */
 		public function getBricks()
 		{
 			return $this->repository->bricks;
 		}
-		
+
+		/**
+		 * Add a brick
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function addBrick($postValues)
 		{
 			$brickObject = $this->createBrickFromPostValues($postValues);
@@ -468,7 +614,15 @@ namespace library\storage
 			$this->repository->bricks[] = $brickObject;
 			$this->save();
 		}
-		
+
+		/**
+		 * Create a brick from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @return \stdClass
+		 * @throws \Exception
+		 */
 		public function createBrickFromPostValues($postValues)
 		{
 			if (isset($postValues['title'])) {
@@ -493,7 +647,14 @@ namespace library\storage
 				throw new \Exception('Trying to create document type with invalid data.');
 			}
 		}
-		
+
+		/**
+		 * Get a brick by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @return mixed
+		 */
 		public function getBrickBySlug($slug)
 		{
 			$bricks = $this->repository->bricks;
@@ -503,7 +664,15 @@ namespace library\storage
 				}
 			}
 		}
-		
+
+		/**
+		 * Save changes to a brick
+		 *
+		 * @param $slug
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveBrick($slug, $postValues)
 		{
 			$brickObject = $this->createBrickFromPostValues($postValues);
@@ -517,7 +686,14 @@ namespace library\storage
 			$this->repository->bricks = $bricks;
 			$this->save();
 		}
-		
+
+		/**
+		 * Delete a brick by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteBrickBySlug($slug)
 		{
 			$bricks = $this->repository->bricks;
@@ -537,6 +713,12 @@ namespace library\storage
 		 * Misc
 		 *
 		 */
+		/**
+		 * Save changes made to the repository
+		 * in the storagepath
+		 *
+		 * @throws \Exception
+		 */
 		private function save() {
 			$storagePath = __DIR__ . $this->storagePath;
 			if (realpath($storagePath) !== false) {
@@ -545,7 +727,16 @@ namespace library\storage
 				throw new \Exception('Couldnt find storagePath ' . $storagePath);
 			}
 		}
-		
+
+		/**
+		 * Convert a string to url friendly slug
+		 *
+		 * @param string $str
+		 * @param array  $replace
+		 * @param string $delimiter
+		 *
+		 * @return mixed|string
+		 */
 		private function slugify($str, $replace=array(), $delimiter='-') {
 			if( !empty($replace) ) {
 				$str = str_replace((array)$replace, ' ', $str);
