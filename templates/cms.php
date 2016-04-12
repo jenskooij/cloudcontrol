@@ -9,40 +9,43 @@
 		<h1>Cloud Control CMS</h1>
 		<nav id="mainNav" class="mainNav grid-wrapper">
 			<ul class="grid-container">
-				<li class="grid-box-2">
+				<li class="grid-box-1">
 					<a class="btn documents grid-inner<?=$mainNavClass == 'documents' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents">
 						<i class="fa fa-file-text-o"></i>
-						Documents
+						<span>Documents</span>
 					</a>
 				</li>
-				<li class="grid-box-2">
+				<li class="grid-box-1">
 					<a class="btn sitemap grid-inner<?=$mainNavClass == 'sitemap' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap">
 						<i class="fa fa-map-signs"></i>
-						Sitemap
+						<span>Sitemap</span>
 					</a>
 				</li>
-				<li class="grid-box-2">
+				<li class="grid-box-1">
 					<a class="btn images grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/images">
 						<i class="fa fa-picture-o"></i>
-						Images
+						<span>Images</span>
 					</a>
 				</li>
-				<li class="grid-box-2">
+				<li class="grid-box-1">
 					<a class="btn files grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/files">
 						<i class="fa fa-files-o"></i>
-						Files
+						<span>Files</span>
 					</a>
 				</li>
-				<li class="grid-box-2">
+				<li class="grid-box-1">
 					<a class="btn configuration grid-inner<?=$mainNavClass == 'configuration' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration">
 						<i class="fa fa-cogs"></i>
-						Configuration
+						<span>Configuration</span>
 					</a>
 				</li>
-				<li class="grid-box-2">
+				<li class="grid-box-1">
+					&nbsp;
+				</li>
+				<li class="grid-box-6 log-off-box">
 					<a class="btn log-off grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/log-off">
 						<i class="fa fa-power-off"></i>
-						Log off
+						<span>Log off</span>
 					</a>
 				</li>
 			</ul>
