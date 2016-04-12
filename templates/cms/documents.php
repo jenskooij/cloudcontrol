@@ -1,4 +1,4 @@
-<script>window.onload=function(){History.init();History.replaceState(null, 'Title', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');};</script>
+<script>window.onload=function(){History.init();History.replaceState(null, 'Cloud Control CMS', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');};</script>
 <section class="documents">
 	<h2><i class="fa fa-file-text-o"></i> Documents</h2>
 	<nav class="actions">

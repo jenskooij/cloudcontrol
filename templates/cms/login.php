@@ -13,7 +13,7 @@
 				<p><?=$errorMsg?></p>
 			</div>
 			<? endif ?>
-			<form method="post">
+			<form method="post" onsubmit="document.getElementById('submitButton').className='btn inactive';document.getElementById('loadingSpinner').style.display='inline-block';">
 				<div class="form-element">
 					<label>Username</label>
 					<input required="required" type="text" name="username" placeholder="Username" />
@@ -23,7 +23,8 @@
 					<input required="required" type="password" name="password" placeholder="Password" />
 				</div>
 				<div class="form-element">
-					<input class="btn" type="submit" value="Login" />
+					<i id="loadingSpinner" class="fa fa-spinner fa-spin fa-fw margin-bottom"></i>
+					<input id="submitButton" class="btn" onclick="" type="submit" value="Login" />
 				</div>
 			</form>
 		</section>
