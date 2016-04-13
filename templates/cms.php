@@ -10,6 +10,12 @@
 		<nav id="mainNav" class="mainNav grid-wrapper">
 			<ul class="grid-container">
 				<li class="grid-box-1">
+					<a class="btn grid-inner<?=$mainNavClass == 'dashboard' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/">
+						<i class="fa fa-th"></i>
+						<span>Dashboard</span>
+					</a>
+				</li>
+				<li class="grid-box-1">
 					<a class="btn documents grid-inner<?=$mainNavClass == 'documents' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents">
 						<i class="fa fa-file-text-o"></i>
 						<span>Documents</span>
@@ -38,9 +44,6 @@
 						<i class="fa fa-cogs"></i>
 						<span>Configuration</span>
 					</a>
-				</li>
-				<li class="grid-box-1">
-					&nbsp;
 				</li>
 				<li class="grid-box-6 log-off-box">
 					<a class="btn log-off grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/log-off">
