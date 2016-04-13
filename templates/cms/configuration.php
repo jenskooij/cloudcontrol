@@ -21,9 +21,9 @@
 				</a>
 			</li>
 			<li class="tile grid-box-3">
-				<a class="btn configuration" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/images">
-					<i class="fa fa-image"></i>
-					Image Handling
+				<a class="btn configuration" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set">
+					<i class="fa fa-file-image-o"></i>
+					Image Set
 				</a>
 			</li>
 		</ul>

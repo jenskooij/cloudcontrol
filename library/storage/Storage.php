@@ -35,5 +35,11 @@ namespace library\storage
 		function getBrickBySlug($slug);
 		function saveBrick($slug, $postValues);
 		function deleteBrickBySlug($slug);
+
+		function getImageSet();
+		function getImageSetBySlug($slug);
+		function saveImageSet($slug, $postValues);
+		function addImageSet($postValues);
+		function deleteImageSetBySlug($slug);
 	}
 }

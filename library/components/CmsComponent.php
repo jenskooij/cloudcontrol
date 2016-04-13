@@ -236,6 +236,32 @@ namespace library\components
 				$this->storage->deleteBrickBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
 				exit;
+			} elseif ($relativeCmsUri == '/configuration/image-set') {
+				$template = 'cms/configuration/image-set';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$this->parameters['imageSet'] = $this->storage->getImageSet();
+			} elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get['slug'])) {
+				$template = 'cms/configuration/image-set-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$imageSet = $this->storage->getImageSetBySlug($request::$get['slug']);
+				if (isset($request::$post['title'])) {
+					$this->storage->saveImageSet($request::$get['slug'], $request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
+					exit;
+				}
+				$this->parameters['imageSet'] = $imageSet;
+			} elseif ($relativeCmsUri == '/configuration/image-set/new') {
+				$template = 'cms/configuration/image-set-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				if (isset($request::$post['title'])) {
+					$this->storage->addImageSet($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get['slug'])) {
+				$this->storage->deleteImageSetBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
+				exit;
 			} elseif ($relativeCmsUri == '/log-off') {
 				$_SESSION['cloudcontrol'] = null;
 				unset($_SESSION['cloudcontrol']);

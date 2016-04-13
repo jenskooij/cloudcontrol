@@ -653,7 +653,7 @@ namespace library\storage
 		 *
 		 * @param $slug
 		 *
-		 * @return mixed
+		 * @return \stdClass
 		 */
 		public function getBrickBySlug($slug)
 		{
@@ -748,6 +748,115 @@ namespace library\storage
 			$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
 
 			return $clean;
+		}
+		/*
+		 *
+		 * Image Set
+		 *
+		 */
+
+		/**
+		 * Get the image set
+		 *
+		 * @return array
+		 */
+		public function getImageSet()
+		{
+			return $this->repository->imageSet;
+		}
+
+		/**
+		 * Get Image by slug
+		 *
+		 * @param $slug
+		 *
+		 * @return \stdClass
+		 */
+		public function getImageSetBySlug($slug)
+		{
+			$imageSet = $this->getImageSet();
+			foreach ($imageSet as $set) {
+				if ($set->slug == $slug) {
+					return $set;
+				}
+			}
+		}
+
+		/**
+		 * Save Image Set by it's slug
+		 *
+		 * @param $slug
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
+		public function saveImageSet($slug, $postValues)
+		{
+			$imageSetObject = $this->createImageSetFromPostValues($postValues);
+
+			$imageSet = $this->repository->imageSet;
+			foreach ($imageSet as $key => $set) {
+				if ($set->slug == $slug) {
+					$imageSet[$key] = $imageSetObject;
+				}
+			}
+			$this->repository->imageSet = $imageSet;
+			$this->save();
+		}
+
+		/**
+		 * Ceate image set from post values
+		 *
+		 * @param $postValues
+		 *
+		 * @return \stdClass
+		 * @throws \Exception
+		 */
+		private function createImageSetFromPostValues($postValues)
+		{
+			if (isset($postValues['title'], $postValues['width'], $postValues['height'], $postValues['method'])) {
+				$imageSetObject = new \stdClass();
+
+				$imageSetObject->title = $postValues['title'];
+				$imageSetObject->slug = $this->slugify($postValues['title']);
+				$imageSetObject->width = $postValues['width'];
+				$imageSetObject->height = $postValues['height'];
+				$imageSetObject->method = $postValues['method'];
+
+				return $imageSetObject;
+			} else {
+				throw new \Exception('Trying to create image set with invalid data.');
+			}
+		}
+
+		/**
+		 * Add image set
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
+		public function addImageSet($postValues)
+		{
+			$imageSetObject = $this->createImageSetFromPostValues($postValues);
+
+			$this->repository->imageSet[] = $imageSetObject;
+
+			$this->save();
+		}
+
+		public function deleteImageSetBySlug($slug)
+		{
+			$imageSet = $this->getImageSet();
+
+			foreach ($imageSet as $key => $set) {
+				if ($set->slug == $slug) {
+					unset($imageSet[$key]);
+				}
+			}
+			$imageSet = array_values($imageSet);
+			$this->repository->imageSet = $imageSet;
+			$this->save();
 		}
 	}
 }
