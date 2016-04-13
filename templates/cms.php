@@ -28,7 +28,7 @@
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn files grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/files">
+					<a class="btn files grid-inner<?=$mainNavClass == 'files' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/files">
 						<i class="fa fa-files-o"></i>
 						<span>Files</span>
 					</a>

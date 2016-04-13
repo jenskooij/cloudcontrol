@@ -23,7 +23,12 @@ namespace library\storage
 		function saveSitemap($postValues);
 		function getSitemapItemBySlug($slug);
 		function deleteSitemapItemBySlug($slug);
-		
+
+		function getFiles();
+		function addFile($postValues);
+		function getFileByName($filename);
+		function deleteFileByName($filename);
+
 		function getDocumentTypes();
 		function addDocumentType($postValues);
 		function deleteDocumentTypeBySlug($slug);
@@ -41,5 +46,6 @@ namespace library\storage
 		function saveImageSet($slug, $postValues);
 		function addImageSet($postValues);
 		function deleteImageSetBySlug($slug);
+		function getSmallestImageSet();
 	}
 }

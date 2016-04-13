@@ -60,6 +60,50 @@ function timeElapsedString($ptime)
 	}
 }
 
+function humanFileSize($size,$unit="") {
+	if( (!$unit && $size >= 1<<30) || $unit == "GB")
+		return number_format($size/(1<<30),2)."GB";
+	if( (!$unit && $size >= 1<<20) || $unit == "MB")
+		return number_format($size/(1<<20),2)."MB";
+	if( (!$unit && $size >= 1<<10) || $unit == "KB")
+		return number_format($size/(1<<10),2)."KB";
+	return number_format($size)." bytes";
+}
+
+function iconByFileType($fileType) {
+	if (strpos($fileType, 'image') !== false) {
+		return 'file-image-o';
+	} elseif (strpos($fileType, 'pdf') !== false) {
+		return 'file-pdf-o';
+	} elseif (strpos($fileType, 'audio') !== false) {
+		return 'file-audio-o';
+	} elseif (strpos($fileType, 'text') !== false) {
+		return 'file-text-o';
+	} elseif (strpos($fileType, 'x-msdownload') !== false) {
+		return 'windows';
+	} elseif (in_array($fileType, array(
+		'application/vnd.ms-excel',
+		'application/msexcel',
+		'application/xls',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'application/vnd.google-apps.spreadsheet',
+	))) {
+		return 'file-excel-o';
+	} elseif (in_array($fileType, array(
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	))) {
+		return 'file-word-o';
+	} elseif (in_array($fileType, array(
+		'application/x-rar-compressed',
+		'application/x-zip-compressed',
+		'application/zip',
+	))) {
+		return 'file-archive-o';
+	}
+	return 'file-o';
+}
+
 /**
  * Dumps a var_dump of the passed arguments with <pre> tags surrounding it.
  * Dies afterwards

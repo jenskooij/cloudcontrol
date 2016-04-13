@@ -455,7 +455,113 @@ namespace library\storage
 				}
 			}
 		}
-		
+
+		/*
+		 *
+		 * Files
+		 *
+		 */
+		/**
+		 * Get all files
+		 *
+		 * @return array
+		 */
+		public function getFiles()
+		{
+			$files =  $this->repository->files;
+			usort($files, array($this, 'compareFiles'));
+			return $files;
+		}
+
+		private function compareFiles($a, $b)
+		{
+			return strcmp($a->file, $b->file);
+		}
+
+		public function addFile($postValues)
+		{
+			$destinationPath = realpath(__DIR__ . '/../../www/files/');
+
+			$filename = $this->validateFilename($postValues['name'], $destinationPath);
+			$destination = $destinationPath . '/' . $filename;
+
+			if ($postValues['error'] != '0') {
+				throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+			}
+
+			if (move_uploaded_file($postValues['tmp_name'], $destination)) {
+				$file = new \stdClass();
+				$file->file = $filename;
+				$file->type = $postValues['type'];
+				$file->size = $postValues['size'];
+
+				$this->repository->files[] = $file;
+				$this->save();
+			} else {
+				throw new \Exception('Error moving uploaded file');
+			}
+		}
+
+		private function validateFilename($filename, $path)
+		{
+			$fileParts = explode('.', $filename);
+			if (count($fileParts) > 1) {
+				$extension = end($fileParts);
+				array_pop($fileParts);
+				$fileNameWithoutExtension = implode('-', $fileParts);
+				$fileNameWithoutExtension = $this->slugify($fileNameWithoutExtension);
+				$filename = $fileNameWithoutExtension . '.' . $extension;
+			} else {
+				$filename = $this->slugify($filename);
+			}
+
+			if (file_exists($path . '/' . $filename)) {
+				$fileParts = explode('.', $filename);
+				if (count($fileParts) > 1) {
+					$extension = end($fileParts);
+					array_pop($fileParts);
+					$fileNameWithoutExtension = implode('-', $fileParts);
+					$fileNameWithoutExtension .= '-copy';
+					$filename = $fileNameWithoutExtension . '.' . $extension;
+				} else {
+					$filename .= '-copy';
+				}
+				return $this->validateFilename($filename,$path);
+			}
+			return $filename;
+		}
+
+		public function getFileByName($filename)
+		{
+			$files = $this->getFiles();
+			foreach ($files as $file) {
+				if ($filename == $file->file) {
+					return $file;
+				}
+			}
+		}
+
+		public function deleteFileByName($filename)
+		{
+			$destinationPath = realpath(__DIR__ . '/../../www/files/');
+			$destination = $destinationPath . '/' . $filename;
+
+			if (file_exists($destination)) {
+				$files = $this->getFiles();
+				foreach ($files as $key => $file) {
+					if ($file->file == $filename) {
+						unlink($destination);
+						unset($files[$key]);
+
+					}
+				}
+
+				$files = array_values($files);
+				$this->repository->files = $files;
+				$this->save();
+			}
+		}
+
 		/*
 		 * 
 		 * Configuration
@@ -845,6 +951,13 @@ namespace library\storage
 			$this->save();
 		}
 
+		/**
+		 * Delete Image Set by its slug
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteImageSetBySlug($slug)
 		{
 			$imageSet = $this->getImageSet();
@@ -857,6 +970,29 @@ namespace library\storage
 			$imageSet = array_values($imageSet);
 			$this->repository->imageSet = $imageSet;
 			$this->save();
+		}
+
+		/**
+		 * Get the image set with the smallest size
+		 *
+		 * @return \stdClass;
+		 */
+		public function getSmallestImageSet()
+		{
+			$imageSet = $this->getImageSet();
+
+			$returnSize = PHP_INT_MAX;
+			$returnSet = null;
+
+			foreach ($imageSet as $set) {
+				$size = $set->width * $set->height;
+				if ($size < $returnSize) {
+					$returnSize = $size;
+					$returnSet = $set;
+				}
+			}
+
+			return $returnSet;
 		}
 	}
 }

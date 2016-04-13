@@ -177,6 +177,40 @@ namespace library\components
 				$this->storage->deleteSitemapItemBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
 				exit;
+			} elseif ($relativeCmsUri == '/files') {
+				$template = 'cms/files';
+				$this->parameters['mainNavClass'] = 'files';
+				$this->parameters['files'] = $this->storage->getFiles();
+			} elseif ($relativeCmsUri == '/files/new') {
+				$template = 'cms/files/form';
+				$this->parameters['mainNavClass'] = 'files';
+				if (isset($_FILES['file'])) {
+					$this->storage->addFile($_FILES['file']);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/files/get' && isset($request::$get['file'])) {
+				$file = $this->storage->getFileByName($request::$get['file']);
+				$path = realpath(__DIR__ . '/../../www/files/');
+				$quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
+				$size   = filesize($path . '/' . $file->file);
+
+				header('Content-Description: File Transfer');
+				header('Content-Type: ' . $file->type);
+				header('Content-Disposition: attachment; filename=' . $quoted);
+				header('Content-Transfer-Encoding: binary');
+				header('Connection: Keep-Alive');
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Pragma: public');
+				header('Content-Length: ' . $size);
+
+				readfile($path . '/' . $file->file);
+				exit;
+			} elseif ($relativeCmsUri == '/files/delete' && isset($request::$get['file'])) {
+				$this->storage->deleteFileByName($request::$get['file']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
+				exit;
 			} elseif ($relativeCmsUri == '/configuration') {
 				$template = 'cms/configuration';
 				$this->parameters['mainNavClass'] = 'configuration';
