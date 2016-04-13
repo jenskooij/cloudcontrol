@@ -1,6 +1,9 @@
 <?php
 namespace library\storage
 {
+
+	use library\images\ImageResizer;
+
 	/**
 	 * Class JsonStorage
 	 * @package library\storage
@@ -306,7 +309,7 @@ namespace library\storage
 			if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
 				$documentFolderObject = new \stdClass();
 				$documentFolderObject->title = $postValues['title'];
-				$documentFolderObject->slug = $this->slugify($postValues['title']);
+				$documentFolderObject->slug = slugify($postValues['title']);
 				$documentFolderObject->type = 'folder';
 				$documentFolderObject->content = json_decode($postValues['content']);
 
@@ -399,7 +402,7 @@ namespace library\storage
 			if (isset($postValues['title'], $postValues['url'], $postValues['component'], $postValues['template'])) {
 				$sitemapObject = new \stdClass();
 				$sitemapObject->title = $postValues['title'];
-				$sitemapObject->slug = $this->slugify($postValues['title']);
+				$sitemapObject->slug = slugify($postValues['title']);
 				$sitemapObject->url = $postValues['url'];
 				$sitemapObject->component = $postValues['component'];
 				$sitemapObject->template = $postValues['template'];
@@ -458,6 +461,84 @@ namespace library\storage
 
 		/*
 		 *
+		 * Images
+		 *
+		 */
+		/**
+		 * Get all images
+		 *
+		 * @return array
+		 */
+		public function getImages()
+		{
+			return $this->repository->images;
+		}
+
+		public function addImage($postValues)
+		{
+			$destinationPath = realpath(__DIR__ . '/../../www/images/');
+
+			$filename = $this->validateFilename($postValues['name'], $destinationPath);
+			$destination = $destinationPath . '/' . $filename;
+
+			if ($postValues['error'] != '0') {
+				throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+			}
+
+			if (move_uploaded_file($postValues['tmp_name'], $destination)) {
+				$imageResizer = new ImageResizer($this->getImageSet());
+				$fileNames = $imageResizer->applyImageSetToImage($destination);
+				$fileNames['original'] = $filename;
+				$imageObject = new \stdClass();
+				$imageObject->file = $filename;
+				$imageObject->type = $postValues['type'];
+				$imageObject->size = $postValues['size'];
+				$imageObject->set = $fileNames;
+
+				$this->repository->images[] = $imageObject;
+				$this->save();
+			} else {
+				throw new \Exception('Error moving uploaded file');
+			}
+		}
+
+		public function deleteImageByName($filename)
+		{
+			$destinationPath = realpath(__DIR__ . '/../../www/images/');
+			$destination = $destinationPath . '/' . $filename;
+
+			$images = $this->getImages();
+
+			foreach ($images as $key => $image) {
+				if ($image->file == $filename) {
+					foreach ($image->set as $imageSetFilename) {
+						$destination = $destinationPath . '/' . $imageSetFilename;
+						if (file_exists($destination)) {
+							unlink($destination);
+						} else {
+							dump($destination);
+						}
+					}
+					unset($images[$key]);
+				}
+			}
+
+			$this->repository->images = $images;
+			$this->save();
+		}
+
+		public function getImageByName($filename)
+		{
+			$images = $this->getImages();
+			foreach ($images as $image) {
+				if ($image->file == $filename) {
+					return $image;
+				}
+			}
+		}
+
+		/*
+		 *
 		 * Files
 		 *
 		 */
@@ -509,10 +590,10 @@ namespace library\storage
 				$extension = end($fileParts);
 				array_pop($fileParts);
 				$fileNameWithoutExtension = implode('-', $fileParts);
-				$fileNameWithoutExtension = $this->slugify($fileNameWithoutExtension);
+				$fileNameWithoutExtension = slugify($fileNameWithoutExtension);
 				$filename = $fileNameWithoutExtension . '.' . $extension;
 			} else {
-				$filename = $this->slugify($filename);
+				$filename = slugify($filename);
 			}
 
 			if (file_exists($path . '/' . $filename)) {
@@ -552,7 +633,6 @@ namespace library\storage
 					if ($file->file == $filename) {
 						unlink($destination);
 						unset($files[$key]);
-
 					}
 				}
 
@@ -603,7 +683,7 @@ namespace library\storage
 			if (isset($postValues['title'])) {
 				$documentTypeObject = new \stdClass();
 				$documentTypeObject->title = $postValues['title'];
-				$documentTypeObject->slug = $this->slugify($postValues['title']);
+				$documentTypeObject->slug = slugify($postValues['title']);
 				$documentTypeObject->fields = array();
 				$documentTypeObject->bricks = array();
 				$documentTypeObject->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks'] : array();
@@ -611,7 +691,7 @@ namespace library\storage
 					foreach ($postValues['fieldTitles'] as $key => $value) {
 						$fieldObject = new \stdClass();
 						$fieldObject->title = $value;
-						$fieldObject->slug = $this->slugify($value);
+						$fieldObject->slug = slugify($value);
 						$fieldObject->type = $postValues['fieldTypes'][$key];
 						$fieldObject->required = ($postValues['fieldRequired'][$key] === 'true');
 						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
@@ -734,13 +814,13 @@ namespace library\storage
 			if (isset($postValues['title'])) {
 				$brickObject = new \stdClass();
 				$brickObject->title = $postValues['title'];
-				$brickObject->slug = $this->slugify($postValues['title']);
+				$brickObject->slug = slugify($postValues['title']);
 				$brickObject->fields = array();
 				if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
 					foreach ($postValues['fieldTitles'] as $key => $value) {
 						$fieldObject = new \stdClass();
 						$fieldObject->title = $value;
-						$fieldObject->slug = $this->slugify($value);
+						$fieldObject->slug = slugify($value);
 						$fieldObject->type = $postValues['fieldTypes'][$key];
 						$fieldObject->required = ($postValues['fieldRequired'][$key] === 'true');
 						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
@@ -834,27 +914,6 @@ namespace library\storage
 			}
 		}
 
-		/**
-		 * Convert a string to url friendly slug
-		 *
-		 * @param string $str
-		 * @param array  $replace
-		 * @param string $delimiter
-		 *
-		 * @return mixed|string
-		 */
-		private function slugify($str, $replace=array(), $delimiter='-') {
-			if( !empty($replace) ) {
-				$str = str_replace((array)$replace, ' ', $str);
-			}
-
-			$clean = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
-			$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
-			$clean = strtolower(trim($clean, '-'));
-			$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
-
-			return $clean;
-		}
 		/*
 		 *
 		 * Image Set
@@ -924,7 +983,7 @@ namespace library\storage
 				$imageSetObject = new \stdClass();
 
 				$imageSetObject->title = $postValues['title'];
-				$imageSetObject->slug = $this->slugify($postValues['title']);
+				$imageSetObject->slug = slugify($postValues['title']);
 				$imageSetObject->width = $postValues['width'];
 				$imageSetObject->height = $postValues['height'];
 				$imageSetObject->method = $postValues['method'];
@@ -990,6 +1049,11 @@ namespace library\storage
 					$returnSize = $size;
 					$returnSet = $set;
 				}
+			}
+
+			if ($returnSet === null) {
+				$returnSet = new \stdClass();
+				$returnSet->slug = 'original';
 			}
 
 			return $returnSet;

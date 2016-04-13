@@ -24,6 +24,11 @@ namespace library\storage
 		function getSitemapItemBySlug($slug);
 		function deleteSitemapItemBySlug($slug);
 
+		function getImages();
+		function addImage($postValues);
+		function deleteImageByName($filename);
+		function getImageByName($filename);
+
 		function getFiles();
 		function addFile($postValues);
 		function getFileByName($filename);

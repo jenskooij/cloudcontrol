@@ -105,6 +105,28 @@ function iconByFileType($fileType) {
 }
 
 /**
+ * Convert a string to url friendly slug
+ *
+ * @param string $str
+ * @param array  $replace
+ * @param string $delimiter
+ *
+ * @return mixed|string
+ */
+function slugify($str, $replace=array(), $delimiter='-') {
+	if( !empty($replace) ) {
+		$str = str_replace((array)$replace, ' ', $str);
+	}
+
+	$clean = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
+	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+	$clean = strtolower(trim($clean, '-'));
+	$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+
+	return $clean;
+}
+
+/**
  * Dumps a var_dump of the passed arguments with <pre> tags surrounding it.
  * Dies afterwards
  *

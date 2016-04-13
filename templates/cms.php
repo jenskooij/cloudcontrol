@@ -22,7 +22,7 @@
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn images grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/images">
+					<a class="btn images grid-inner<?=$mainNavClass == 'images' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/images">
 						<i class="fa fa-picture-o"></i>
 						<span>Images</span>
 					</a>

@@ -177,6 +177,27 @@ namespace library\components
 				$this->storage->deleteSitemapItemBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
 				exit;
+			} elseif ($relativeCmsUri == '/images') {
+				$template = 'cms/images';
+				$this->parameters['mainNavClass'] = 'images';
+				$this->parameters['images'] = $this->storage->getImages();
+				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
+			} elseif ($relativeCmsUri == '/images/new') {
+				$template = 'cms/images/form';
+				$this->parameters['mainNavClass'] = 'images';
+				if (isset($_FILES['file'])) {
+					$this->storage->addImage($_FILES['file']);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/images/delete' && isset($request::$get['file'])) {
+				$this->storage->deleteImageByName($request::$get['file']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
+				exit;
+			} elseif ($relativeCmsUri == '/images/show' && isset($request::$get['file'])) {
+				$template = 'cms/images/show';
+				$this->parameters['mainNavClass'] = 'images';
+				$this->parameters['image'] = $this->storage->getImageByName($request::$get['file']);
 			} elseif ($relativeCmsUri == '/files') {
 				$template = 'cms/files';
 				$this->parameters['mainNavClass'] = 'files';
