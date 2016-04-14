@@ -3,6 +3,7 @@
 <head>
 	<title>Cloud Control CMS</title>
 	<link rel="stylesheet" href="<?=\library\cc\Request::$subfolders?>/css/cms.css"/>
+	<link rel="shortcut icon" type="image/png" href="<?=$request::$subfolders?>favicon.ico"/>
 </head>
 <body class="grid-wrapper login">
 	<main class="body grid-container">

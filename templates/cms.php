@@ -2,7 +2,8 @@
 <html>
 <head>
 	<title>Cloud Control CMS</title>
-	<link rel="stylesheet" href="<?=\library\cc\Request::$subfolders?>/css/cms.css"/>
+	<link rel="stylesheet" href="<?=$request::$subfolders?>/css/cms.css"/>
+	<link rel="shortcut icon" type="image/png" href="<?=$request::$subfolders?>favicon.ico"/>
 </head>
 <body>
 	<header id="header" class="header">
@@ -10,43 +11,43 @@
 		<nav id="mainNav" class="mainNav grid-wrapper">
 			<ul class="grid-container">
 				<li class="grid-box-1">
-					<a class="btn grid-inner<?=$mainNavClass == 'dashboard' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/">
+					<a class="btn grid-inner<?=$mainNavClass == 'dashboard' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/">
 						<i class="fa fa-th"></i>
 						<span>Dashboard</span>
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn documents grid-inner<?=$mainNavClass == 'documents' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents">
+					<a class="btn documents grid-inner<?=$mainNavClass == 'documents' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/documents">
 						<i class="fa fa-file-text-o"></i>
 						<span>Documents</span>
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn sitemap grid-inner<?=$mainNavClass == 'sitemap' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap">
+					<a class="btn sitemap grid-inner<?=$mainNavClass == 'sitemap' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/sitemap">
 						<i class="fa fa-map-signs"></i>
 						<span>Sitemap</span>
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn images grid-inner<?=$mainNavClass == 'images' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/images">
+					<a class="btn images grid-inner<?=$mainNavClass == 'images' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/images">
 						<i class="fa fa-picture-o"></i>
 						<span>Images</span>
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn files grid-inner<?=$mainNavClass == 'files' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/files">
+					<a class="btn files grid-inner<?=$mainNavClass == 'files' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/files">
 						<i class="fa fa-files-o"></i>
 						<span>Files</span>
 					</a>
 				</li>
 				<li class="grid-box-1">
-					<a class="btn configuration grid-inner<?=$mainNavClass == 'configuration' ? ' active' : ''?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration">
+					<a class="btn configuration grid-inner<?=$mainNavClass == 'configuration' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/configuration">
 						<i class="fa fa-cogs"></i>
 						<span>Configuration</span>
 					</a>
 				</li>
 				<li class="grid-box-6 log-off-box">
-					<a class="btn log-off grid-inner" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/log-off">
+					<a class="btn log-off grid-inner" href="<?=$request::$subfolders?><?=$cmsPrefix?>/log-off">
 						<i class="fa fa-power-off"></i>
 						<span>Log off</span>
 					</a>
@@ -67,6 +68,6 @@
 		</section>
 	<? endif ?>
 	</main>
-	<script src="<?=\library\cc\Request::$subfolders?>js/cms.js"></script>
+	<script src="<?=$request::$subfolders?>js/cms.js"></script>
 </body>
 </html>

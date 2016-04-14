@@ -83,6 +83,7 @@ namespace library\components
 			$loginTemplatePath = __DIR__ . '../../../templates/cms/login.php';
 			if (realpath($loginTemplatePath) !== false) {
 				ob_clean();
+				$this->parameters['request'] = $this->request;
 				extract($this->parameters);
 				include($loginTemplatePath);
 				ob_end_flush();
