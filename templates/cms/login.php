@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="<?=\library\cc\Request::$subfolders?>/css/cms.css"/>
 	<link rel="shortcut icon" type="image/png" href="<?=$request::$subfolders?>favicon.ico"/>
 </head>
-<body class="grid-wrapper login">
+<body class="grid-wrapper login" onload="document.getElementById('username').focus();">
 	<main class="body grid-container">
 		<h1>Cloud Control</h1>
 		<section class="login-form grid-box-4">
@@ -16,12 +16,12 @@
 			<? endif ?>
 			<form method="post" onsubmit="document.getElementById('submitButton').className='btn inactive';document.getElementById('loadingSpinner').style.display='inline-block';">
 				<div class="form-element">
-					<label>Username</label>
-					<input required="required" type="text" name="username" placeholder="Username" />
+					<label for="username">Username</label>
+					<input id="username" required="required" type="text" name="username" placeholder="Username" />
 				</div>
 				<div class="form-element">
-					<label>Password</label>
-					<input required="required" type="password" name="password" placeholder="Password" />
+					<label for="password">Password</label>
+					<input id="password" required="required" type="password" name="password" placeholder="Password" />
 				</div>
 				<div class="form-element">
 					<i id="loadingSpinner" class="fa fa-spinner fa-spin fa-fw margin-bottom"></i>
@@ -30,14 +30,26 @@
 			</form>
 		</section>
 	</main>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script>
-$.get('https://api.unsplash.com/photos/random?client_id=e91dda05377e2adf28bdb3bb62ea86366639b73d70eaaab124ceac53919cf60d&category=4', function (result) {
-	if (result.urls !== null) {
-		$('body').css('background-image', 'url(\'' + result.urls.regular + '\')');
-	}
-});
-</script>
+	<script>
+		function httpGetAsync(theUrl, callback)
+		{
+			var xmlHttp = new XMLHttpRequest();
+			xmlHttp.onreadystatechange = function() {
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					callback(xmlHttp.responseText);
+			}
+			xmlHttp.open("GET", theUrl, true); // true for asynchronous
+			xmlHttp.send(null);
+		}
+
+		(function () {
+			"use strict";
+			httpGetAsync('https://api.unsplash.com/photos/random?client_id=e91dda05377e2adf28bdb3bb62ea86366639b73d70eaaab124ceac53919cf60d&category=4', function (result){
+				result = JSON.parse(result);
+				document.getElementsByTagName('body')[0].style.backgroundImage = 'url(\'' + result.urls.regular + '\')';
+			});
+		})();
+	</script>
 
 </body>
 </html>
