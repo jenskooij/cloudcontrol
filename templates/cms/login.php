@@ -34,26 +34,26 @@
 			</form>
 		</section>
 	</main>
-	<script>
-		function httpGetAsync(theUrl, callback)
-		{
-			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.onreadystatechange = function() {
-				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-					callback(xmlHttp.responseText);
-			}
-			xmlHttp.open("GET", theUrl, true); // true for asynchronous
-			xmlHttp.send(null);
-		}
+<script>
+function httpGetAsync(theUrl, callback) {
+    "use strict";
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+            callback(xmlHttp.responseText);
+        }
+    };
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+}
 
-		(function () {
-			"use strict";
-			httpGetAsync('https://api.unsplash.com/photos/random?client_id=e91dda05377e2adf28bdb3bb62ea86366639b73d70eaaab124ceac53919cf60d&category=4', function (result){
-				result = JSON.parse(result);
-				document.getElementsByTagName('body')[0].style.backgroundImage = 'url(\'' + result.urls.regular + '\')';
-			});
-		})();
-	</script>
-
+(function () {
+    "use strict";
+    httpGetAsync('https://api.unsplash.com/photos/random?client_id=e91dda05377e2adf28bdb3bb62ea86366639b73d70eaaab124ceac53919cf60d&category=4', function (result) {
+        result = JSON.parse(result);
+        document.getElementsByTagName('body')[0].style.backgroundImage = 'url(\'' + result.urls.regular + '\')';
+    });
+}());
+</script>
 </body>
 </html>
