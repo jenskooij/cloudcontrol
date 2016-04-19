@@ -6,8 +6,12 @@
 	<link rel="shortcut icon" type="image/png" href="<?=$request::$subfolders?>favicon.ico"/>
 </head>
 <body class="grid-wrapper login" onload="document.getElementById('username').focus();">
+
 	<main class="body grid-container">
 		<h1>Cloud Control</h1>
+		<!--[if lt IE 10]>
+		<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+		<![endif]-->
 		<section class="login-form grid-box-4">
 			<? if (isset($errorMsg)) : ?>
 			<div class="errorMsg">
