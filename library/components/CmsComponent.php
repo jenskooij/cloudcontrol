@@ -125,6 +125,16 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
 					exit;
 				}
+			} elseif ($relativeCmsUri == '/documents/new-document' && isset($request::$get['path'])) {
+				$template = 'cms/documents/document-form';
+				$this->parameters['mainNavClass'] = 'documents';
+				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
+				if (isset($request::$get['documentType'])) {
+					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType']);
+					$this->parameters['bricks'] = $this->storage->getBricks();
+				} else {
+					$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
+				}
 			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
 
 				$template = 'cms/documents/folder-form';
@@ -183,6 +193,10 @@ namespace library\components
 				$this->parameters['mainNavClass'] = 'images';
 				$this->parameters['images'] = $this->storage->getImages();
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
+			} elseif ($relativeCmsUri == '/images.json') {
+				header('Content-type:application/json');
+				die(json_encode($this->storage->getImages()));
+				exit;
 			} elseif ($relativeCmsUri == '/images/new') {
 				$template = 'cms/images/form';
 				$this->parameters['mainNavClass'] = 'images';
@@ -203,6 +217,10 @@ namespace library\components
 				$template = 'cms/files';
 				$this->parameters['mainNavClass'] = 'files';
 				$this->parameters['files'] = $this->storage->getFiles();
+			} elseif ($relativeCmsUri == '/files.json') {
+				header('Content-type:application/json');
+				die(json_encode($this->storage->getFiles()));
+				exit;
 			} elseif ($relativeCmsUri == '/files/new') {
 				$template = 'cms/files/form';
 				$this->parameters['mainNavClass'] = 'files';

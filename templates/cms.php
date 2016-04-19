@@ -68,6 +68,10 @@
 		</section>
 	<? endif ?>
 	</main>
-	<script src="<?=$request::$subfolders?>js/cms.js"></script>
+<script>
+var subfolders = '<?=$request::$subfolders?>',
+	cmsSubfolders = '<?=$request::$subfolders . $cmsPrefix?>';
+</script>
+<script src="<?=$request::$subfolders?>js/cms.js"></script>
 </body>
 </html>
