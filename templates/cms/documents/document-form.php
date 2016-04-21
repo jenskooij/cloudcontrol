@@ -20,11 +20,36 @@
 	<form method="<?= isset($request::$get['documentType']) ? 'post' : 'get' ?>">
 		<input type="hidden" name="path" value="<?=$request::$get['path']?>" />
 		<? if (isset($request::$get['documentType'])) : ?>
+			<div class="title">
+				<label for="title">Title</label>
+				<input required="required" type="text" id="title" name="title" placeholder="Title" />
+			</div>
+			<?$fieldPrefix='fields';?>
 			<? foreach ($documentType->fields as $field) : ?>
 				<div class="form-element">
 					<? include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>
 				</div>
 			<? endforeach ?>
+			<hr />
+			<? foreach ($documentType->bricks as $brick) : ?>
+				<label><?=$brick->title?></label>
+				<?$fieldPrefix='bricks[' . $brick->slug . '][fields]';?>
+				<input type="hidden" name="bricks[<?=$brick->slug?>][type]" value="<?=$brick->brickSlug?>" />
+				<? foreach ($brick->structure->fields as $field) : ?>
+					<div class="form-element">
+						<? include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>
+					</div>
+				<? endforeach ?>
+				<hr />
+			<? endforeach;?>
+			<? if (count($documentType->dynamicBricks) > 0) : ?>
+				<label>Bricks</label>
+				<select>
+					<? foreach ($documentType->dynamicBricks as $dynamicBrick) : ?>
+					<option value="<?=$dynamicBrick->slug?>"><?=$dynamicBrick->title?></option>
+					<? endforeach ?>
+				</select>
+			<? endif ?>
 		<? else : ?>
 		<div class="form-element">
 			<label for="documentType">Document Type</label>

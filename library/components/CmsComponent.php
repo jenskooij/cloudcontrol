@@ -134,7 +134,11 @@ namespace library\components
 				$this->parameters['mainNavClass'] = 'documents';
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
 				if (isset($request::$get['documentType'])) {
-					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType']);
+					if (isset($request::$post['title'], $request::$get['documentType'], $request::$get['path'])) {
+						header('Content-type: application/json');
+						die(json_encode($request::$post));
+					}
+					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType'], true);
 					$this->parameters['bricks'] = $this->storage->getBricks();
 				} else {
 					$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();

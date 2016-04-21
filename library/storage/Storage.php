@@ -37,7 +37,7 @@ namespace library\storage
 		function getDocumentTypes();
 		function addDocumentType($postValues);
 		function deleteDocumentTypeBySlug($slug);
-		function getDocumentTypeBySlug($slug);
+		function getDocumentTypeBySlug($slug, $getBricks);
 		function saveDocumentType($slug, $postValues);
 		
 		function getBricks();

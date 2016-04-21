@@ -703,6 +703,7 @@ namespace library\storage
 					foreach ($postValues['brickTitles'] as $key => $value) {
 						$brickObject = new \stdClass();
 						$brickObject->title = $value;
+						$brickObject->slug = slugify($value);
 						$brickObject->brickSlug = $postValues['brickBricks'][$key];
 						
 						$documentTypeObject->bricks[] = $brickObject;
@@ -737,15 +738,26 @@ namespace library\storage
 		/**
 		 * Get document type by its slug
 		 *
-		 * @param $slug
+		 * @param      $slug
+		 * @param bool $getBricks
 		 *
 		 * @return mixed
 		 */
-		public function getDocumentTypeBySlug($slug)
+		public function getDocumentTypeBySlug($slug, $getBricks = false)
 		{
 			$documentTypes = $this->repository->documentTypes;
 			foreach ($documentTypes as $documentType) {
 				if ($documentType->slug == $slug) {
+					if ($getBricks === true) {
+						foreach ($documentType->bricks as $key => $brick) {
+							$brickStructure = $this->getBrickBySlug($brick->brickSlug);
+							$documentType->bricks[$key]->structure = $brickStructure;
+						}
+						foreach ($documentType->dynamicBricks as $key => $brickSlug) {
+							$brickStructure = $this->getBrickBySlug($brickSlug);
+							$documentType->dynamicBricks[$key] = $brickStructure;
+						}
+					}
 					return $documentType;
 				}
 			}
