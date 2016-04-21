@@ -117,6 +117,10 @@ namespace library\components
 				$template = 'cms/documents';
 				$this->parameters['documents'] = $this->storage->getDocuments();
 				$this->parameters['mainNavClass'] = 'documents';
+			} elseif ($relativeCmsUri == '/documents.json') {
+				header('Content-type:application/json');
+				die(json_encode($this->storage->getDocuments()));
+				exit;
 			} elseif ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path'])) {
 				$template = 'cms/documents/folder-form';
 				$this->parameters['mainNavClass'] = 'documents';

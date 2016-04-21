@@ -20,3 +20,8 @@
 		</div>
 	</div>
 </div>
+<?/*
+// TODO
+Ajax upload to be implemented
+http://igstan.ro/posts/2009-01-11-ajax-file-upload-with-pure-javascript.html
+*/?>
