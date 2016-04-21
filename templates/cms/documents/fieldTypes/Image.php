@@ -9,7 +9,7 @@
 		<div class="grid-box-10">
 			<div class="grid-inner">
 				<a class="btn" onmousedown="imageSelect(this, '<?=$field->slug?>');">Select</a>
-				<input required="required" readonly="readonly" id="<?=$field->slug?>_input" type="text" name="<?=$field->slug?>" />
+				<input placeholder="No image selected" required="required" readonly="readonly" id="<?=$field->slug?>_input" type="text" name="<?=$field->slug?>" />
 				<div class="image-selector" id="<?=$field->slug?>_imageSelector" style="display:none;"></div>
 			</div>
 		</div>
