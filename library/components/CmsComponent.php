@@ -157,7 +157,10 @@ namespace library\components
 				$request::$get['path'] = $request::$get['slug'];
 				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->type, true);
 				$this->parameters['bricks'] = $this->storage->getBricks();
-
+			} elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get['slug'])) {
+				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
+				$this->template = 'cms/documents/brick';
+				$this->parameters['brick'] = $this->storage->getBrickBySlug($request::$get['slug']);
 			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
 
 				$template = 'cms/documents/folder-form';

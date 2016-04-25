@@ -221,12 +221,22 @@ namespace library\storage
 			$documentObj->documentTypeSlug = $documentType->slug;
 			$documentObj->state = isset($postValues['state']) ? 'published' : 'unpublished';
 			$documentObj->lastModificationDate = time();
-			$documentObj->creationDate = isset($postValues['creationDate']) ? $postValues['creationDate'] : time();
+			$documentObj->creationDate = isset($postValues['creationDate']) ? intval($postValues['creationDate']) : time();
 			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
 
 			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
 			$documentObj->bricks = isset($postValues['bricks']) ? $postValues['bricks'] : array();
-			$documentObj->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks '] : array();
+			$documentObj->dynamicBricks = array();
+			if (isset($postValues['dynamicBricks'])) {
+				foreach ($postValues['dynamicBricks'] as $brickTypeSlug => $brick) {
+					foreach ($brick as $brickContent) {
+						$brickObj = new \stdClass();
+						$brickObj->type = $brickTypeSlug;
+						$brickObj->fields = $brickContent;
+						$documentObj->dynamicBricks[] = $brickObj;
+					}
+				}
+			}
 
 			return $documentObj;
 		}

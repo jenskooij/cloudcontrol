@@ -2,7 +2,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
-
+<script>var smallestImage = '<?=$smallestImage?>';</script>
 <?$copyable=''?>
 <section class="documents">
 	<h2><i class="fa fa-file-text-o"></i> Documents</h2>
@@ -27,6 +27,9 @@
 		<input type="hidden" name="path" value="<?=$request::$get['path']?>" />
 		<? if (isset($documentType)) : ?>
 			<input type="hidden" name="documentType" value="<?=$documentType->slug?>" />
+			<? if (isset($document)) : ?>
+			<input type="hidden" name="creationDate" value="<?=$document->creationDate?>" />
+			<? endif ?>
 			<div class="title">
 				<label for="title">Title</label>
 				<input required="required" value="<?=isset($document) ? $document->title : '' ?>" type="text" id="title" name="title" placeholder="Title" />
@@ -221,12 +224,15 @@
 				<hr />
 			<? endforeach;?>
 			<? if (count($documentType->dynamicBricks) > 0) : ?>
-				<label>Bricks</label>
+			<div class="dynamicBrickWrapper">
+				<label>Dynamic Bricks</label>
 				<select>
 					<? foreach ($documentType->dynamicBricks as $dynamicBrick) : ?>
 					<option value="<?=$dynamicBrick->slug?>"><?=$dynamicBrick->title?></option>
 					<? endforeach ?>
-				</select>
+				</select><a class="btn" onclick="addDynamicBrick(this);">+</a>
+				<ul id="dynamicBrickDropzone" class="dynamicBricks sortable"></ul>
+			</div>
 			<? endif ?>
 		<? else : ?>
 		<div class="form-element">
