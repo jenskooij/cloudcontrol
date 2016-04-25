@@ -7,8 +7,8 @@
 		</div>
 		<div class="grid-box-10">
 			<div class="grid-inner">
-				<a class="btn" onmousedown="imageSelect(this, '<?=$field->slug?>');">Select</a>
-				<input placeholder="No image selected" required="required" readonly="readonly" id="<?=$field->slug?>_input" type="text" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" />
+				<a class="btn js-imageSelector" onmousedown="imageSelect(this, '<?=$field->slug?>');" onclick="">Select</a>
+				<input value="<?=isset($value) ? $value : '' ?>" placeholder="No image selected" required="required" readonly="readonly" id="<?=$field->slug?>_input" type="text" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" />
 				<div class="image-selector" id="<?=$field->slug?>_imageSelector" style="display:none;"></div>
 			</div>
 		</div>

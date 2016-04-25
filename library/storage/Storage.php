@@ -12,6 +12,9 @@ namespace library\storage
 		function getUserByUsername($username);
 
 		function getDocuments();
+		function getDocumentBySlug($slug);
+		function saveDocument($postValues);
+
 		function addDocumentFolder($postValues);
 		function deleteDocumentFolderBySlug($slug);
 		function getDocumentFolderBySlug($slug);

@@ -85,6 +85,86 @@ namespace library\storage
 			return $this->repository->documents;
 		}
 
+		public function getDocumentBySlug($slug)
+		{
+			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
+			$indices = $documentContainer['indices'];
+
+			$folder = $this->repository->documents;
+			$previousFolder = $this->repository->documents;
+			foreach ($indices as $index) {
+				if ($folder === $this->repository->documents) {
+					$folder = $folder[$index];
+				} else {
+					$previousFolder = $folder;
+					$folder = $folder->content[$index];
+				}
+			}
+
+			return $folder;
+		}
+
+		public function saveDocument($postValues)
+		{
+			$documentFolderObject = $this->createDocumentFromPostValues($postValues);
+
+			$documentContainer = $this->getDocumentContainerByPath($_GET['slug']);
+			$indices = $documentContainer['indices'];
+
+			$folder = $this->repository->documents;
+			$previousFolder = $this->repository->documents;
+			foreach ($indices as $index) {
+				if ($folder === $this->repository->documents) {
+					$folder = $folder[$index];
+				} else {
+					$previousFolder = $folder;
+					$folder = $folder->content[$index];
+				}
+			}
+
+			if ($previousFolder === $this->repository->documents) {
+				// Check for duplicates
+				foreach ($this->repository->documents as $index => $document) {
+					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'document') {
+						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
+					}
+				}
+				$this->repository->documents[end($indices)] = $documentFolderObject;
+			} else {
+				// Check for duplicates
+				foreach ($previousFolder->content as $index => $document) {
+					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'document') {
+						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
+					}
+				}
+				$previousFolder->content[end($indices)] = $documentFolderObject ;
+			}
+
+			$this->save();
+		}
+
+		private function createDocumentFromPostValues($postValues)
+		{
+			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);
+
+			$documentObj = new \stdClass();
+			$documentObj->title = $postValues['title'];
+			$documentObj->slug = slugify($postValues['title']);
+			$documentObj->type = $postValues['documentType'];
+			$documentObj->documentType = $documentType->title;
+			$documentObj->documentTypeSlug = $documentType->slug;
+			$documentObj->state = isset($postValues['state']) ? $postValues['state'] : 'unpublished';
+			$documentObj->lastModificationDate = time();
+			$documentObj->creationDate = isset($postValues['creationDate']) ? $postValues['creationDate'] : time();
+			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
+
+			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
+			$documentObj->bricks = isset($postValues['bricks']) ? $postValues['bricks'] : array();
+			$documentObj->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks '] : array();
+
+			return $documentObj;
+		}
+
 		/**
 		 * Add new document in given path
 		 *

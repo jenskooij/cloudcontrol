@@ -37,7 +37,7 @@
 <? function renderDocument($document, $cmsPrefix, $slugPrefix = '') {?>
 <div class="grid-box-10">
 	<h3>
-		<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit?slug=<?=$slugPrefix . $document->slug?>" title="Edit">
+		<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-document?slug=<?=$slugPrefix . $document->slug?>" title="Edit">
 			<i class="fa fa-file-text-o"></i> <?=$document->title?>
 		</a>
 		<small class="small state <?=strtolower($document->state)?>"><?=ucfirst($document->state)?></small>
@@ -53,7 +53,7 @@
 	</h3>
 </div>
 <div class="documentActions grid-box-2">
-	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
+	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-document?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
 	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 </div>
 <?}?>

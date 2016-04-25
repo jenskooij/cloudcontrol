@@ -143,6 +143,20 @@ namespace library\components
 				} else {
 					$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
 				}
+			} elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get['slug'])) {
+				$template = 'cms/documents/document-form';
+				$this->parameters['mainNavClass'] = 'documents';
+				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
+				if (isset($request::$post['title'], $request::$get['slug'])) {
+					$this->storage->saveDocument($request::$post);
+					header('Content-type: application/json');
+					die(json_encode($request::$post));
+				}
+				$this->parameters['document'] = $this->storage->getDocumentBySlug($request::$get['slug']);
+				$request::$get['path'] = $request::$get['slug'];
+				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->type, true);
+				$this->parameters['bricks'] = $this->storage->getBricks();
+
 			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
 
 				$template = 'cms/documents/folder-form';

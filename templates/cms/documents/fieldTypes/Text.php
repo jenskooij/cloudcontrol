@@ -1,1 +1,1 @@
-<textarea<?=$field->required ? ' required="required"' : '' ?> onkeyup="textAreaAdjust(this)" id="<?=$field->slug?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" placeholder="<?=$field->title?>"></textarea>
+<textarea<?=$field->required ? ' required="required"' : '' ?> onkeyup="textAreaAdjust(this)" id="<?=$field->slug?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" placeholder="<?=$field->title?>"><?=isset($value) ? $value : '' ?></textarea>

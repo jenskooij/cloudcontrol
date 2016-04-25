@@ -6,7 +6,7 @@ if (isset($summernoteInstances)) {
 }
 ?>
 <div class="rte">
-	<div id="summernote_<?=$field->slug?>_rte_<?=$summernoteInstances?>" class="summernote"></div>
+	<div id="summernote_<?=$field->slug?>_rte_<?=$summernoteInstances?>" class="summernote"><?=isset($value) ? $value : '' ?></div>
 </div>
 <textarea style="display:none;" id="summernote_<?=$field->slug?>_container_<?=$summernoteInstances?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]"></textarea>
 <script>
