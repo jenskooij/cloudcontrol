@@ -149,7 +149,7 @@ namespace library\storage
 			if ($postValues['path'] == '' || $postValues['path'] == '/') {
 				// Check folder duplicate child
 				foreach ($this->repository->documents as $document) {
-					if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
+					if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
 						// TODO make it so it doesnt throw an exception, but instead shows a warning
 						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
 					}
@@ -158,7 +158,7 @@ namespace library\storage
 			} else {
 				$documentContainer = $this->getDocumentContainerByPath($postValues['path']);
 				$documentContainerArray = $documentContainer['indices'];
-				$containerFolder = $documentContainer['containerFolder'];
+				$containerFolder = $documentContainer['previousDocument'] == null ? $documentContainer['containerFolder'] : $documentContainer['previousDocument'];
 				$folder = $this->repository->documents;
 				foreach ($documentContainerArray as $index) {
 					if ($folder === $this->repository->documents) {
@@ -171,7 +171,7 @@ namespace library\storage
 				// Check folder duplicate child
 				if (isset($containerFolder->content)) {
 					foreach ($containerFolder->content as $document) {
-						if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
+						if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
 							// TODO make it so it doesnt throw an exception, but instead shows a warning
 							throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
 						}
@@ -219,7 +219,7 @@ namespace library\storage
 			$documentObj->type = $postValues['documentType'];
 			$documentObj->documentType = $documentType->title;
 			$documentObj->documentTypeSlug = $documentType->slug;
-			$documentObj->state = isset($postValues['state']) ? $postValues['state'] : 'unpublished';
+			$documentObj->state = isset($postValues['state']) ? 'published' : 'unpublished';
 			$documentObj->lastModificationDate = time();
 			$documentObj->creationDate = isset($postValues['creationDate']) ? $postValues['creationDate'] : time();
 			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;

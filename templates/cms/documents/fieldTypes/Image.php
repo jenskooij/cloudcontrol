@@ -2,7 +2,7 @@
 	<div class="grid-container">
 		<div class="grid-box-2">
 			<div class="grid-inner">
-				<div class="selected-image" id="<?=$field->slug?>_selectedImage"></div>
+				<div<?=isset($value) ? ' style="background-image:url(\'' . $request::$subfolders . 'images/' . $value . '\');"' : '' ?> class="selected-image" id="<?=$field->slug?>_selectedImage"></div>
 			</div>
 		</div>
 		<div class="grid-box-10">

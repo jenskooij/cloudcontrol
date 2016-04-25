@@ -3,7 +3,11 @@
 		<div class="grid-box-2">
 			<div class="grid-inner">
 				<div class="selected-file-type" id="<?=$field->slug?>_selectedFile">
+					<? if (isset($value) && $value != '') : ?>
+						<i class="fa fa-file-o"></i>
+					<? else : ?>
 					<i class="fa fa-ellipsis-h"></i>
+					<? endif ?>
 				</div>
 			</div>
 		</div>
