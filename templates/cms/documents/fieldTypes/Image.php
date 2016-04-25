@@ -1,4 +1,3 @@
-<label for="<?=$field->slug?>"><?=$field->title?></label>
 <div class="image grid-wrapper">
 	<div class="grid-container">
 		<div class="grid-box-2">
