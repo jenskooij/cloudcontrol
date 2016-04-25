@@ -1,1 +1,1 @@
-<input type="text" id="<?=$field->slug?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" placeholder="<?=$field->title?>" />
+<input type="text"<?=$field->required ? ' required="required"' : '' ?> id="<?=$field->slug?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]" placeholder="<?=$field->title?>" />
