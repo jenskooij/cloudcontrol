@@ -14,6 +14,8 @@ namespace library\storage
 		function getDocuments();
 		function getDocumentBySlug($slug);
 		function saveDocument($postValues);
+		function addDocument($postValues);
+		function deleteDocumentBySlug($slug);
 
 		function addDocumentFolder($postValues);
 		function deleteDocumentFolderBySlug($slug);

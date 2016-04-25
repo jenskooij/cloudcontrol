@@ -135,8 +135,9 @@ namespace library\components
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
 				if (isset($request::$get['documentType'])) {
 					if (isset($request::$post['title'], $request::$get['documentType'], $request::$get['path'])) {
-						header('Content-type: application/json');
-						die(json_encode($request::$post));
+						$this->storage->addDocument($request::$post);
+						header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+						exit;
 					}
 					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType'], true);
 					$this->parameters['bricks'] = $this->storage->getBricks();
@@ -149,8 +150,8 @@ namespace library\components
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
 				if (isset($request::$post['title'], $request::$get['slug'])) {
 					$this->storage->saveDocument($request::$post);
-					header('Content-type: application/json');
-					die(json_encode($request::$post));
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+					exit;
 				}
 				$this->parameters['document'] = $this->storage->getDocumentBySlug($request::$get['slug']);
 				$request::$get['path'] = $request::$get['slug'];
@@ -177,6 +178,10 @@ namespace library\components
 
 				$this->parameters['mainNavClass'] = 'documents';
 				$this->parameters['folder'] = $folder;
+			} else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get['slug'])) {
+				$this->storage->deleteDocumentBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
+				exit;
 			} else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get['slug'])) {
 				$this->storage->deleteDocumentFolderBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');

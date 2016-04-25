@@ -143,6 +143,72 @@ namespace library\storage
 			$this->save();
 		}
 
+		public function addDocument($postValues)
+		{
+			$documentFolderObject = $this->createDocumentFromPostValues($postValues);
+			if ($postValues['path'] == '' || $postValues['path'] == '/') {
+				// Check folder duplicate child
+				foreach ($this->repository->documents as $document) {
+					if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
+						// TODO make it so it doesnt throw an exception, but instead shows a warning
+						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
+					}
+				}
+				$this->repository->documents[] = $documentFolderObject;
+			} else {
+				$documentContainer = $this->getDocumentContainerByPath($postValues['path']);
+				$documentContainerArray = $documentContainer['indices'];
+				$containerFolder = $documentContainer['containerFolder'];
+				$folder = $this->repository->documents;
+				foreach ($documentContainerArray as $index) {
+					if ($folder === $this->repository->documents) {
+						$folder = $folder[$index];
+					} else {
+						$folder = $folder->content[$index];
+					}
+
+				}
+				// Check folder duplicate child
+				if (isset($containerFolder->content)) {
+					foreach ($containerFolder->content as $document) {
+						if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
+							// TODO make it so it doesnt throw an exception, but instead shows a warning
+							throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
+						}
+					}
+				}
+				$folder->content[] = $documentFolderObject;
+			}
+			$this->save();
+		}
+
+		public function deleteDocumentBySlug($slug)
+		{
+			$documentContainer = $this->getDocumentContainerByPath($slug);
+			$indices = $documentContainer['indices'];
+
+			$folder = $this->repository->documents;
+			$previousFolder = $this->repository->documents;
+			foreach ($indices as $index) {
+				if ($folder === $this->repository->documents) {
+					$folder = $folder[$index];
+				} else {
+					$previousFolder = $folder;
+					$folder = $folder->content[$index];
+				}
+			}
+
+			if ($previousFolder === $this->repository->documents) {
+				unset($this->repository->documents[end($indices)]);
+				$this->repository->documents = array_values($this->repository->documents);
+			} else {
+				unset($previousFolder->content[end($indices)]);
+				$previousFolder->content = array_values($previousFolder->content);
+			}
+
+			$this->save();
+		}
+
 		private function createDocumentFromPostValues($postValues)
 		{
 			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);

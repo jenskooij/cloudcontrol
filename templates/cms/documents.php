@@ -54,7 +54,7 @@
 </div>
 <div class="documentActions grid-box-2">
 	<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-document?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
+	<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete-document?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 </div>
 <?}?>
 <? function renderFolder($document, $cmsPrefix, $slugPrefix ='', $root = false) {?>
