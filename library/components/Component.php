@@ -17,8 +17,9 @@ namespace library\components
 		 * @param                     $template
 		 * @param Request $request
 		 * @param                     $parameters
+		 * @param                     $matchedSitemapItem
 		 */
-		function __construct($template, Request $request, $parameters);
+		function __construct($template, Request $request, $parameters, $matchedSitemapItem);
 
 		/**
 		 * @param \library\storage\Storage $storage

@@ -82,7 +82,7 @@ namespace library\components
 		 */
 		protected function showLogin()
 		{
-			$loginTemplatePath = __DIR__ . '../../../templates/cms/login.php';
+			$loginTemplatePath = __DIR__ . '/../../templates/cms/login.php';
 			if (realpath($loginTemplatePath) !== false) {
 				ob_clean();
 				$this->parameters['request'] = $this->request;

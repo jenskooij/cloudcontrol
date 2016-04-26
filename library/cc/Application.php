@@ -1,6 +1,10 @@
 <?php
 namespace library\cc
 {
+
+	use library\components\Component;
+	use library\storage\JsonStorage;
+
 	/**
 	 * Class Application
 	 * @package library\cc
@@ -61,7 +65,7 @@ namespace library\cc
 		 */
 		private function config()
 		{
-			$configPath = __DIR__ . '../../../config.json';
+			$configPath = __DIR__ . '/../../config.json';
 			if (realpath($configPath) !== false) {
 				$json = file_get_contents($configPath);
 				$this->config = json_decode($json);
@@ -76,7 +80,7 @@ namespace library\cc
 		private function storage()
 		{
 			if ($this->getStorageType() == 'json') {
-				$this->storage = new \library\storage\JsonStorage($this->getStoragePath());
+				$this->storage = new JsonStorage($this->getStoragePath());
 			}
 		}
 
@@ -135,7 +139,7 @@ namespace library\cc
 				$template = $sitemapItem->template;
 				$parameters = $sitemapItem->parameters;
 				
-				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters);
+				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
 				
 				$this->matchedSitemapItems[$key]->object->run($this->storage);
 			}
@@ -149,20 +153,20 @@ namespace library\cc
 		 * @return mixed
 		 * @throws \Exception
 		 */
-		private function getComponentObject($class='', $template='', $parameters=array())
+		private function getComponentObject($class='', $template='', $parameters=array(), $matchedSitemapItem)
 		{
 			$libraryComponentName = '\\library\\components\\' . $class;
 			$userComponentName = '\\components\\' . $class;
 			
 			if (\autoLoad($libraryComponentName, false)) {
-				$component = new $libraryComponentName($template, $this->request, $parameters);
+				$component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
 			} elseif (\autoLoad($userComponentName, false)) {
-				$component = new $userComponentName($template, $this->request, $parameters);
+				$component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
 			} else {
 				throw new \Exception('Could not load component ' . $class);
 			}
 			
-			if (!$component instanceof \library\components\Component) {
+			if (!$component instanceof Component) {
 				throw new \Exception('Component not of type Component. Must inherit \library\components\Component');
 			}
 			

@@ -48,6 +48,7 @@ namespace library\cc
 			global $rootPath;
 			
 			self::$subfolders = '/' . str_replace('//', '/', str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), "", $rootPath));
+			self::$subfolders = str_replace('//', '/', self::$subfolders);
 			self::$requestUri = $_SERVER['REQUEST_URI'];
 			self::$queryString = $_SERVER['QUERY_STRING'];
 			self::$relativeUri = str_replace('?' . self::$queryString, '', str_replace(self::$subfolders, '', self::$requestUri));

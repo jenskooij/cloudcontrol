@@ -27,19 +27,25 @@ namespace library\components
 		 * @var array
 		 */
 		protected $parameters = array();
+		/***
+		 * @var \stdClass
+		 */
+		protected $matchedSitemapItem;
 
 		/**
 		 * BaseComponent constructor.
 		 *
-		 * @param string              $template
+		 * @param string  $template
 		 * @param Request $request
-		 * @param array               $parameters
+		 * @param array   $parameters
+		 * @param         $matchedSitemapItem
 		 */
-		public function __construct($template='', Request $request, $parameters=array())
+		public function __construct($template='', Request $request, $parameters=array(), $matchedSitemapItem)
 		{
 			$this->template = $template;
 			$this->request = $request;
 			$this->parameters = (array) $parameters;
+			$this->matchedSitemapItem = $matchedSitemapItem;
 		}
 		
 		/**
@@ -82,7 +88,7 @@ namespace library\components
 		 */
 		public function renderTemplate($template='')
 		{
-			$templatePath = __DIR__ . '../../../templates/' . $template . '.php';
+			$templatePath = __DIR__ . '/../../templates/' . $template . '.php';
 			if (realpath($templatePath) !== false) {
 				ob_clean();
 				$this->parameters['request'] = $this->request;
