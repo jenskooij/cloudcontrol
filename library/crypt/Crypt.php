@@ -38,8 +38,10 @@ namespace library\crypt
 		{
 			$output = '';
 			$random_state = microtime();
-			
-			if (is_readable('/dev/urandom') &&
+
+			$openBasedir = ini_get('open_basedir');
+			if (empty($openBasedir) &&
+				is_readable('/dev/urandom') &&
 				($fh = @fopen('/dev/urandom', 'rb'))) {
 				$output = fread($fh, $count);
 				fclose($fh);
