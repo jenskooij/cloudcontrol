@@ -32,6 +32,8 @@ namespace library\components
 
 			$this->checkLogin();
 
+			$this->parameters['userRights'] = $_SESSION['cloudcontrol']->rights;
+
 			$this->routing();
 		}
 
@@ -110,10 +112,12 @@ namespace library\components
 			}
 			
 			$template = null;
+
+			$userRights = $_SESSION['cloudcontrol']->rights;
 			
 			if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
 				$template = 'cms/dashboard';
-			} elseif ($relativeCmsUri == '/documents') {
+			} elseif ($relativeCmsUri == '/documents' && in_array('documents', $userRights)) {
 				$template = 'cms/documents';
 				$this->parameters['documents'] = $this->storage->getDocuments();
 				$this->parameters['mainNavClass'] = 'documents';
@@ -121,7 +125,7 @@ namespace library\components
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getDocuments()));
 				exit;
-			} elseif ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path'])) {
+			} elseif ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path']) && in_array('documents', $userRights)) {
 				$template = 'cms/documents/folder-form';
 				$this->parameters['mainNavClass'] = 'documents';
 				if (isset($request::$post['title'], $request::$post['path'])) {
@@ -129,7 +133,7 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/documents/new-document' && isset($request::$get['path'])) {
+			} elseif ($relativeCmsUri == '/documents/new-document' && isset($request::$get['path']) && in_array('documents', $userRights)) {
 				$template = 'cms/documents/document-form';
 				$this->parameters['mainNavClass'] = 'documents';
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
@@ -144,7 +148,7 @@ namespace library\components
 				} else {
 					$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
 				}
-			} elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 				$template = 'cms/documents/document-form';
 				$this->parameters['mainNavClass'] = 'documents';
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
@@ -157,11 +161,11 @@ namespace library\components
 				$request::$get['path'] = $request::$get['slug'];
 				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->type, true);
 				$this->parameters['bricks'] = $this->storage->getBricks();
-			} elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
 				$this->template = 'cms/documents/brick';
 				$this->parameters['brick'] = $this->storage->getBrickBySlug($request::$get['slug']);
-			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
+			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 
 				$template = 'cms/documents/folder-form';
 				$folder = $this->storage->getDocumentFolderBySlug($request::$get['slug']);
@@ -181,22 +185,22 @@ namespace library\components
 
 				$this->parameters['mainNavClass'] = 'documents';
 				$this->parameters['folder'] = $folder;
-			} else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get['slug'])) {
+			} else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 				$this->storage->deleteDocumentBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
 				exit;
-			} else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get['slug'])) {
+			} else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 				$this->storage->deleteDocumentFolderBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
 				exit;
-			} elseif ($relativeCmsUri == '/sitemap') {
+			} elseif ($relativeCmsUri == '/sitemap' && in_array('sitemap', $userRights)) {
 				$template = 'cms/sitemap';
 				if (isset($request::$post['save'])) {					
 					$this->storage->saveSitemap($request::$post);
 				}
 				$this->parameters['mainNavClass'] = 'sitemap';
 				$this->parameters['sitemap'] = $this->storage->getSitemap();
-			} elseif ($relativeCmsUri == '/sitemap/new') {
+			} elseif ($relativeCmsUri == '/sitemap/new' && in_array('sitemap', $userRights)) {
 				$template = 'cms/sitemap/form';
 				$this->parameters['mainNavClass'] = 'sitemap';
 				if (isset($request::$post['title'], $request::$post['template'], $request::$post['component'])) {
@@ -204,7 +208,7 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get['slug']) && in_array('sitemap', $userRights)) {
 				$template = 'cms/sitemap/form';
 				$this->parameters['mainNavClass'] = 'sitemap';
 				$sitemapItem = $this->storage->getSitemapItemBySlug($request::$get['slug']);
@@ -214,11 +218,11 @@ namespace library\components
 					exit;
 				}
 				$this->parameters['sitemapItem'] = $sitemapItem;
-			} elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get['slug']) && in_array('sitemap', $userRights)) {
 				$this->storage->deleteSitemapItemBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
 				exit;
-			} elseif ($relativeCmsUri == '/images') {
+			} elseif ($relativeCmsUri == '/images' && in_array('images', $userRights)) {
 				$template = 'cms/images';
 				$this->parameters['mainNavClass'] = 'images';
 				$this->parameters['images'] = $this->storage->getImages();
@@ -227,7 +231,7 @@ namespace library\components
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getImages()));
 				exit;
-			} elseif ($relativeCmsUri == '/images/new') {
+			} elseif ($relativeCmsUri == '/images/new' && in_array('images', $userRights)) {
 				$template = 'cms/images/form';
 				$this->parameters['mainNavClass'] = 'images';
 				if (isset($_FILES['file'])) {
@@ -235,15 +239,15 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/images/delete' && isset($request::$get['file'])) {
+			} elseif ($relativeCmsUri == '/images/delete' && isset($request::$get['file']) && in_array('images', $userRights)) {
 				$this->storage->deleteImageByName($request::$get['file']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
 				exit;
-			} elseif ($relativeCmsUri == '/images/show' && isset($request::$get['file'])) {
+			} elseif ($relativeCmsUri == '/images/show' && isset($request::$get['file']) && in_array('images', $userRights)) {
 				$template = 'cms/images/show';
 				$this->parameters['mainNavClass'] = 'images';
 				$this->parameters['image'] = $this->storage->getImageByName($request::$get['file']);
-			} elseif ($relativeCmsUri == '/files') {
+			} elseif ($relativeCmsUri == '/files' && in_array('files', $userRights)) {
 				$template = 'cms/files';
 				$this->parameters['mainNavClass'] = 'files';
 				$this->parameters['files'] = $this->storage->getFiles();
@@ -251,7 +255,7 @@ namespace library\components
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getFiles()));
 				exit;
-			} elseif ($relativeCmsUri == '/files/new') {
+			} elseif ($relativeCmsUri == '/files/new' && in_array('files', $userRights)) {
 				$template = 'cms/files/form';
 				$this->parameters['mainNavClass'] = 'files';
 				if (isset($_FILES['file'])) {
@@ -259,7 +263,7 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/files/get' && isset($request::$get['file'])) {
+			} elseif ($relativeCmsUri == '/files/get' && isset($request::$get['file']) && in_array('files', $userRights)) {
 				$file = $this->storage->getFileByName($request::$get['file']);
 				$path = realpath(__DIR__ . '/../../www/files/');
 				$quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
@@ -277,18 +281,18 @@ namespace library\components
 
 				readfile($path . '/' . $file->file);
 				exit;
-			} elseif ($relativeCmsUri == '/files/delete' && isset($request::$get['file'])) {
+			} elseif ($relativeCmsUri == '/files/delete' && isset($request::$get['file']) && in_array('files', $userRights)) {
 				$this->storage->deleteFileByName($request::$get['file']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
 				exit;
-			} elseif ($relativeCmsUri == '/configuration') {
+			} elseif ($relativeCmsUri == '/configuration' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration';
 				$this->parameters['mainNavClass'] = 'configuration';
-			} elseif ($relativeCmsUri == '/configuration/users') {
+			} elseif ($relativeCmsUri == '/configuration/users' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/users';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$this->parameters['users'] = $this->storage->getUsers();
-			} elseif ($relativeCmsUri == '/configuration/users/new') {
+			} elseif ($relativeCmsUri == '/configuration/users/new' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/users-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				if (isset($_POST['username'])) {
@@ -296,11 +300,11 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$this->storage->deleteUserBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
 				exit;
-			} elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/users-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$this->parameters['user'] = $this->storage->getUserBySlug($request::$get['slug']);
@@ -309,11 +313,11 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/configuration/document-types') {
+			} elseif ($relativeCmsUri == '/configuration/document-types' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/document-types';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
-			} elseif ($relativeCmsUri == '/configuration/document-types/new') {
+			} elseif ($relativeCmsUri == '/configuration/document-types/new' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/document-types-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$bricks = $this->storage->getBricks();
@@ -323,7 +327,7 @@ namespace library\components
 					exit;
 				}
 				$this->parameters['bricks'] = $bricks;
-			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/document-types-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug']);
@@ -335,15 +339,15 @@ namespace library\components
 				}
 				$this->parameters['documentType'] = $documentType;
 				$this->parameters['bricks'] = $bricks;
-			} elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$this->storage->deleteDocumentTypeBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
 				exit;
-			} elseif ($relativeCmsUri == '/configuration/bricks') {
+			} elseif ($relativeCmsUri == '/configuration/bricks' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/bricks';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$this->parameters['bricks'] = $this->storage->getBricks();
-			} elseif ($relativeCmsUri == '/configuration/bricks/new') {
+			} elseif ($relativeCmsUri == '/configuration/bricks/new' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/bricks-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				if (isset($request::$post['title'])) {
@@ -351,7 +355,7 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/bricks-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$brick = $this->storage->getBrickBySlug($request::$get['slug']);
@@ -361,15 +365,15 @@ namespace library\components
 					exit;
 				}
 				$this->parameters['brick'] = $brick;
-			} elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$this->storage->deleteBrickBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
 				exit;
-			} elseif ($relativeCmsUri == '/configuration/image-set') {
+			} elseif ($relativeCmsUri == '/configuration/image-set' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/image-set';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$this->parameters['imageSet'] = $this->storage->getImageSet();
-			} elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/image-set-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				$imageSet = $this->storage->getImageSetBySlug($request::$get['slug']);
@@ -379,7 +383,7 @@ namespace library\components
 					exit;
 				}
 				$this->parameters['imageSet'] = $imageSet;
-			} elseif ($relativeCmsUri == '/configuration/image-set/new') {
+			} elseif ($relativeCmsUri == '/configuration/image-set/new' && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/image-set-form';
 				$this->parameters['mainNavClass'] = 'configuration';
 				if (isset($request::$post['title'])) {
@@ -387,7 +391,7 @@ namespace library\components
 					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
 					exit;
 				}
-			} elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get['slug'])) {
+			} elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$this->storage->deleteImageSetBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
 				exit;
