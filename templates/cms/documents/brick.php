@@ -6,9 +6,9 @@
 <? foreach ($brick->fields as $field) : ?>
 			<div class="form-element">
 				<label for="<?=$field->slug?>"><?=$field->title?></label>
-				<? if (isset($document)) :
+				<? if (isset($dynamicBrick)) :
 					$fieldSlug = $field->slug;
-					$value = isset($document->fields->$fieldSlug) ? current($document->fields->$fieldSlug) : '';
+					$value = isset($dynamicBrick->fields->$fieldSlug) ? current($dynamicBrick->fields->$fieldSlug) : '';
 				else :
 					$value = '';
 				endif ?>
@@ -38,9 +38,9 @@
 							</div>
 						</div>
 					</li>
-					<? if (isset($document)) :
+					<? if (isset($dynamicBrick)) :
 						$fieldSlug = $field->slug;
-						$iterable = isset($document->fields->$fieldSlug) ? $document->fields->$fieldSlug : array();
+						$iterable = isset($dynamicBrick->fields->$fieldSlug) ? $dynamicBrick->fields->$fieldSlug : array();
 						array_shift($iterable);
 						?>
 						<? foreach ($iterable as $value) : ?>
@@ -64,9 +64,9 @@
 				</ul>
 				<a class="btn js-addmultiple">+</a>
 				<? elseif ($field->multiple == true) : ?>
-					<? if (isset($document)) :
+					<? if (isset($dynamicBrick)) :
 						$fieldSlug = $field->slug;
-						$iterable = $document->fields->$fieldSlug;
+						$iterable = isset($dynamicBrick->fields->$fieldSlug) ? $dynamicBrick->fields->$fieldSlug : array();
 						array_shift($iterable);
 						?>
 						<? foreach ($iterable as $value) : ?>

@@ -231,7 +231,21 @@
 					<option value="<?=$dynamicBrick->slug?>"><?=$dynamicBrick->title?></option>
 					<? endforeach ?>
 				</select><a class="btn" onclick="addDynamicBrick(this);">+</a>
-				<ul id="dynamicBrickDropzone" class="dynamicBricks sortable"></ul>
+				<ul id="dynamicBrickDropzone" class="dynamicBricks sortable">
+				<? if (isset($document)) : ?>
+					<? foreach ($document->dynamicBricks as $dynamicBrick) : ?>
+						<? foreach ($bricks as $brick) :
+						if ($brick->slug == $dynamicBrick->type) {
+							break;
+						}
+						endforeach ?>
+						<li class="brick form-element">
+							<label><?=$brick->title?></label>
+							<?include(__DIR__ . '/brick.php')?>
+						</li>
+					<? endforeach ?>
+				<? endif ?>
+				</ul>
 			</div>
 			<? endif ?>
 		<? else : ?>

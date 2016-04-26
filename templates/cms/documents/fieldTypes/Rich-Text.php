@@ -6,12 +6,12 @@ if (isset($summernoteInstances)) {
 }
 ?>
 <div class="rte">
-	<div id="summernote_<?=$field->slug?>_rte_<?=$summernoteInstances?>" class="summernote"><?=isset($value) ? $value : '' ?></div>
+	<div id="summernote_<?=str_replace(']', '-', str_replace('[','-', $fieldPrefix)) . $field->slug?>_rte_<?=$summernoteInstances?>" class="summernote"><?=isset($value) ? $value : '' ?></div>
 </div>
 <textarea style="display:none;" id="summernote_<?=$field->slug?>_container_<?=$summernoteInstances?>" name="<?=$fieldPrefix?>[<?=$field->slug?>][]"></textarea>
 <script>
 	$(document).ready(function () {
-		$('#summernote_<?=$field->slug?>_rte_<?=$summernoteInstances?>').summernote({
+		$('#summernote_<?=str_replace(']', '-', str_replace('[','-', $fieldPrefix)) . $field->slug?>_rte_<?=$summernoteInstances?>').summernote({
 			height: 300,
 			toolbar: [
 				//[groupname, [button list]]
