@@ -28,73 +28,27 @@
       }
    ],
    "applicationComponents" :
-   [
-   ],
+   [],
    "documents" :
-   [
-      {
-         "title" : "My Document",
-         "slug" : "my-document",
-         "type" : "document",
-         "documentType" : "Default Document",
-         "documentTypeSlug" : "default-document",
-         "lastModifiedBy" : "admin",
-         "state" : "unpublished",
-         "lastModificationDate" : "1460029803",
-         "creationDate" : "0",
-         "fields" :
-         [
-         ],
-         "bricks" :
-         [
-         ],
-         "dynamicBricks" :
-         [
-         ]
-      }
-   ],
+   [],
    "documentTypes" :
-   [
-      {
-         "title" : "Document",
-         "slug" : "document",
-         "fields" :
-         [
-            {
-               "title" : "Content",
-               "slug" : "content",
-               "type" : "Text",
-               "required" : false,
-               "multiple" : false
-            }
-         ],
-         "bricks" :
-         [
-         ],
-         "dynamicBricks" :
-         [
-         ]
-      }
-   ],
+   [],
    "bricks" :
-   [
-   ],
+   [],
    "imageSet" :
    [
       {
-         "title" : "Thumb",
-         "slug" : "thumb",
-         "width" : "100",
-         "height" : "100",
+         "title" : "Thumbnail",
+         "slug" : "thumbnail",
+         "width" : "180",
+         "height" : "180",
          "method" : "smartcrop"
       }
    ],
    "images" :
-   [
-   ],
+   [],
    "files" :
-   [
-   ],
+   [],
    "users" :
    [
       {

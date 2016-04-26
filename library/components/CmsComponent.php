@@ -284,6 +284,31 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/configuration') {
 				$template = 'cms/configuration';
 				$this->parameters['mainNavClass'] = 'configuration';
+			} elseif ($relativeCmsUri == '/configuration/users') {
+				$template = 'cms/configuration/users';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$this->parameters['users'] = $this->storage->getUsers();
+			} elseif ($relativeCmsUri == '/configuration/users/new') {
+				$template = 'cms/configuration/users-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				if (isset($_POST['username'])) {
+					$this->storage->addUser($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get['slug'])) {
+				$this->storage->deleteUserBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
+				exit;
+			} elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get['slug'])) {
+				$template = 'cms/configuration/users-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$this->parameters['user'] = $this->storage->getUserBySlug($request::$get['slug']);
+				if (isset($_POST['username'])) {
+					$this->storage->saveUser($request::$get['slug'], $request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
+					exit;
+				}
 			} elseif ($relativeCmsUri == '/configuration/document-types') {
 				$template = 'cms/configuration/document-types';
 				$this->parameters['mainNavClass'] = 'configuration';

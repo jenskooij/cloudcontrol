@@ -2,6 +2,7 @@
 namespace library\storage
 {
 
+	use library\crypt\Crypt;
 	use library\images\ImageResizer;
 
 	/**
@@ -70,6 +71,101 @@ namespace library\storage
 			
 			return $return;
 		}
+
+		public function getUserBySlug($slug)
+		{
+			$return = array();
+
+			$users = $this->repository->users;
+			foreach ($users as $user) {
+				if ($user->slug == $slug) {
+					$return = $user;
+					break;
+				}
+			}
+
+			return $return;
+		}
+
+		public function getUsers()
+		{
+			return $this->repository->users;
+		}
+
+		public function saveUser($slug, $postValues)
+		{
+			$userObj = $this->createUserFromPostValues($postValues);
+			if ($userObj->slug != $slug) {
+				// If the username changed, check for duplicates
+				$doesItExist = $this->getUserBySlug($userObj->slug);
+				if (!empty($doesItExist)) {
+					throw new \Exception('Trying to rename user to existing username');
+				}
+			}
+			$users = $this->getUsers();
+			foreach ($users as $key => $user) {
+				if ($user->slug == $slug) {
+					$users[$key] = $userObj;
+				}
+			}
+			$this->repository->users = $users;
+			$this->save();
+		}
+
+		public function addUser($postValues)
+		{
+			$userObj = $this->createUserFromPostValues($postValues);
+
+			$doesItExist = $this->getUserBySlug($userObj->slug);
+			if (!empty($doesItExist)) {
+				throw new \Exception('Trying to add username that already exists.');
+			}
+			$this->repository->users[] = $userObj;
+			$this->save();
+		}
+
+		public function deleteUserBySlug($slug)
+		{
+			$userToDelete = $this->getUserBySlug($slug);
+			if (empty($userToDelete)) {
+				throw new \Exception('Trying to delete a user that doesn\'t exist.');
+			}
+			$users = $this->getUsers();
+			foreach ($users as $key => $user) {
+				if ($user->slug == $userToDelete->slug) {
+					unset($users[$key]);
+					$this->repository->users = array_values($users);
+				}
+			}
+			$this->save();
+		}
+
+		private function createUserFromPostValues($postValues)
+		{
+			if (isset($postValues['username'])) {
+				$user = new \stdClass();
+				$user->username = $postValues['username'];
+				$user->slug = slugify($postValues['username']);
+				$user->rights = array();
+				if (isset($postValues['rights'])) {
+					$user->rights = $postValues['rights'];
+				}
+
+				if (isset($postValues['password']) && empty($postValues['password']) == false) {
+					$crypt = new Crypt();
+					$user->password = $crypt->encrypt($postValues['password'], 16);
+					$user->salt = $crypt->getLastSalt();
+				} else {
+					$user->password = $postValues['passHash'];
+					$user->salt = $postValues['salt'];
+				}
+
+				return $user;
+			} else {
+				throw new \Exception('Trying to create user with invalid data.');
+			}
+		}
+
 		/*
 		 *
 		 * Documents

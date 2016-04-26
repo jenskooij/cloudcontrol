@@ -10,6 +10,11 @@ namespace library\storage
 		function getApplicationComponents();
 		
 		function getUserByUsername($username);
+		function getUserBySlug($slug);
+		function getUsers();
+		function saveUser($slug, $postValues);
+		function addUser($postValues);
+		function deleteUserBySlug($slug);
 
 		function getDocuments();
 		function getDocumentBySlug($slug);
