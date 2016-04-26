@@ -102,7 +102,7 @@
 					<? elseif ($field->multiple == true) : ?>
 						<? if (isset($document)) :
 							$fieldSlug = $field->slug;
-							$iterable = $document->fields->$fieldSlug;
+							$iterable = isset($document->fields->$fieldSlug) ? $document->fields->$fieldSlug : array();
 							array_shift($iterable);
 							?>
 							<? foreach ($iterable as $value) : ?>
