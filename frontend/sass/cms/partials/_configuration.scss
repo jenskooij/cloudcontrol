@@ -1,0 +1,119 @@
+@import "../variables";
+@import "../general";
+@import "../../includes/helpers";
+
+.configuration {
+	h2 {
+		color:$configuration-color;
+		
+		a {
+			color:$configuration-color;
+			
+			&:hover {
+				color:lighten($configuration-color, 10%);
+				text-decoration:none;
+			}
+		}
+	}
+	
+	ul.configuration > li {
+		@extend %panel;
+		
+		h3 {
+			@extend %inlineblock;
+			vertical-align:baseline;
+			margin:0;
+		}
+		
+		.btn {
+			padding:0.5em;
+			vertical-align:baseline;
+			
+			&.documentTitle {
+				background-color:$panel-bg-color;
+				color:$text-color;
+				
+				&:hover {
+					color:$btn-default-color;
+					background-color:$btn-text-color;
+				}
+			}
+		}
+		
+		.grid-box-8 {
+			width:66.666666666%;
+		}
+		
+		.grid-box-4 {
+			width:33.333333333%;
+		}
+		
+		.documentActions {
+			text-align:right;
+		}
+
+		.small {
+			font-size: 0.7em;
+		}
+
+		.label {
+			color:$text-color-light;
+		}
+	}
+	
+	.form-element .fields {
+		input[type="text"],
+		select {
+			@extend %inlineblock;
+			vertical-align:baseline
+		}
+
+		@include breakpoint(desktop) {
+			input[type="text"] {
+				width: 33%;
+			}
+
+			select {
+				width: 19%;
+			}
+		}
+		
+		.btn {
+			vertical-align:baseline;
+			
+
+		}
+	}
+	
+	.form-element .bricks {
+		input[type="text"],
+		select {
+			@extend %inlineblock;
+			vertical-align:baseline
+		}
+
+		@include breakpoint(desktop) {
+			input[type="text"] {
+				width: 72%;
+			}
+
+			select {
+				width: 19%;
+			}
+		}
+		
+		.btn {
+			vertical-align:baseline;
+			
+			&.move {
+				cursor:move;
+				background-color:#f0f0f0;
+				color:#999;
+			}
+		}
+	}
+	
+	.add-parameter{
+		margin:1em 0;
+	}
+}

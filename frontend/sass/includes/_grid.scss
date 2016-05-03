@@ -1,0 +1,120 @@
+%grid-box { 
+	float:left;
+	width:100%;
+	padding: 0.5em; 
+}
+
+.grid-wrapper{
+	overflow:hidden;
+	width:100%;
+	max-width:1280px;
+	margin:0 auto;
+	
+	> .grid-container{
+		@extend %clearfix;
+		margin:-1em;
+		padding:0;
+		
+		> .grid-box-1 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:8.333333333%;
+			}
+		}
+		
+		> .grid-box-2 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:16.666666666%;
+			}
+		}
+		
+		> .grid-box-3 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:25%;
+			}
+		}
+		
+		> .grid-box-4 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:33.333333333%;
+			}
+		}
+
+		> .grid-box-5 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:41.666666666%;
+			}
+		}
+		
+		> .grid-box-6 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:50%;
+			}
+		}
+
+		> .grid-box-7 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:58.333333333%;
+			}
+		}
+		
+		> .grid-box-8 {
+			@extend %grid-box;
+			
+			@include breakpoint(desktop) {
+				width:66.666666666%;
+			}
+		}
+
+		> .grid-box-9 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:75%;
+			}
+		}
+
+		> .grid-box-10 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:83.333333333%;
+			}
+		}
+
+		> .grid-box-11 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:91.666666666%;
+			}
+		}
+
+		> .grid-box-12 {
+			@extend %grid-box;
+
+			@include breakpoint(desktop) {
+				width:100%;
+			}
+		}
+		
+		.grid-inner {
+			display:block;
+			width:100%;
+			padding:1em;
+		}
+	}
+}

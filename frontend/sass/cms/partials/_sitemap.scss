@@ -1,0 +1,30 @@
+.sitemap {
+	h2 {
+		color:$sitemap-color;
+	}
+	
+	ul.sitemap > li {
+		@extend %panel;
+		width:90%;
+		
+		@include breakpoint(desktop) {
+			width:100%;
+		}
+		
+		.url {
+			font-family:$font-family-code;
+			display:block;
+			border:1px solid #f0f0f0;
+			padding:1em;
+			margin:1em 0;
+		}
+		
+		textarea {
+			display:none;
+		}
+	}
+	
+	.add-parameter {
+		margin:1em 0;
+	}
+}

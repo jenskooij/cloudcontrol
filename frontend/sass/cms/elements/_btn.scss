@@ -1,0 +1,104 @@
+@import "../variables";
+
+.btn {
+	font-size:1em;
+	line-height:1em;
+	@extend %inlineblock;
+	font-weight:bold;
+	padding:1em;
+	text-decoration:none;
+	color:$btn-text-color;
+	background-color:$btn-default-color;
+	border-style:none;
+	font-family: $font-family-body;
+	letter-spacing:1px;
+	cursor:pointer;
+	
+	&:hover,
+	&.active {
+		color:$btn-default-color;
+		background-color:$btn-text-color;
+	}
+	
+	&.documents {
+		background-color:$documents-color;
+		
+		&:hover,
+		&.active {
+			color:$documents-color;
+			background-color:$btn-text-color;
+		}
+	}
+	
+	&.sitemap {
+		background-color:$sitemap-color;
+		
+		&:hover,
+		&.active{
+			color:$sitemap-color;
+			background-color:$btn-text-color;
+		}
+	}
+	
+	&.images {
+		background-color:$images-color;
+		
+		&:hover,
+		&.active {
+			color:$images-color;
+			background-color:$btn-text-color;
+		}
+	}
+	
+	&.files {
+		background-color:$files-color;
+		
+		&:hover,
+		&.active {
+			color:$files-color;
+			background-color:$btn-text-color;
+		}
+	}
+	
+	&.configuration {
+		background-color:$configuration-color;
+		
+		&:hover,
+		&.active {
+			color:$configuration-color;
+			background-color:$btn-text-color;
+		}
+	}
+	
+	&.error {
+		background-color:$error-color;
+		
+		&:hover,
+		&.active {
+			color:$error-color;
+			background-color:$btn-text-color;
+		}
+	}
+
+	&.move {
+		cursor:move;
+		background-color:$btn-move-color;
+		color:$btn-text-color-dark;
+	}
+
+	&.reset {
+		background-color:$btn-move-color;
+		color:$btn-text-color-dark;
+	}
+
+	&.inactive {
+		background-color:$btn-move-color;
+		color:$btn-text-color-dark;
+		cursor:default;
+
+		&:hover {
+			background-color:$btn-move-color;
+			color:$btn-text-color-dark;
+		}
+	}
+}

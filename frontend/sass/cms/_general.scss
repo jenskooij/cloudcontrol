@@ -1,0 +1,25 @@
+html{
+	min-height:100%;
+	height:100%;
+}
+
+body{
+	background-color:$bg-color;
+	min-height:100%;
+}
+
+%panel {
+	background-color:$panel-bg-color;
+	padding:1em;
+	margin:1em 0;
+}
+
+section {
+	padding:1em;
+	width:100%;
+	max-width:1280px;
+	
+	@include breakpoint(desktop) {
+		margin:4em auto;
+	}
+}

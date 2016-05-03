@@ -1,0 +1,141 @@
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+	border-style:none;
+	background-color:$input-bg-color;
+	border-bottom:1px solid $input-accent-color;
+	padding:1em;
+	display:block;
+	width:100%;
+	margin:1em 0;
+	font-family: $font-family-code;
+	font-size:1em;
+	
+	&::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+		font-style:italic;
+		
+		&:focus {
+			color:$btn-default-color;
+		}
+	}
+	&:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+		font-style:italic;
+		opacity:  1;
+	   
+		&:focus {
+			color:$btn-default-color;
+		}
+	}
+	&::-moz-placeholder { /* Mozilla Firefox 19+ */
+		font-style:italic;
+		opacity:  1;
+
+		&:focus {
+			color:$btn-default-color;
+		}
+	}
+	&:-ms-input-placeholder { /* Internet Explorer 10-11 */
+		font-style:italic;
+		
+		&:focus {
+			color:$btn-default-color;
+		}
+	}
+	
+	&:focus {
+		outline:none;
+		border-bottom:1px solid $btn-default-color;
+	}
+}
+
+.grid-inner {
+	input[type="text"],
+	input[type="password"],
+	input[type="email"],
+	input[type="date"],
+	input[type="number"],
+	input[type="file"],
+	select,
+	textarea{
+		margin:0;
+	}
+}
+
+textarea {
+	overflow:hidden;
+}
+
+select {
+	height:3.1em;
+}
+
+select[multiple="multiple"] {
+	height: 15em;
+	
+	option {
+		border-bottom:1px solid lighten($input-accent-color, 40%);
+		padding:1em;
+		
+		&:hover {
+			background-color:lighten($btn-default-color, 50%);
+		}
+		
+		&:checked,
+		&:selected,
+		&:active{
+			background-color:#fc0;
+			font-weight:bold;
+		}
+	}
+	
+	option:checked { 
+		padding-left:3em;
+		
+		&:before {
+			@extend %inlineblock;
+			content: "\f00c";
+			font-family: "FontAwesome";
+			margin-left: -2em;
+			margin-right: 1em;
+		}
+	}
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	@extend %inlineblock;
+	margin:1em;
+}
+
+label {
+	@extend %inlineblock;
+	margin:1em;
+}
+
+form.panel {
+	@extend %panel;
+}
+
+.form-element {
+	&.parameters {
+		input[type="text"] {
+			@extend %inlineblock;
+			width:45%;
+			vertical-align:baseline;
+		}
+		
+		a {
+			@extend %inlineblock;
+			vertical-align:baseline;
+		}
+	}
+}
+
+input[type="submit"] {
+	height:3em;
+}

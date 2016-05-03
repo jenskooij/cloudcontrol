@@ -1,0 +1,44 @@
+.login {
+	display:table;
+	background-size:cover;
+	background-position:center;
+	
+	.errorMsg {
+		margin:1em 0;
+		color:$error-color;
+	}
+	
+	h1 {
+		color:#fff;
+		text-shadow:1px 1px 0 rgba(29,29,29,0.5);
+	}
+	
+	.body {
+		display:table-cell;
+		vertical-align:middle;
+	}
+	
+	.login-form {
+		@extend %panel;
+	}
+
+	.fa-spinner {
+		margin-top:1em;
+		display:none;
+	}
+
+	.browserupgrade {
+		display:block;
+		color:#800;
+		font-weight:700;
+		font-size:2em;
+
+		a {
+			color:#f00;
+		}
+	}
+}
+
+body.login > main.body > .login-form {
+	padding:1em;
+}

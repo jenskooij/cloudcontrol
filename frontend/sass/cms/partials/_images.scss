@@ -1,0 +1,123 @@
+.images {
+  h2 {
+    color: $images-color;
+
+    a {
+      color: $images-color;
+
+      &:hover {
+        color: lighten($images-color, 10%);
+        text-decoration: none;
+      }
+    }
+  }
+
+  ul.images {
+    margin-top:1em;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+
+    &> li.grid-box-2 {
+      @extend %panel;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+
+      margin:0.5em;
+      padding: 0;
+
+      .btn {
+        padding: 0.5em;
+        vertical-align: baseline;
+
+        &.documentTitle {
+          background-color: $panel-bg-color;
+          color: $text-color;
+
+          &:hover,
+          &.active {
+            color: $btn-default-color;
+            background-color: $btn-text-color;
+          }
+
+          &.active {
+            i:before {
+              content: "\f115";
+            }
+          }
+        }
+
+        &.error {
+          position:absolute;
+        }
+      }
+
+      .grid-box-10 {
+        width: 83.333333333%;
+      }
+
+      .grid-box-2 {
+        width: 16.666666666%;
+      }
+
+      .empty {
+        padding: 0.5em;
+      }
+
+      .documentActions {
+        text-align: right;
+      }
+
+      .small {
+        font-size:0.7em;
+        display:block;
+
+        &.state {
+          color:lighten($error-color, 20%);
+
+          &.state.published {
+            color:$validate-color;
+          }
+        }
+      }
+
+      .label {
+        color:$text-color-light;
+      }
+
+
+      .image-link {
+        display:block;
+      }
+      img {
+        width:100%;
+        margin: 0 auto;
+      }
+    }
+  }
+
+  .show-image {
+    @extend %panel;
+
+    label {
+      display:block;
+    }
+
+    .value {
+      border-style:none;
+      background-color:$input-bg-color;
+      border-bottom:1px solid $input-accent-color;
+      padding:1em;
+      display:block;
+      width:100%;
+      margin:1em 0;
+      font-family: $font-family-code;
+      font-size:1em;
+    }
+  }
+}

@@ -1,0 +1,81 @@
+.files {
+  h2 {
+    color: $files-color;
+
+    a {
+      color: $files-color;
+
+      &:hover {
+        color: lighten($files-color, 10%);
+        text-decoration: none;
+      }
+    }
+  }
+
+  ul.files {
+    &> li {
+      @extend %panel;
+      padding: 0;
+
+      h3 {
+        @extend %inlineblock;
+        vertical-align: baseline;
+        margin: 0;
+      }
+
+      .btn {
+        padding: 0.5em;
+        vertical-align: baseline;
+
+        &.documentTitle {
+          background-color: $panel-bg-color;
+          color: $text-color;
+
+          &:hover,
+          &.active {
+            color: $btn-default-color;
+            background-color: $btn-text-color;
+          }
+
+          &.active {
+            i:before {
+              content: "\f115";
+            }
+          }
+        }
+      }
+
+      .grid-box-10 {
+        width: 83.333333333%;
+      }
+
+      .grid-box-2 {
+        width: 16.666666666%;
+      }
+
+      .empty {
+        padding: 0.5em;
+      }
+
+      .documentActions {
+        text-align: right;
+      }
+
+      .small {
+        font-size:0.7em;
+
+        &.state {
+          color:lighten($error-color, 20%);
+
+          &.state.published {
+            color:$validate-color;
+          }
+        }
+      }
+
+      .label {
+        color:$text-color-light;
+      }
+    }
+  }
+}

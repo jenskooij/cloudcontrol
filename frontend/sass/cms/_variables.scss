@@ -1,0 +1,35 @@
+// Google Fonts
+@import url(http://fonts.googleapis.com/css?family=Roboto|Ubuntu+Mono:400italic,700italic,400,700);
+// Font awesome
+@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css);
+
+// Font Variables
+$font-family-headers: 'Roboto', serif;
+$font-family-body: 'Roboto', serif;
+$font-family-code: 'Ubuntu Mono', courier;
+
+// Colors
+$text-color: rgb(29,29,29);
+$text-color-light: rgb(153,153,153);
+
+$bg-color: rgb(240,240,240);
+$panel-bg-color: rgb(255,255,255);
+
+$error-color: rgb(255,46,18);
+$validate-color: rgb(0,193,63);
+
+$input-bg-color: rgb(246,246,246);
+$input-accent-color: rgb(29,29,29);
+
+$main-nav-color: rgb(29,29,29);
+
+$documents-color: rgb(0,130,135);
+$sitemap-color: rgb(176,30,0);
+$images-color: rgb(119,185,0);
+$files-color: rgb(255,183,0);
+$configuration-color: rgb(170,64,255);
+
+$btn-text-color: rgb(255,255,255);
+$btn-text-color-dark: rgb(153, 153, 153);
+$btn-default-color: rgb(0,106,193);
+$btn-move-color: rgb(240, 240, 240);

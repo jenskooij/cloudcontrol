@@ -1,0 +1,36 @@
+// 
+// Box sizing. Happy sizing for all.
+//
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+//
+// Clear fix. Happy grids for all.
+//
+%clearfix:before, %clearfix:after { 
+	content: " "; 
+	display: table; 
+}
+
+%clearfix:after { 
+	clear: both; 
+}
+
+%clearfix { // IE we love you
+	*zoom: 1; 
+}
+
+//
+// Display: inline-block
+//
+
+%inlineblock {
+	display:inline-block;
+	*display:inline;
+	zoom:1;
+	vertical-align:top;
+}

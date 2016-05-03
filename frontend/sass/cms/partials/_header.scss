@@ -1,0 +1,133 @@
+@import "../variables";
+@import "../../includes/helpers";
+@import "../../includes/breakpoints";
+
+.header {
+	position:fixed;
+	left:0;
+	width:100%;
+	background-color:$main-nav-color;
+	top:-250%;
+	transition:top 0.2s;
+	height:100%;
+	
+	&.active {
+		top:0;
+	}
+	
+	@include breakpoint(desktop) {
+		top:0;
+		height:inherit;
+		position:absolute;
+	}
+	
+	h1 {
+		display:none;
+	}
+	
+	.mainNav {
+		padding:1em;
+		
+		@include breakpoint(desktop) {
+			padding:0;
+		}
+	
+		li {
+			@extend %inlineblock;
+			
+			a {
+				@extend %inlineblock;
+				padding:1em;
+				color: $btn-text-color;
+				text-decoration:none;
+				font-size:1.3em;
+				
+				@include breakpoint(desktop) {
+					padding:0.5em;
+					font-size:2em;
+
+					span{
+						display:none;
+					}
+
+					&:hover span {
+						margin-left: -2em;
+						display: inline-block;
+						*display:inline;
+						zoom: 1;
+						vertical-align: top;
+						position: absolute;
+						background-color: $main-nav-color;
+						margin-top: 3.5em;
+						font-size: 0.5em;
+						padding: 0.5em;
+						color:#fff;
+
+						&:before {
+							width: 0;
+							height: 0;
+							border-style: solid;
+							border-width: 0 7.5px 12px 7.5px;
+							border-color: transparent transparent $main-nav-color transparent;
+							content:' ';
+							position:absolute;
+							margin-top:-1.2em;
+						}
+					}
+				}
+				
+				&.btn {
+					background-color:$main-nav-color;
+					text-align:center;
+					padding:0.6em;
+					
+					&.log-off:hover {
+						color:$btn-default-color;
+					}
+				}		
+			}
+
+			@include breakpoint(desktop) {
+				&.log-off-box {
+					text-align: right;
+
+					a {
+						display:inline-block;
+						*display:inline;
+						zoom:1;
+						vetical-align:top;
+						width: auto;
+
+						&:hover span {
+							margin-top:1.5em;
+							margin-left:-4em;
+
+							&:before {
+								margin-left:3em;
+							}
+						}
+					}
+				}
+			}
+		}		
+	}
+}
+
+.mainNav-toggle {
+	display:block;
+	width:3em;
+	height:3em;
+	top:0;
+	right:0;
+	position:fixed;
+	background-color:$main-nav-color;
+	font-size:1.3em;
+	
+	@include breakpoint(desktop) {
+		display:none;
+	}
+	
+	span {
+		display:none;
+	}
+}

@@ -1,0 +1,12 @@
+.sitemap{
+	.ui-state-highlight {
+		height: 200px;
+		line-height: 1.2em;
+	}
+}
+
+.ui-sortable-helper {
+	opacity:0.8;
+	box-shadow:0px 0px 3px $btn-default-color;
+	cursor:move;
+}
