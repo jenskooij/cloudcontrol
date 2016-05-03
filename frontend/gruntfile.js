@@ -10,10 +10,12 @@ module.exports = function (grunt) {
             options: {
                 separator: '\r\n'
             },
-            dist: {
-                src: [
-					'javascripts/cms/*.js'
-				],
+            site: {
+                src: ['javascripts/site/*.js'],
+                dest: 'build.site.js'
+            },
+            cms: {
+                src: ['javascripts/cms/*.js'],
 				dest: 'build.cms.js'
             }
         },
@@ -24,12 +26,19 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				files: {
-					'../cloudcontrol/www/js/cms.js': ['<%= concat.dist.dest %>']
+					'../cloudcontrol/www/js/cms.js': ['<%= concat.cms.dest %>'],
+					'../cloudcontrol/www/js/site.js': ['<%= concat.site.dest %>']
 				}
 			}
 		},
 		jshint: {
-            files: ['gruntfile.js', 'javascripts/cms/*.js','!javascripts/cms/*.min.js'],
+            files: [
+                'gruntfile.js',
+                'javascripts/cms/*.js',
+                '!javascripts/cms/*.min.js',
+                'javascripts/site/*.js',
+                '!javascripts/site/*.min.js'
+            ],
             options: {
                 globals: {
                     jQuery: true,
@@ -49,7 +58,7 @@ module.exports = function (grunt) {
             }
         },
 		watch: {
-            files: ['<%= jshint.files %>', 'sass/**/*.scss'],
+            files: ['<%= jshint.files %>', 'sass/**/*.*', 'sass/*.*'],
             tasks: ['concat', 'uglify', 'jshint', 'compass']
         }
     });
