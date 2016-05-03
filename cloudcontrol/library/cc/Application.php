@@ -139,7 +139,7 @@ namespace library\cc
 				$template = $sitemapItem->template;
 				$parameters = $sitemapItem->parameters;
 				
-				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem=null);
+				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, new \stdClass());
 				
 				$this->matchedSitemapItems[$key]->object->run($this->storage);
 			}

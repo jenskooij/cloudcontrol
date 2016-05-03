@@ -154,8 +154,8 @@ namespace library\images\methods
 		public function Execute($imageResource)
 		{
 			$watermark = $this->GetWatermark();
-			$watermarkWidth  = imagesx($watermark);
-			$watermarkHeight = imagesy($watermark);
+			$watermarkWidth  = imagesx($watermark->GetImageResource());
+			$watermarkHeight = imagesy($watermark->GetImageResource());
 			
 			$x = $this->calculateX($imageResource);
 			$y = $this->calculateY($imageResource);
@@ -171,12 +171,12 @@ namespace library\images\methods
 			imagesavealpha($new, true);
 			
 			// Preserve transparency of the watermark
-			imagecolortransparent($watermark, imagecolorallocatealpha($watermark, 0, 0, 0, 127));
-			imagealphablending($watermark, false);
-			imagesavealpha($watermark, true);
+			imagecolortransparent($watermark->GetImageResource(), imagecolorallocatealpha($watermark->GetImageResource(), 0, 0, 0, 127));
+			imagealphablending($watermark->GetImageResource(), false);
+			imagesavealpha($watermark->GetImageResource(), true);
 			
 			imagealphablending($new, true);
-			imagealphablending($watermark, true);
+			imagealphablending($watermark->GetImageResource(), true);
 			
 			imagecopy($new, $imageResource, 0, 0, 0, 0, $imageWidth, $imageHeight);
 			imagecopymerge($new, $watermark, $x, $y, 0, 0, $watermarkWidth, $watermarkHeight, $this->_transparency);
