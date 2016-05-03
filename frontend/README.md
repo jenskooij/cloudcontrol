@@ -27,6 +27,8 @@ For javascript, you can just start creating .js files in the ``javascripts/site/
 folder. These will automatically be concatinated and uglified
 (which is kinda like minified) into the cloud control framework.
 
+**Note:** For instructions on how to use the backend, see [here](../cloudcontrol/README.md)
+
 ### Install log<a name="installLog"></a>
 ```
 grunt-contrib-concat@1.0.1 node_modules\grunt-contrib-concat
