@@ -1,3 +1,6 @@
+[![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
+[![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
+
 # Cloud Control Framework
 
 Cloud Control is a PHP framework that is intended for rapid development of
