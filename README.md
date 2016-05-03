@@ -8,7 +8,7 @@ use it for whatever project you see fit.
 
 ## Installation
 The framework uses PHP, npm and grunt, so make sure you have those installed prior to
-using the framework. See also the installation instructions for the [frontend](frontend/README.md) and [backend](cloudcontrol/README.md).
+using the framework. See also the installation instructions for the [frontend](frontend) and [backend](cloudcontrol).
 
 ## Getting started
 1. Make sure you have PHP installed on your local computer (use WAMP, LAMP or MAMP or

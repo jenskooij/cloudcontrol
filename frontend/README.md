@@ -27,7 +27,7 @@ For javascript, you can just start creating .js files in the ``javascripts/site/
 folder. These will automatically be concatinated and uglified
 (which is kinda like minified) into the cloud control framework.
 
-**Note:** For instructions on how to use the backend, see [here](../cloudcontrol/README.md)
+**Note:** For instructions on how to use the backend, see [here](../cloudcontrol)
 
 ### Install log<a name="installLog"></a>
 ```

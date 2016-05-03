@@ -13,7 +13,7 @@ you can create a folder structure that you feel works best.
 Creating custom Components should be done in the `components`. A good default
 template for starting to develop components is found [here](#component).
 
-**Note:** For instructions on how to use the frontend, see [here](../frontend/README.md)
+**Note:** For instructions on how to use the frontend, see [here](../frontend)
 
 ### Examples
 ## Default Component
