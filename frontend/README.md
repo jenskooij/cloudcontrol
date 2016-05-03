@@ -1,4 +1,4 @@
-# cloud-control-frontend v0.0.1
+# cloud-control-frontend v0.0.3
 ## Cloud Control Frontend
 ### Dependencies
 See also the [install log](#installLog)
