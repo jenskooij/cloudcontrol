@@ -180,4 +180,3 @@ function initFramework($storagePath)
 		copy($baseTemplateDefaultPath, $baseTemplateTargetPath);
 	}
 }
-?>

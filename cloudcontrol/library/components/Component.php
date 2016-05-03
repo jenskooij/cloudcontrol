@@ -39,4 +39,3 @@ namespace library\components
 		function get();
 	}
 }
-?>

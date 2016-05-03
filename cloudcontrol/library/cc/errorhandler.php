@@ -112,4 +112,3 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
 	}
 	exit;
 }
-?>

@@ -38,7 +38,7 @@ function autoLoad($class, $throwException = true)
 	if (file_exists($file)) {
 		require_once($file);
 		if ($throwException) {
-			if (class_exists($class, false) == false && interface_exists($class, false) == false) {
+			if (class_exists($class, false) === false && interface_exists($class, false) === false) {
 				throw new \Exception('Could not load class "' . $class . '" in file ' . $file);
 			} else {
 				return true;

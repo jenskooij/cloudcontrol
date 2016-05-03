@@ -1,6 +1,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
 [![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
 [![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
+[![Build Status](https://scrutinizer-ci.com/g/jenskooij/cloudcontrol/badges/build.png?b=master)](https://scrutinizer-ci.com/g/jenskooij/cloudcontrol/build-status/master)
 
 # Cloud Control Framework
 

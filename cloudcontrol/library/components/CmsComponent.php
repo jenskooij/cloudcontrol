@@ -82,17 +82,10 @@ namespace library\components
 		 */
 		protected function showLogin()
 		{
-			$loginTemplatePath = __DIR__ . '/../../templates/cms/login.php';
-			if (realpath($loginTemplatePath) !== false) {
-				ob_clean();
-				$this->parameters['request'] = $this->request;
-				extract($this->parameters);
-				include($loginTemplatePath);
-				ob_end_flush();
-				exit;
-			} else {
-				throw new \Exception('Cannot load login template ' . $loginTemplatePath);
-			}
+			$loginTemplatePath = 'cms/login';
+			$this->renderTemplate($loginTemplatePath);
+			ob_end_flush();
+			exit;
 		}
 
 		/**
@@ -109,6 +102,8 @@ namespace library\components
 			$pos = strpos($request::$relativeUri, $this->parameters['cmsPrefix']);
 			if ($pos !== false) {
 				$relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters['cmsPrefix']));
+			} else {
+				$relativeCmsUri = '/';
 			}
 			
 			$template = null;
@@ -402,7 +397,7 @@ namespace library\components
 				exit;
 			}
 
-			if ($template != null) {
+			if ($template !== null) {
 				$this->parameters['body'] = $this->renderTemplate($template);
 			}			
 		}
