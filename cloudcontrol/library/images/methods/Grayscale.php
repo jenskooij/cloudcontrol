@@ -26,4 +26,3 @@ namespace library\images\methods
 		}
 	}
 }
-?>

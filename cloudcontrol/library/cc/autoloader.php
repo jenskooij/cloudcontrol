@@ -62,4 +62,3 @@ function autoLoad($class, $throwException = true)
 	}
 	return false;
 }
-?>

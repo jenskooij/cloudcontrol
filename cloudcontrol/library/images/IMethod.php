@@ -21,4 +21,3 @@ namespace library\images
 		abstract public function Execute($imageResource);
 	}
 }
-?>

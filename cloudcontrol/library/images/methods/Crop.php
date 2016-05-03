@@ -118,4 +118,3 @@ namespace library\images\methods
 		}
 	}
 }
-?>
