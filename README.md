@@ -1,3 +1,4 @@
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
 [![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
 
