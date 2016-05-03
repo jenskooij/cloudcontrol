@@ -38,6 +38,8 @@ namespace library\storage
 				$jsonString = file_get_contents($storagePath);
 				$this->repository = json_decode($jsonString);
 			} else {
+				// Here is some logic for the initialisation of a new clone of the framework
+				initFramework($storagePath);
 				throw new \Exception('Couldnt find storagePath ' . $storagePath);
 			}
 		}

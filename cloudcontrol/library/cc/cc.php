@@ -159,4 +159,25 @@ END;
 	}
 	die;
 }
+
+/**
+ * Initializes the framework by creating the default
+ * storage and base template
+ *
+ * @param string $storagePath
+ */
+function initFramework($storagePath)
+{
+	$storageDefaultPath = realpath('../_storage.json');
+	$baseTemplateDefaultPath = realpath('../library/cc/_base.php');
+	$baseTemplateTargetPath = '../templates/base.php';
+	// Create the initial storage
+	if (file_exists($storageDefaultPath) && realpath($storagePath) === false) {
+		copy($storageDefaultPath, $storagePath);
+	}
+	// Create the initial base template
+	if (file_exists($baseTemplateDefaultPath) && realpath($baseTemplateTargetPath) === false) {
+		copy($baseTemplateDefaultPath, $baseTemplateTargetPath);
+	}
+}
 ?>
