@@ -325,7 +325,7 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
 				$template = 'cms/configuration/document-types-form';
 				$this->parameters['mainNavClass'] = 'configuration';
-				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug']);
+				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug'], false);
 				$bricks = $this->storage->getBricks();
 				if (isset($request::$post['title'])) {
 					$this->storage->saveDocumentType($request::$get['slug'], $request::$post);

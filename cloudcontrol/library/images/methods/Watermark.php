@@ -56,7 +56,7 @@ namespace library\images\methods
 		/**
 		 * Use build-in logic to position the x of watermark
 		 *
-		 * @param 	string $x
+		 * @param 	string $imageResource
 		 * @return 	self
 		 */
 		protected function calculateX($imageResource)
@@ -81,7 +81,7 @@ namespace library\images\methods
 		/**
 		 * Use build-in logic to position the y of watermark
 		 *
-		 * @param 	string $y
+		 * @param 	string $imageResource
 		 * @return 	self
 		 */
 		public function calculateY($imageResource)

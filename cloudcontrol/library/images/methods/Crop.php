@@ -78,7 +78,7 @@ namespace library\images\methods
 			$this->_y = $y;
 			return $this;
 		}
-		
+
 		/**
 		 * If neccesary, fill the background color
 		 * with this color
@@ -86,13 +86,20 @@ namespace library\images\methods
 		 * @param int $r Red
 		 * @param int $g Green
 		 * @param int $b Blue
+		 *
+		 * @return $this
 		 */
 		public function FillBackground($r, $g, $b)
 		{
 			$this->_backgroundColor = array(intval($r), intval($g), intval($b));
 			return $this;
 		}
-		
+
+		/**
+		 * @param resource $imageResource
+		 *
+		 * @return resource
+		 */
 		public function Execute($imageResource)
 		{
 			// Define the origial width and height

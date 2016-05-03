@@ -93,7 +93,7 @@ namespace library\images
 		 *
 		 * @see 	http://www.php.net/manual/en/function.imagecreatefromwbmp.php#86214
 		 * @author 	alexander at alexauto dot nl 
-		 * @param	string		$imagePath
+		 * @param	string		$p_sFile
 		 * @return  resource
 		 */
 		public function CreateImageFromBmp($p_sFile)
@@ -106,7 +106,9 @@ namespace library\images
 			
 			$temp    =    unpack("H*",$read); 
 			$hex    =    $temp[1]; 
-			$header    =    substr($hex,0,108); 
+			$header    =    substr($hex,0,108);
+			$width=null;
+			$height=null;
 			
 			//    Process the header 
 			//    Structure: http://www.fastgraph.com/help/bmp_header_format.html 

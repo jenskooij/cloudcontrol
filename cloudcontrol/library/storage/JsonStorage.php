@@ -153,7 +153,7 @@ namespace library\storage
 					$user->rights = $postValues['rights'];
 				}
 
-				if (isset($postValues['password']) && empty($postValues['password']) == false) {
+				if (isset($postValues['password']) && empty($postValues['password']) === false) {
 					$crypt = new Crypt();
 					$user->password = $crypt->encrypt($postValues['password'], 16);
 					$user->salt = $crypt->getLastSalt();
@@ -509,6 +509,8 @@ namespace library\storage
 			$returnArray = array();
 			$noMatches = 0;
 			$foundDocument = null;
+			$document = null;
+			$previousDocument = null;
 			foreach ($slugs as $slug) {
 				$matched = false;
 				$previousDocument = null;
@@ -531,7 +533,7 @@ namespace library\storage
 						$previousDocument = $document;
 					}
 				}
-				if ($matched == true) {
+				if ($matched === true) {
 					$noMatches += 1;
 				} else {
 					throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);

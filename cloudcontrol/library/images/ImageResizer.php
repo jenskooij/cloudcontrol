@@ -24,9 +24,16 @@ namespace library\images
 			$this->imageSet = $imageSet;
 		}
 
+		/**
+		 * @param $imagePath
+		 *
+		 * @return array
+		 * @throws \Exception
+		 */
 		public function applyImageSetToImage($imagePath)
 		{
 			$returnFileNames = array();
+			$filename = '';
 			if (file_exists($imagePath)) {
 				foreach ($this->imageSet as $set) {
 					if ($set->method == 'resize') {
@@ -104,7 +111,13 @@ namespace library\images
 			}
 		}
 
-		private function modifyName($imagePath, $modifier)
+		/**
+		 * @param        $imagePath
+		 * @param string $modifier
+		 *
+		 * @return string
+		 */
+		private function modifyName($imagePath, $modifier='')
 		{
 			$filename = basename($imagePath);
 			$path = dirname($imagePath);

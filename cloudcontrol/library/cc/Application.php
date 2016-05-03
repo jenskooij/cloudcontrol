@@ -139,7 +139,7 @@ namespace library\cc
 				$template = $sitemapItem->template;
 				$parameters = $sitemapItem->parameters;
 				
-				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
+				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem=null);
 				
 				$this->matchedSitemapItems[$key]->object->run($this->storage);
 			}
@@ -149,6 +149,7 @@ namespace library\cc
 		 * @param string $class
 		 * @param string $template
 		 * @param array  $parameters
+		 * @param \stdClass  $matchedSitemapItem
 		 *
 		 * @return mixed
 		 * @throws \Exception
