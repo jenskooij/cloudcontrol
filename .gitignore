@@ -1,3 +1,9 @@
+# IDE and other tools
+*.iml
+*.idea/*
+
+
+# Project specific files
 cloudcontrol/components/*
 frontend/javascripts/site/*
 frontend/sass/site/*
