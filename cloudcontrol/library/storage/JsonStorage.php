@@ -192,6 +192,14 @@ namespace library\storage
 			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
 			$indices = $documentContainer['indices'];
 
+			if ($indices === null) {
+				$emptyReturn = new \stdClass();
+				$emptyReturn->title = 'Not found';
+				$emptyReturn->type = null;
+				$emptyReturn->state = 'published';
+				return $emptyReturn;
+			}
+
 			$folder = $this->repository->documents;
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
@@ -256,19 +264,8 @@ namespace library\storage
 				}
 				$this->repository->documents[] = $documentFolderObject;
 			} else {
-				$documentContainer = $this->getDocumentContainerByPath($postValues['path']);
-				$documentContainerArray = $documentContainer['indices'];
-				$containerFolder = $documentContainer['previousDocument'] == null ? $documentContainer['containerFolder'] : $documentContainer['previousDocument'];
-				$folder = $this->repository->documents;
-				foreach ($documentContainerArray as $index) {
-					if ($folder === $this->repository->documents) {
-						$folder = $folder[$index];
-					} else {
-						$folder = $folder->content[$index];
-					}
-
-				}
 				// Check folder duplicate child
+				$containerFolder = $this->getDocumentFolderBySlug($postValues['path']);
 				if (isset($containerFolder->content)) {
 					foreach ($containerFolder->content as $document) {
 						if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
@@ -277,7 +274,7 @@ namespace library\storage
 						}
 					}
 				}
-				$folder->content[] = $documentFolderObject;
+				$containerFolder->content[] = $documentFolderObject;
 			}
 			$this->save();
 		}
@@ -568,7 +565,13 @@ namespace library\storage
 				if ($matched === true) {
 					$noMatches += 1;
 				} else {
-					throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);
+					//throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);
+					return array(
+							'containerFolder' => new \stdClass(),
+							'indices' => null,
+							'document' => new \stdClass(),
+							'previousDocument' => new \stdClass()
+					);
 				}
 				$i += 1;
 			}

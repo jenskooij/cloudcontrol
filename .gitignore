@@ -5,6 +5,8 @@ npm-debug.log
 
 
 # Project specific files
+cloudcontrol/.git
+frontend/.git
 cloudcontrol/components/*
 frontend/javascripts/site/*
 frontend/sass/site/*

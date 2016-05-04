@@ -103,10 +103,12 @@ namespace library\cc
 						$matchedClone = clone $sitemapItem;
 						$matchedClone->matches = $matches;
 						$this->matchedSitemapItems[] = $matchedClone;
+						return;
 					}
 				} else {
 					if ($sitemapItem->url == $relativeUri) {
 						$this->matchedSitemapItems[] = $sitemapItem;
+						return;
 					}
 				}
 			}
@@ -139,7 +141,7 @@ namespace library\cc
 				$template = $sitemapItem->template;
 				$parameters = $sitemapItem->parameters;
 				
-				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, new \stdClass());
+				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
 				
 				$this->matchedSitemapItems[$key]->object->run($this->storage);
 			}
