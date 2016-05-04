@@ -25,6 +25,10 @@ if (php_sapi_name() != "cli") {
 	ob_end_flush();
 }
 
+/**
+ * @param $ptime
+ * @return string|void
+ */
 function timeElapsedString($ptime)
 {
 	$etime = time() - $ptime;
@@ -58,6 +62,7 @@ function timeElapsedString($ptime)
 			return $r . ' ' . ($r > 1 ? $a_plural[$str] : $str) . ' ago';
 		}
 	}
+	return 0;
 }
 
 function humanFileSize($size,$unit="") {
@@ -125,6 +130,8 @@ function slugify($str, $replace=array(), $delimiter='-') {
 
 	return $clean;
 }
+
+/** @noinspection PhpDocSignatureInspection */
 
 /**
  * Dumps a var_dump of the passed arguments with <pre> tags surrounding it.

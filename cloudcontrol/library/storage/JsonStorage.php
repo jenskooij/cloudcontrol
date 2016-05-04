@@ -713,6 +713,7 @@ namespace library\storage
 					return $sitemapItem;
 				}
 			}
+			return null;
 		}
 
 		/*
@@ -782,6 +783,10 @@ namespace library\storage
 			$this->save();
 		}
 
+		/**
+		 * @param $filename
+		 * @return null
+         */
 		public function getImageByName($filename)
 		{
 			$images = $this->getImages();
@@ -790,6 +795,7 @@ namespace library\storage
 					return $image;
 				}
 			}
+			return null;
 		}
 
 		/*
@@ -867,6 +873,10 @@ namespace library\storage
 			return $filename;
 		}
 
+		/**
+		 * @param $filename
+		 * @return null
+         */
 		public function getFileByName($filename)
 		{
 			$files = $this->getFiles();
@@ -875,8 +885,13 @@ namespace library\storage
 					return $file;
 				}
 			}
+			return null;
 		}
 
+		/**
+		 * @param $filename
+		 * @throws \Exception
+         */
 		public function deleteFileByName($filename)
 		{
 			$destinationPath = realpath(__DIR__ . '/../../www/files/');
@@ -1016,6 +1031,7 @@ namespace library\storage
 					return $documentType;
 				}
 			}
+			return null;
 		}
 
 		/**
@@ -1116,6 +1132,7 @@ namespace library\storage
 					return $brick;
 				}
 			}
+			return null;
 		}
 
 		/**
@@ -1212,6 +1229,7 @@ namespace library\storage
 					return $set;
 				}
 			}
+			return null;
 		}
 
 		/**

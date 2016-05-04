@@ -47,11 +47,12 @@ namespace library\components
 			$this->parameters = (array) $parameters;
 			$this->matchedSitemapItem = $matchedSitemapItem;
 		}
-		
+
 		/**
 		 * Hook for implementation in derived classes
 		 *
 		 * @param Storage $storage
+		 * @return mixed|void
 		 */
 		public function run(Storage $storage)
 		{

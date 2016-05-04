@@ -111,10 +111,13 @@ namespace library\crypt
 		{
 			return $this->lastSalt;
 		}
-		
+
 		/**
 		 * Compare the input with a known hash and salt
 		 *
+		 * @param $input
+		 * @param $hash
+		 * @param $salt
 		 * @return bool
 		 */
 		public function compare($input, $hash, $salt)
