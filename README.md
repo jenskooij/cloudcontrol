@@ -35,6 +35,7 @@ any other tool of your choice).
 ## Contributing to this project
 If you feel like contributing to the Cloud Control Framework itself, feel free
 to do so, but please use the following work-flow:
+
 1. Create an issue
 2. Create a branch / fork
 3. Checkout this branch fork
