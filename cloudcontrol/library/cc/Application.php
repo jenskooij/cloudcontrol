@@ -123,7 +123,7 @@ namespace library\cc
 				$class = $applicationComponent->component;
 				$template = $applicationComponent->template;
 				$parameters = $applicationComponent->parameters;
-				$this->applicationComponents[$key]['object'] = $this->getComponentObject($class, $template, $parameters);
+				$this->applicationComponents[$key]['object'] = $this->getComponentObject($class, $template, $parameters, new \stdClass());
 			}
 		}
 

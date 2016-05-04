@@ -182,18 +182,21 @@ namespace library\storage
 			return $this->repository->documents;
 		}
 
+		/**
+		 * @param string $slug
+		 * @return mixed
+		 * @throws \Exception
+		 */
 		public function getDocumentBySlug($slug)
 		{
 			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
 			$indices = $documentContainer['indices'];
 
 			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
 					$folder = $folder[$index];
 				} else {
-					$previousFolder = $folder;
 					$folder = $folder->content[$index];
 				}
 			}
@@ -430,12 +433,10 @@ namespace library\storage
 			$indices = $documentContainer['indices'];
 
 			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
 					$folder = $folder[$index];
 				} else {
-					$previousFolder = $folder;
 					$folder = $folder->content[$index];
 				}
 			}
@@ -760,7 +761,6 @@ namespace library\storage
 		public function deleteImageByName($filename)
 		{
 			$destinationPath = realpath(__DIR__ . '/../../www/images/');
-			$destination = $destinationPath . '/' . $filename;
 
 			$images = $this->getImages();
 
@@ -1301,7 +1301,7 @@ namespace library\storage
 		/**
 		 * Get the image set with the smallest size
 		 *
-		 * @return \stdClass;
+		 * @return \stdClass
 		 */
 		public function getSmallestImageSet()
 		{

@@ -119,7 +119,6 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/documents.json') {
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getDocuments()));
-				exit;
 			} elseif ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path']) && in_array('documents', $userRights)) {
 				$template = 'cms/documents/folder-form';
 				$this->parameters['mainNavClass'] = 'documents';
@@ -225,7 +224,6 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/images.json') {
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getImages()));
-				exit;
 			} elseif ($relativeCmsUri == '/images/new' && in_array('images', $userRights)) {
 				$template = 'cms/images/form';
 				$this->parameters['mainNavClass'] = 'images';
@@ -249,7 +247,6 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/files.json') {
 				header('Content-type:application/json');
 				die(json_encode($this->storage->getFiles()));
-				exit;
 			} elseif ($relativeCmsUri == '/files/new' && in_array('files', $userRights)) {
 				$template = 'cms/files/form';
 				$this->parameters['mainNavClass'] = 'files';
