@@ -25,3 +25,8 @@ if (isset($summernoteInstances)) {
 		});
 	});
 </script>
+<?
+if (!isset($GLOBALS['rteList'])) {
+	$GLOBALS['rteList'] = array();
+}
+$GLOBALS['rteList'][] = 'summernote_' . str_replace(']', '-', str_replace('[','-', $fieldPrefix)) . $field->slug . '_rte_' . $summernoteInstances ?>

@@ -313,6 +313,8 @@ namespace library\storage
 		{
 			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);
 
+			$staticBricks = $documentType->bricks;
+
 			$documentObj = new \stdClass();
 			$documentObj->title = $postValues['title'];
 			$documentObj->slug = slugify($postValues['title']);
@@ -325,7 +327,38 @@ namespace library\storage
 			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
 
 			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
-			$documentObj->bricks = isset($postValues['bricks']) ? $postValues['bricks'] : array();
+			$documentObj->bricks = array();
+			if (isset($postValues['bricks'])) {
+				foreach ($postValues['bricks'] as $brickSlug => $brick) {
+					// Check if its multiple
+					$multiple = false;
+					foreach ($staticBricks as $staticBrick) {
+						if ($staticBrick->slug === $brickSlug) {
+							$multiple = $staticBrick->multiple;
+							break;
+						}
+					}
+
+					if ($multiple) {
+						$brickArray = array();
+						foreach ($brick as $brickInstance) {
+							$brickObj = new \stdClass();
+							$brickObj->fields = new \stdClass();
+							$brickObj->type = $staticBrick->brickSlug;
+
+							foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
+								$brickObj->fields->$fieldName = $fieldValues;
+							}
+
+							$brickArray[] = $brickObj;
+						}
+
+						$documentObj->bricks[$brickSlug] = $brickArray;
+					} else {
+						$documentObj->bricks[$brickSlug] = $brick;
+					}
+				}
+			}
 			$documentObj->dynamicBricks = array();
 			if (isset($postValues['dynamicBricks'])) {
 				foreach ($postValues['dynamicBricks'] as $brickTypeSlug => $brick) {
@@ -337,7 +370,6 @@ namespace library\storage
 					}
 				}
 			}
-
 			return $documentObj;
 		}
 
@@ -975,7 +1007,8 @@ namespace library\storage
 						$brickObject->title = $value;
 						$brickObject->slug = slugify($value);
 						$brickObject->brickSlug = $postValues['brickBricks'][$key];
-						
+						$brickObject->multiple = ($postValues['brickMultiples'][$key] === 'true');
+
 						$documentTypeObject->bricks[] = $brickObject;
 					}
 				}

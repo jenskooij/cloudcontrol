@@ -2,7 +2,11 @@
 	<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
 	<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 </div>
-<?$fieldPrefix = 'dynamicBricks[' . $brick->slug . '][' . time() . ']'?>
+<?if ($static == true) {
+	$fieldPrefix = 'bricks[' . $myBrickSlug . '][' . str_replace('.', '', str_replace(' ', '', microtime())) . '][fields]';
+} else {
+	$fieldPrefix = 'dynamicBricks[' . $brick->slug . '][' . str_replace('.', '', str_replace(' ', '', microtime())) . ']';
+}?>
 <? foreach ($brick->fields as $field) : ?>
 			<div class="form-element">
 				<label for="<?=$field->slug?>"><?=$field->title?></label>
