@@ -4,6 +4,7 @@
 See also the [install log](#installLog)
 - **node**: ~4.4.0,
 - **npm**: ~2.14.20
+- **ruby**: ~2.3.0
 - **grunt**: ~1.0.0
 - **grunt-contrib-compass**: ~1.1.1
 - **grunt-contrib-jshint**:  ~1.0.0

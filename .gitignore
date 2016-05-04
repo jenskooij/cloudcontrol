@@ -1,6 +1,7 @@
 # IDE and other tools
 *.iml
 *.idea/*
+npm-debug.log
 
 
 # Project specific files
