@@ -30,17 +30,17 @@
 		</div>
 		<div class="form-element">
 			<label for="template">Parameters</label>
-			<div id="dropZone">
+			<ul id="dropZone">
 			<? if (isset($sitemapItem)) : ?>
 				<? foreach ($sitemapItem->parameters as $key => $value) : ?>
-					<div class="form-element parameters">
+					<li class="form-element parameters">
 						<input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name" value="<?=$key?>" />
 						<input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value" value="<?=$value?>" />
 						<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
-					</div>
+					</li>
 				<? endforeach ?>
 			<? endif ?>
-			</div>
+			</ul>
 			<a class="btn add-parameter" id="sitemap_add_parameter">+</a>
 		</div>
 		<div class="form-element">
@@ -48,11 +48,11 @@
 		</div>
 	</form>
 </section>
-<div class="form-element parameters" id="parameterPlaceholder" style="display:none;">
+<li class="form-element parameters" id="parameterPlaceholder" style="display:none;">
 	<input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name" />
 	<input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value" />
 	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
-</div>
+</li>
 <script>
 window.onload = function () {
 	"use strict";

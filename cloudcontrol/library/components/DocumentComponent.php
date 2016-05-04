@@ -3,6 +3,13 @@ namespace library\components {
 
 	use library\storage\Storage;
 
+	/**
+	 * Class DocumentComponent
+	 *
+	 * Has optional parameter `folder` to prefix the relative url with a folder
+	 *
+	 * @package library\components
+	 */
 	class DocumentComponent extends BaseComponent
 	{
 		public function run(Storage $storage)

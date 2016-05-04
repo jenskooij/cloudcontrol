@@ -113,7 +113,7 @@ namespace library\images\methods
 		 */
 		public function SetWatermark(Image $image)
 		{
-			$this->_watermark = $image->GetImageResource();
+			$this->_watermark = $image;
 			return $this;
 		}
 
