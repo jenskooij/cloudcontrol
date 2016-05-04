@@ -165,7 +165,7 @@ namespace library\components
 				}
 				$result = new \stdClass();
 				$result->body = $this->renderTemplate('cms/documents/brick');
-				$result->rteList = $GLOBALS['rteList'];
+				$result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
 				ob_clean();
 				header('Content-type: application/json');
 				die(json_encode($result));
