@@ -153,7 +153,7 @@ namespace library\components
 				}
 				$this->parameters['document'] = $this->storage->getDocumentBySlug($request::$get['slug']);
 				$request::$get['path'] = $request::$get['slug'];
-				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->type, true);
+				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->documentTypeSlug, true);
 				$this->parameters['bricks'] = $this->storage->getBricks();
 			} elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get['slug']) && in_array('documents', $userRights)) {
 				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
