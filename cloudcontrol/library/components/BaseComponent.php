@@ -87,11 +87,13 @@ namespace library\components
 		 * @return string
 		 * @throws \Exception
 		 */
-		public function renderTemplate($template='')
+		public function renderTemplate($template='', $obClean = true)
 		{
 			$templatePath = __DIR__ . '/../../templates/' . $template . '.php';
 			if (realpath($templatePath) !== false) {
-				ob_clean();
+				if ($obClean) {
+					ob_clean();
+				}
 				$this->parameters['request'] = $this->request;
 				extract($this->parameters);
 				include($templatePath);
@@ -99,6 +101,26 @@ namespace library\components
 			} else {
 				throw new \Exception('Couldnt find template ' . $templatePath);
 			}
+		}
+
+		/**
+		 * Alias for renderTemplate for usage to include templates in other templates
+		 *
+		 * @param string $template
+		 *
+		 * @param array  $parameters
+		 *
+		 * @return string
+		 * @throws \Exception
+		 */
+		public function includeTemplate($template='', $parameters = array())
+		{
+			if (is_array($parameters)) {
+				foreach ($parameters as $name => $value) {
+					$this->parameters[$name] = $value;
+				}
+			}
+			return $this->renderTemplate($template, false);
 		}
 	}
 }
