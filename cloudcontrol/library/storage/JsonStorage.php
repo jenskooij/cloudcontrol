@@ -315,7 +315,7 @@ namespace library\storage
 			$documentObj = new \stdClass();
 			$documentObj->title = $postValues['title'];
 			$documentObj->slug = slugify($postValues['title']);
-			$documentObj->type = $postValues['documentType'];
+			$documentObj->type = 'document';
 			$documentObj->documentType = $documentType->title;
 			$documentObj->documentTypeSlug = $documentType->slug;
 			$documentObj->state = isset($postValues['state']) ? 'published' : 'unpublished';
