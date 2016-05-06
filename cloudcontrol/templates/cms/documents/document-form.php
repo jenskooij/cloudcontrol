@@ -138,15 +138,17 @@
 							<? foreach ($document->bricks as $brickArray) : ?>
 								<? foreach ($brickArray as $dynamicBrick) : ?>
 									<? foreach ($bricks as $brick) :
-										if ($brick->slug == $dynamicBrick->type) {
+										if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type) {
 											break;
 										}
 									endforeach ?>
+									<? if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type) : ?>
 									<li class="brick form-element">
 										<label><?=$brick->title?></label>
 										<?$static = true; ?>
 										<?include(__DIR__ . '/brick.php')?>
 									</li>
+									<? endif ?>
 								<? endforeach ?>
 							<? endforeach ?>
 						<? endif ?>
