@@ -21,8 +21,8 @@ namespace library\images\methods
 		
 		protected $_destWidth;
 		protected $_destHeight;
-		protected $_destX = 0;
-		protected $_destY = 0;
+		protected $_destX = 0.0;
+		protected $_destY = 0.0;
 		
 		protected $_backgroundColor = false;
 	
@@ -102,10 +102,6 @@ namespace library\images\methods
 		 */
 		public function Execute($imageResource)
 		{
-			// Define the origial width and height
-			$originalWidth = imagesx($imageResource);
-			$originalHeight = imagesy($imageResource);
-			
 			// Create the new image
 			$new = imagecreatetruecolor($this->_width, $this->_height);
 			

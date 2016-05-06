@@ -52,6 +52,10 @@
 				<? foreach ($documentType->bricks as $myBrick) : ?>
 				<li class="form-element bricks">
 					<input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" value="<?=$myBrick->title?>" />
+					<select name="brickMultiples[]">
+						<option<?=$myBrick->multiple ? '' : ' selected="selected"' ?> value="false">Not Multiple</option>
+						<option<?=$myBrick->multiple ? ' selected="selected"' : '' ?> value="true">Multiple</option>
+					</select>
 					<select name="brickBricks[]">
 						<? foreach ($bricks as $brick) : ?>
 						<option<?=$myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
@@ -107,6 +111,10 @@
 		<? foreach ($bricks as $brick) : ?>
 		<option value="<?=$brick->slug?>"><?=$brick->title?></option>
 		<? endforeach ?>
+	</select>
+	<select name="brickMultiples[]">
+		<option value="false">Not Multiple</option>
+		<option value="true">Multiple</option>
 	</select>
 	<a class="btn error"><i class="fa fa-times"></i></a>
 	<a class="btn move"><i class="fa fa-arrows-v"></i></a>

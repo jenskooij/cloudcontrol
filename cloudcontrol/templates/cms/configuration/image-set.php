@@ -9,26 +9,26 @@
 	</nav>
 	<? if (isset($imageSet)) : ?>
 		<ul class="configuration grid-wrapper">
-			<? foreach ($imageSet as $imageSet) : ?>
+			<? foreach ($imageSet as $currentSet) : ?>
 				<li class="grid-container">
 					<div class="grid-box-8">
 						<h3>
-							<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/edit?slug=<?=$imageSet->slug?>" title="Edit">
-								<i class="fa fa-file-image-o"></i> <?=$imageSet->title?>
+							<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/edit?slug=<?=$currentSet->slug?>" title="Edit">
+								<i class="fa fa-file-image-o"></i> <?=$currentSet->title?>
 							</a>
 							<small class="small">
 								<span class="label">Size:</span>
-								<?=$imageSet->width?>x<?=$imageSet->height?>
+								<?=$currentSet->width?>x<?=$currentSet->height?>
 							</small> -
 							<small class="small">
 								<span class="label">Method:</span>
-								<?=ucfirst($imageSet->method)?>
+								<?=ucfirst($currentSet->method)?>
 							</small>
 						</h3>
 					</div>
 					<div class="documentActions grid-box-4">
-						<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/edit?slug=<?=$imageSet->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-						<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/delete?slug=<?=$imageSet->slug?>" title="Delete"><i class="fa fa-times"></i></a>
+						<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/edit?slug=<?=$currentSet->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
+						<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/image-set/delete?slug=<?=$currentSet->slug?>" title="Delete"><i class="fa fa-times"></i></a>
 					</div>
 				</li>
 			<? endforeach ?>

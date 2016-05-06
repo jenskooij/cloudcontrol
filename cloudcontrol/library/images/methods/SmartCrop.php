@@ -10,8 +10,6 @@
  
 namespace library\images\methods
 {
-	use \library\images\methods\Crop;
-
 	class SmartCrop extends Crop
 	{
 		/**

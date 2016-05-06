@@ -1,9 +1,15 @@
-# cloud-control-frontend v0.0.3
+[![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
+[![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
+
+# cloud-control-frontend v0.0.4
 ## Cloud Control Frontend
 ### Dependencies
 See also the [install log](#installLog)
 - **node**: ~4.4.0,
 - **npm**: ~2.14.20
+- **ruby**: ~2.3.0
+- **compass**: ~1.0.3
+- **sass-globbing**: ~1.1.5
 - **grunt**: ~1.0.0
 - **grunt-contrib-compass**: ~1.1.1
 - **grunt-contrib-jshint**:  ~1.0.0

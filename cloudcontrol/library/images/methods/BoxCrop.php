@@ -10,10 +10,12 @@
  
 namespace library\images\methods
 {
-	use \library\images\methods\Crop;
-
 	class BoxCrop extends Crop
-	{	
+	{
+		/**
+		 * @param resource $imageResource
+		 * @return resource
+         */
 		public function Execute($imageResource)
 		{
 			// Define the origial width and height

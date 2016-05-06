@@ -38,14 +38,16 @@ namespace library\images
 				throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer, true) . '</pre>');
 			}
 		}
-		
+
 		/**
 		 * Saves the image to a file
 		 *
-		 * @param string 	$path
-		 * @param int 		$mimeTypeConstantValue
-		 * @param int		$quality
-		 * @param null		$imageResource			If no resource is given, uses $this->_imageResource
+		 * @param string $path
+		 * @param int $mimeTypeConstantValue
+		 * @param int $quality
+		 * @param null $imageResource If no resource is given, uses $this->_imageResource
+		 * @return bool
+		 * @throws \Exception
 		 */
 		public function SaveImage($path, $mimeTypeConstantValue, $quality = 100, $imageResource = null)
 		{
@@ -63,16 +65,16 @@ namespace library\images
 			else {
 				throw new \Exception('Not a valid mimetypeconstant given see function documentation');
 			}
-			return false;
 		}
-		
+
 		/**
 		 * Returns either the Mime-Type Constant value
 		 * or the default extension for the detected mime-type;
 		 *
 		 * @see http://www.php.net/manual/en/function.image-type-to-mime-type.php
-		 * @param string 	$imagePath
-		 * @param bool 		$getExtension
+		 * @param string $imagePath
+		 * @param bool $getExtension
+		 * @return bool|int|string
 		 */
 		public function GetImageMimeType($imagePath, $getExtension = false)
 		{
@@ -190,11 +192,11 @@ namespace library\images
 			//    Return image-object 
 			return $image;
 		}
-		
+
 		/**
 		 * Returns the image resource
-		 *
 		 * @return resource
+		 * @throws \Exception
 		 */
 		final public function GetImageResource()
 		{

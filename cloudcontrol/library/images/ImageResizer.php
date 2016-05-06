@@ -51,6 +51,13 @@ namespace library\images
 			}
 		}
 
+		/**
+		 * @param string $imagePath
+		 * @param string $width
+		 * @param string $height
+		 * @return string
+		 * @throws \Exception
+		 */
 		public function resize($imagePath='', $width='',$height='')
 		{
 			$modifier = '-r' . $width . 'x' . $height;
@@ -71,6 +78,13 @@ namespace library\images
 			}
 		}
 
+		/**
+		 * @param string $imagePath
+		 * @param string $width
+		 * @param string $height
+		 * @return string
+		 * @throws \Exception
+		 */
 		public function smartcrop($imagePath='', $width='',$height='')
 		{
 			$modifier = '-s' . $width . 'x' . $height;
@@ -91,6 +105,13 @@ namespace library\images
 			}
 		}
 
+		/**
+		 * @param string $imagePath
+		 * @param string $width
+		 * @param string $height
+		 * @return string
+		 * @throws \Exception
+		 */
 		public function boxcrop($imagePath='', $width='',$height='')
 		{
 			$modifier = '-b' . $width . 'x' . $height;
@@ -147,11 +168,5 @@ namespace library\images
 			}
 			return $path . '/' . $filename;
 		}
-
-		private function validateFilename($filename, $path)
-		{
-
-		}
-
 	}
 }

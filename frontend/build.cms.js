@@ -7841,17 +7841,30 @@ function processRtes() {
     return true;
 }
 
-function addDynamicBrick(e) {
+function addDynamicBrick(e, isStatic, dropzoneId) {
     "use strict";
-    var slug = e.parentNode.getElementsByTagName('select')[0].value,
+    var slug,
         divs,
         i,
-        id;
-    httpGetAsync(cmsSubfolders + '/documents/get-brick?slug=' + slug, function (result) {
+        id,
+        myBrickSlug,
+        url;
+    if (isStatic === 'true') {
+        slug = e.parentNode.getElementsByTagName('input')[0].value;
+        myBrickSlug = e.parentNode.getElementsByTagName('input')[1].value;
+        url = cmsSubfolders + '/documents/get-brick?slug=' + slug + "&static=" + isStatic + "&myBrickSlug=" + myBrickSlug;
+    } else {
+        slug = e.parentNode.getElementsByTagName('select')[0].value;
+        url = cmsSubfolders + '/documents/get-brick?slug=' + slug + "&static=" + isStatic;
+    }
+
+
+    httpGetAsync(url, function (result) {
+        var resultObject = JSON.parse(result);
         var li = document.createElement('li');
         li.className = 'brick form-element';
-        li.innerHTML = result;
-        document.getElementById('dynamicBrickDropzone').appendChild(li);
+        li.innerHTML = resultObject.body;
+        document.getElementById(dropzoneId).appendChild(li);
 
         $( ".sortable" ).sortable({
             placeholder: "ui-state-highlight",
@@ -7867,6 +7880,23 @@ function addDynamicBrick(e) {
         });
         applyDeleteButtons();
         applyAddButtons();
+
+        for (i = 0; i < resultObject.rteList.length; i += 1) {
+            id = resultObject.rteList[i];
+            console.log($('#' + id));
+            $('#' + id).summernote({
+                height: 300,
+                toolbar: [
+                    //[groupname, [button list]]
+
+                    ['style', ['bold', 'italic', 'underline', 'clear', 'style']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['para', ['ul', 'ol']],
+                    ['insert', ['table', 'link', 'picture']],
+                    ['misc', ['codeview']],
+                ]
+            });
+        }
 
         divs = li.getElementsByTagName('div');
         for (i = 0; i < divs.length; i += 1) {

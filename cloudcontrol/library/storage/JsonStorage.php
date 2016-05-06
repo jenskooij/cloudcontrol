@@ -40,7 +40,6 @@ namespace library\storage
 			} else {
 				// Here is some logic for the initialisation of a new clone of the framework
 				initFramework($storagePath);
-				throw new \Exception('Couldnt find storagePath ' . $storagePath);
 			}
 		}
 
@@ -183,18 +182,29 @@ namespace library\storage
 			return $this->repository->documents;
 		}
 
+		/**
+		 * @param string $slug
+		 * @return mixed
+		 * @throws \Exception
+		 */
 		public function getDocumentBySlug($slug)
 		{
 			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
 			$indices = $documentContainer['indices'];
 
+			if ($indices === null) {
+				$emptyReturn = new \stdClass();
+				$emptyReturn->title = 'Not found';
+				$emptyReturn->type = null;
+				$emptyReturn->state = 'published';
+				return $emptyReturn;
+			}
+
 			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
 					$folder = $folder[$index];
 				} else {
-					$previousFolder = $folder;
 					$folder = $folder->content[$index];
 				}
 			}
@@ -254,19 +264,8 @@ namespace library\storage
 				}
 				$this->repository->documents[] = $documentFolderObject;
 			} else {
-				$documentContainer = $this->getDocumentContainerByPath($postValues['path']);
-				$documentContainerArray = $documentContainer['indices'];
-				$containerFolder = $documentContainer['previousDocument'] == null ? $documentContainer['containerFolder'] : $documentContainer['previousDocument'];
-				$folder = $this->repository->documents;
-				foreach ($documentContainerArray as $index) {
-					if ($folder === $this->repository->documents) {
-						$folder = $folder[$index];
-					} else {
-						$folder = $folder->content[$index];
-					}
-
-				}
 				// Check folder duplicate child
+				$containerFolder = $this->getDocumentFolderBySlug($postValues['path']);
 				if (isset($containerFolder->content)) {
 					foreach ($containerFolder->content as $document) {
 						if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
@@ -275,7 +274,7 @@ namespace library\storage
 						}
 					}
 				}
-				$folder->content[] = $documentFolderObject;
+				$containerFolder->content[] = $documentFolderObject;
 			}
 			$this->save();
 		}
@@ -311,6 +310,8 @@ namespace library\storage
 		{
 			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);
 
+			$staticBricks = $documentType->bricks;
+
 			$documentObj = new \stdClass();
 			$documentObj->title = $postValues['title'];
 			$documentObj->slug = slugify($postValues['title']);
@@ -323,7 +324,38 @@ namespace library\storage
 			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
 
 			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
-			$documentObj->bricks = isset($postValues['bricks']) ? $postValues['bricks'] : array();
+			$documentObj->bricks = array();
+			if (isset($postValues['bricks'])) {
+				foreach ($postValues['bricks'] as $brickSlug => $brick) {
+					// Check if its multiple
+					$multiple = false;
+					foreach ($staticBricks as $staticBrick) {
+						if ($staticBrick->slug === $brickSlug) {
+							$multiple = $staticBrick->multiple;
+							break;
+						}
+					}
+
+					if ($multiple) {
+						$brickArray = array();
+						foreach ($brick as $brickInstance) {
+							$brickObj = new \stdClass();
+							$brickObj->fields = new \stdClass();
+							$brickObj->type = $staticBrick->brickSlug;
+
+							foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
+								$brickObj->fields->$fieldName = $fieldValues;
+							}
+
+							$brickArray[] = $brickObj;
+						}
+
+						$documentObj->bricks[$brickSlug] = $brickArray;
+					} else {
+						$documentObj->bricks[$brickSlug] = $brick;
+					}
+				}
+			}
 			$documentObj->dynamicBricks = array();
 			if (isset($postValues['dynamicBricks'])) {
 				foreach ($postValues['dynamicBricks'] as $brickTypeSlug => $brick) {
@@ -335,7 +367,6 @@ namespace library\storage
 					}
 				}
 			}
-
 			return $documentObj;
 		}
 
@@ -431,12 +462,10 @@ namespace library\storage
 			$indices = $documentContainer['indices'];
 
 			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
 					$folder = $folder[$index];
 				} else {
-					$previousFolder = $folder;
 					$folder = $folder->content[$index];
 				}
 			}
@@ -536,7 +565,13 @@ namespace library\storage
 				if ($matched === true) {
 					$noMatches += 1;
 				} else {
-					throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);
+					//throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);
+					return array(
+							'containerFolder' => new \stdClass(),
+							'indices' => null,
+							'document' => new \stdClass(),
+							'previousDocument' => new \stdClass()
+					);
 				}
 				$i += 1;
 			}
@@ -713,6 +748,7 @@ namespace library\storage
 					return $sitemapItem;
 				}
 			}
+			return null;
 		}
 
 		/*
@@ -761,7 +797,6 @@ namespace library\storage
 		public function deleteImageByName($filename)
 		{
 			$destinationPath = realpath(__DIR__ . '/../../www/images/');
-			$destination = $destinationPath . '/' . $filename;
 
 			$images = $this->getImages();
 
@@ -783,6 +818,10 @@ namespace library\storage
 			$this->save();
 		}
 
+		/**
+		 * @param $filename
+		 * @return null
+         */
 		public function getImageByName($filename)
 		{
 			$images = $this->getImages();
@@ -791,6 +830,7 @@ namespace library\storage
 					return $image;
 				}
 			}
+			return null;
 		}
 
 		/*
@@ -868,6 +908,10 @@ namespace library\storage
 			return $filename;
 		}
 
+		/**
+		 * @param $filename
+		 * @return null
+         */
 		public function getFileByName($filename)
 		{
 			$files = $this->getFiles();
@@ -876,8 +920,13 @@ namespace library\storage
 					return $file;
 				}
 			}
+			return null;
 		}
 
+		/**
+		 * @param $filename
+		 * @throws \Exception
+         */
 		public function deleteFileByName($filename)
 		{
 			$destinationPath = realpath(__DIR__ . '/../../www/files/');
@@ -961,7 +1010,8 @@ namespace library\storage
 						$brickObject->title = $value;
 						$brickObject->slug = slugify($value);
 						$brickObject->brickSlug = $postValues['brickBricks'][$key];
-						
+						$brickObject->multiple = ($postValues['brickMultiples'][$key] === 'true');
+
 						$documentTypeObject->bricks[] = $brickObject;
 					}
 				}
@@ -1017,6 +1067,7 @@ namespace library\storage
 					return $documentType;
 				}
 			}
+			return null;
 		}
 
 		/**
@@ -1117,6 +1168,7 @@ namespace library\storage
 					return $brick;
 				}
 			}
+			return null;
 		}
 
 		/**
@@ -1213,6 +1265,7 @@ namespace library\storage
 					return $set;
 				}
 			}
+			return null;
 		}
 
 		/**
@@ -1302,7 +1355,7 @@ namespace library\storage
 		/**
 		 * Get the image set with the smallest size
 		 *
-		 * @return \stdClass;
+		 * @return \stdClass
 		 */
 		public function getSmallestImageSet()
 		{
