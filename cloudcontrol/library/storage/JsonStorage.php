@@ -1228,6 +1228,7 @@ namespace library\storage
 		private function save() {
 			$storagePath = __DIR__ . $this->storagePath;
 			if (realpath($storagePath) !== false) {
+				copy($storagePath, $storagePath . '.bak');
 				file_put_contents($storagePath, json_encode($this->repository));
 			} else {
 				throw new \Exception('Couldnt find storagePath ' . $storagePath);
