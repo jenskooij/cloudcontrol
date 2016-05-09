@@ -192,6 +192,8 @@ namespace library\cc
 		private function renderSitemapComponents()
 		{
 			foreach ($this->matchedSitemapItems as $sitemapItem) {
+				header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
+				header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
 				$sitemapItem->object->render();
 				ob_clean();
 				echo $sitemapItem->object->get();
