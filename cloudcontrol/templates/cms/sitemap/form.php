@@ -1,5 +1,5 @@
 <section class="sitemap">
-	<h2>Sitemap</h2>
+	<h2><i class="fa fa-map-signs"></i> Sitemap</h2>
 	<nav class="actions">
 		<ul>
 			<li>
