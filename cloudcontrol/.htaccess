@@ -4,3 +4,12 @@ RewriteEngine On
 # Rewrite all requests to the www folder
 RewriteCond %{REQUEST_URI} !^/www/.*$
 RewriteRule ^(.*)$ www/$1 [L]
+
+<IfModule mod_expires.c>
+    ExpiresActive on
+
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+</IfModule>
