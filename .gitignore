@@ -12,6 +12,7 @@ frontend/javascripts/site/*
 frontend/sass/site/*
 cloudcontrol/www/css/*
 cloudcontrol/www/js/*
+cloudcontrol/www/robots.txt
 cloudcontrol/templates/*
 !cloudcontrol/templates/cms.php
 !cloudcontrol/templates/cms/*
