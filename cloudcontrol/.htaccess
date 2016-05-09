@@ -9,6 +9,7 @@ RewriteRule .* ? [F,L]
 RewriteCond %{REQUEST_URI} !^/www/.*$
 RewriteRule ^(.*)$ www/$1 [L]
 
+# Allow caching if available
 <IfModule mod_expires.c>
     ExpiresActive on
 
@@ -16,4 +17,14 @@ RewriteRule ^(.*)$ www/$1 [L]
     ExpiresByType image/jpeg "access plus 1 month"
     ExpiresByType image/gif "access plus 1 month"
     ExpiresByType image/png "access plus 1 month"
+
+    ExpiresByType text/html "access plus 2 days"
+
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+# Set XSS Protection header
+Header set X-XSS-Protection "1; mode=block"
 </IfModule>
