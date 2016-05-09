@@ -16,7 +16,7 @@
 	max-width:1280px;
 	margin:0 auto;
 	
-	> .grid-container{
+	.grid-container{
 		@extend %clearfix;
 		margin:-1em;
 		padding:0;
