@@ -4,6 +4,12 @@
 	padding: 0.5em; 
 }
 
+.grid-inner {
+	display:block;
+	width:100%;
+	padding:1em;
+}
+
 .grid-wrapper{
 	overflow:hidden;
 	width:100%;
@@ -111,10 +117,6 @@
 			}
 		}
 		
-		.grid-inner {
-			display:block;
-			width:100%;
-			padding:1em;
-		}
+
 	}
 }

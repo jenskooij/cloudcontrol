@@ -135,14 +135,14 @@
 					<?$myBrickSlug=$brick->slug;?>
 					<ul id="newBrickDropzone" class="dynamicBricks sortable">
 						<? if (isset($document)) : ?>
-							<? foreach ($document->bricks as $brickArray) : ?>
+							<? foreach ($document->bricks as $currentBrickSlug => $brickArray) : ?>
 								<? foreach ($brickArray as $dynamicBrick) : ?>
 									<? foreach ($bricks as $brick) :
-										if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type) {
+										if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type && $currentBrickSlug === $myBrickSlug) {
 											break;
 										}
 									endforeach ?>
-									<? if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type) : ?>
+									<? if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type && $currentBrickSlug === $myBrickSlug) : ?>
 									<li class="brick form-element">
 										<label><?=$brick->title?></label>
 										<?$static = true; ?>
