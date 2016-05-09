@@ -126,6 +126,7 @@
 				<?$value='';?>
 			<? endforeach ?>
 			<hr />
+			<? $static_brick_nr = 0;?>
 			<? foreach ($documentType->bricks as $brick) : ?>
 			<div class="brick">
 				<label><?=$brick->title?></label>
@@ -133,7 +134,7 @@
 					<input type="hidden" value="<?=$brick->brickSlug?>"/>
 					<input type="hidden" value="<?=$brick->slug?>"/>
 					<?$myBrickSlug=$brick->slug;?>
-					<ul id="newBrickDropzone" class="dynamicBricks sortable">
+					<ul id="newBrickDropzone_<?=$static_brick_nr?>" class="dynamicBricks sortable">
 						<? if (isset($document)) : ?>
 							<? foreach ($document->bricks as $currentBrickSlug => $brickArray) : ?>
 								<? foreach ($brickArray as $dynamicBrick) : ?>
@@ -153,7 +154,8 @@
 							<? endforeach ?>
 						<? endif ?>
 					</ul>
-					<a class="btn" onclick="addDynamicBrick(this, 'true', 'newBrickDropzone');">+</a>
+					<a class="btn" onclick="addDynamicBrick(this, 'true', 'newBrickDropzone_<?=$static_brick_nr?>');">+</a>
+					<?$static_brick_nr += 1?>
 				<? else : ?>
 					<?$fieldPrefix='bricks[' . $brick->slug . '][fields]';?>
 					<input type="hidden" name="bricks[<?=$brick->slug?>][type]" value="<?=$brick->brickSlug?>" />
