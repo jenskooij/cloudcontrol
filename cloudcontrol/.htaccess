@@ -1,6 +1,10 @@
 Options +FollowSymLinks
 RewriteEngine On
 
+# Disallow libwww-perl access
+RewriteCond %{HTTP_USER_AGENT} libwww-perl.*
+RewriteRule .* ? [F,L]
+
 # Rewrite all requests to the www folder
 RewriteCond %{REQUEST_URI} !^/www/.*$
 RewriteRule ^(.*)$ www/$1 [L]
