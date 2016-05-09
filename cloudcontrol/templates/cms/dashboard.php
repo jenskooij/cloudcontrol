@@ -1,6 +1,12 @@
 <section class="dashboard ">
 	<nav class="tiles grid-wrapper">
 		<ul class="grid-container">
+			<li class="tile grid-box-3">
+				<a class="btn return" href="<?=\library\cc\Request::$subfolders?>">
+					<i class="fa fa-reply"></i>
+					Return to site
+				</a>
+			</li>
 			<? if (in_array('documents', $userRights)) : ?>
 			<li class="tile grid-box-3">
 				<a class="btn documents" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents">
