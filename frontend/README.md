@@ -1,7 +1,7 @@
 [![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
 [![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
 
-# cloud-control-frontend v0.0.4
+# cloud-control-frontend v0.0.5
 ## Cloud Control Frontend
 ### Dependencies
 See also the [install log](#installLog)
