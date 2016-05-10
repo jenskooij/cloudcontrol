@@ -118,7 +118,7 @@ class LanguageComponent implements Component
     /*
      * These functions are required by the interface, but not for the functionality
      */
-    function run(Storage $storage) {}
-    function render() {}
-    function get() {}
+    public function run(Storage $storage) {}
+    public function render() {}
+    public function get() {}
 }

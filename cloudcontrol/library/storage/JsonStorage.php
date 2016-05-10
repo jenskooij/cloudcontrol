@@ -323,6 +323,7 @@ namespace library\storage
 				foreach ($postValues['bricks'] as $brickSlug => $brick) {
 					// Check if its multiple
 					$multiple = false;
+					$staticBrick = null;
 					foreach ($staticBricks as $staticBrick) {
 						if ($staticBrick->slug === $brickSlug) {
 							$multiple = $staticBrick->multiple;
@@ -559,7 +560,6 @@ namespace library\storage
 				if ($matched === true) {
 					$noMatches += 1;
 				} else {
-					//throw new \Exception('Unknown folder "' . $slug . '" in path: ' . $path);
 					return array(
 							'containerFolder' => new \stdClass(),
 							'indices' => null,

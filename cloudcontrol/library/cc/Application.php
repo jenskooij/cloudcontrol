@@ -151,7 +151,7 @@ namespace library\cc
 		 * @param string $class
 		 * @param string $template
 		 * @param array  $parameters
-		 * @param \stdClass  $matchedSitemapItem
+		 * @param \stdClass|null  $matchedSitemapItem
 		 *
 		 * @return mixed
 		 * @throws \Exception
