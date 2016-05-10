@@ -2,6 +2,7 @@
 namespace library\components
 {
 
+	use library\cc\Application;
 	use library\cc\Request;
 	use library\storage\Storage;
 
@@ -62,11 +63,13 @@ namespace library\components
 		/**
 		 * Renders the template
 		 *
+		 * @param null|Application $application
+		 *
 		 * @throws \Exception
 		 */
-		public function render()
+		public function render($application=null)
 		{
-			$this->renderedContent = $this->renderTemplate($this->template);
+			$this->renderedContent = $this->renderTemplate($this->template, true, $application);
 		}
 
 		/**
@@ -84,10 +87,13 @@ namespace library\components
 		 *
 		 * @param string $template
 		 *
+		 * @param bool   $obClean
+		 * @param null|Application   $application
+		 *
 		 * @return string
 		 * @throws \Exception
 		 */
-		public function renderTemplate($template='', $obClean = true)
+		public function renderTemplate($template='', $obClean = true, $application=null)
 		{
 			$templatePath = __DIR__ . '/../../templates/' . $template . '.php';
 			if (realpath($templatePath) !== false) {
@@ -95,6 +101,12 @@ namespace library\components
 					ob_clean();
 				}
 				$this->parameters['request'] = $this->request;
+				if ($application !== null) {
+					$acParameters = $application->getAllApplicationComponentParameters();
+					foreach ($acParameters as $parameters) {
+						extract($parameters);
+					}
+				}
 				extract($this->parameters);
 				include($templatePath);
 				return ob_get_contents();
@@ -123,6 +135,11 @@ namespace library\components
 				}
 			}
 			return $this->renderTemplate($template, false);
+		}
+
+		public function getParameters()
+		{
+			return $this->parameters;
 		}
 	}
 }

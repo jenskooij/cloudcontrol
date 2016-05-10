@@ -124,7 +124,8 @@ namespace library\cc
 			foreach ($this->applicationComponents as $key => $applicationComponent) {
 				$class = $applicationComponent->component;
 				$parameters = $applicationComponent->parameters;
-				$this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, new \stdClass());
+				$this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, null);
+				$this->applicationComponents[$key]->{'object'}->run($this->storage);
 			}
 		}
 
@@ -191,14 +192,40 @@ namespace library\cc
 		private function renderSitemapComponents()
 		{
 			foreach ($this->matchedSitemapItems as $sitemapItem) {
-				header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
-				header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
-				$sitemapItem->object->render();
+				$this->setCachingHeaders();
+				$sitemapItem->object->render($this);
 				ob_clean();
 				echo $sitemapItem->object->get();
 				ob_end_flush();
 				exit;
 			}
+		}
+
+		public function getAllApplicationComponentParameters()
+		{
+			$allParameters = array();
+			foreach ($this->applicationComponents as $applicationComponent) {
+				$parameters = $applicationComponent->{'object'}->getParameters();
+				$allParameters[] = $parameters;
+			}
+			return $allParameters;
+		}
+
+		public function unlockApplicationComponentParameters()
+		{
+			foreach ($this->applicationComponents as $applicationComponent) {
+				$parameters = $applicationComponent->{'object'}->getParameters();
+				extract($parameters);
+			}
+		}
+
+		/**
+		 * Set the default caching of pages to 2 days
+		 */
+		public function setCachingHeaders()
+		{
+			header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
+			header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
 		}
 
 		/**
@@ -221,5 +248,6 @@ namespace library\cc
 		{
 			$this->applicationComponents = $this->storage->getApplicationComponents();
 		}
+
 	}
 }

@@ -25,34 +25,42 @@ namespace library\components {
 				$this->documentParameterName = $this->parameters['documentParameterName'];
 			}
 
-			if ($this->matchedSitemapItem->regex == false) {
+			if ($this->matchedSitemapItem === null) { // If no sitemapitem, its an application component
 				if (isset($this->parameters['document'])) {
 					$this->parameters[$this->documentParameterName] = $storage->getDocumentBySlug($this->parameters['document']);
 				} else {
-					throw new \Exception('When not using a regex, you need to set the parameter `document` with the path to the document in this sitemap item: ' . $this->matchedSitemapItem->title);
+					throw new \Exception('When used as application component, you need to specify a document.');
 				}
 			} else {
-				if (isset($this->parameters['document'])) {
-					$this->parameters[$this->documentParameterName] = $storage->getDocumentBySlug($this->parameters['document']);
+				if ($this->matchedSitemapItem->regex == false) {
+					if (isset($this->parameters['document'])) {
+						$this->parameters[$this->documentParameterName] = $storage->getDocumentBySlug($this->parameters['document']);
+					} else {
+						throw new \Exception('When not using a regex, you need to set the parameter `document` with the path to the document in this sitemap item: ' . $this->matchedSitemapItem->title);
+					}
 				} else {
-					$relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
-					if (isset($this->parameters['folder'])) {
-						if (substr($this->parameters['folder'], -1) !== '/') {
-							$this->parameters['folder'] = $this->parameters['folder'] . '/';
+					if (isset($this->parameters['document'])) {
+						$this->parameters[$this->documentParameterName] = $storage->getDocumentBySlug($this->parameters['document']);
+					} else {
+						$relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
+						if (isset($this->parameters['folder'])) {
+							if (substr($this->parameters['folder'], -1) !== '/') {
+								$this->parameters['folder'] = $this->parameters['folder'] . '/';
+							}
+							$relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
 						}
-						$relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
-					}
 
-					$document = $storage->getDocumentBySlug($relativeDocumentUri);
+						$document = $storage->getDocumentBySlug($relativeDocumentUri);
 
-					if ($document->type == 'folder') {
-						throw new \Exception('The found document is a folder.');
-					}
+						if ($document->type == 'folder') {
+							throw new \Exception('The found document is a folder.');
+						}
 
-					if ($document->state != 'published') {
-						throw new \Exception('Found document is unpublished.');
+						if ($document->state != 'published') {
+							throw new \Exception('Found document is unpublished.');
+						}
+						$this->parameters[$this->documentParameterName] = $document;
 					}
-					$this->parameters[$this->documentParameterName] = $document;
 				}
 			}
 		}
