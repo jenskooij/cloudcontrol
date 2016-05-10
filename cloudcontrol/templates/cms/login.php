@@ -30,6 +30,7 @@
 				<div class="form-element">
 					<i id="loadingSpinner" class="fa fa-spinner fa-spin fa-fw margin-bottom"></i>
 					<input id="submitButton" class="btn" onclick="" type="submit" value="Login" />
+					<a href="<?=$request::$subfolders?>" class="btn" title="Return to site"><i class="fa fa-reply"></i></a>
 				</div>
 			</form>
 		</section>
