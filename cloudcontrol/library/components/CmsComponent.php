@@ -17,7 +17,7 @@ namespace library\components
 		protected $invalidCredentialsMsg = 'Invalid username / password combination';
 
 		/**
-		 * @var null
+		 * @var null|string
          */
 		protected $subTemplate = null;
 
@@ -108,6 +108,8 @@ namespace library\components
 			if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
 				$this->subTemplate = 'cms/dashboard';
 			}
+
+			$this->logOffRouting($this->request, $relativeCmsUri);
 
 			$this->apiRouting($relativeCmsUri);
 
@@ -628,6 +630,16 @@ namespace library\components
 			} elseif ($relativeCmsUri == '/configuration/application-components/delete' && isset($request::$get['slug'])) {
 				$this->storage->deleteApplicationComponentBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
+				exit;
+			}
+		}
+
+		private function logOffRouting($request, $relativeCmsUri)
+		{
+			if ($relativeCmsUri == '/log-off') {
+				$_SESSION['cloudcontrol'] = null;
+				unset($_SESSION['cloudcontrol']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix']);
 				exit;
 			}
 		}
