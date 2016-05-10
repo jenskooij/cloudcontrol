@@ -53,7 +53,7 @@ namespace library\images\methods
 			// Create the new image
 			$new = imagecreatetruecolor($this->_width, $this->_height);
 			
-			if ($this->_backgroundColor !== false) {
+			if ($this->_backgroundColor !== null) {
 				$fill = imagecolorallocate($new, $this->_backgroundColor[0], $this->_backgroundColor[1], $this->_backgroundColor[2]);
 				imagefill($new, 0, 0, $fill);
 			}
