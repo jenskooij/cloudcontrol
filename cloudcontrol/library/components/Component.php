@@ -37,5 +37,10 @@ namespace library\components
 		 * @return mixed
 		 */
 		function get();
+
+		/**
+		 * @return \stdClass
+		 */
+		function getParameters();
 	}
 }
