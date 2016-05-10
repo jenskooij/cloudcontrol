@@ -8,6 +8,10 @@ namespace library\storage
 	interface Storage
 	{
 		function getApplicationComponents();
+		function addApplicationComponent($postValues);
+		function getApplicationComponentBySlug($slug);
+		function saveApplicationComponent($slug, $postValues);
+		function deleteApplicationComponentBySlug($slug);
 		
 		function getUserByUsername($username);
 		function getUserBySlug($slug);

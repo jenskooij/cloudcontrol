@@ -123,9 +123,8 @@ namespace library\cc
 		{
 			foreach ($this->applicationComponents as $key => $applicationComponent) {
 				$class = $applicationComponent->component;
-				$template = $applicationComponent->template;
 				$parameters = $applicationComponent->parameters;
-				$this->applicationComponents[$key]['object'] = $this->getComponentObject($class, $template, $parameters, new \stdClass());
+				$this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, new \stdClass());
 			}
 		}
 
@@ -182,7 +181,7 @@ namespace library\cc
 		private function renderApplicationComponents()
 		{
 			foreach ($this->applicationComponents as $applicationComponent) {
-				$applicationComponent['object']->render();
+				$applicationComponent->{'object'}->render();
 			}
 		}
 

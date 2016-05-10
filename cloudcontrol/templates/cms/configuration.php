@@ -26,6 +26,12 @@
 					Image Set
 				</a>
 			</li>
+			<li class="tile grid-box-3">
+				<a class="btn configuration" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/application-components">
+					<i class="fa fa-puzzle-piece"></i>
+					Application Components
+				</a>
+			</li>
 		</ul>
 	</nav>
 </section>

@@ -43,13 +43,7 @@ namespace library\storage
 			}
 		}
 
-		/**
-		 * @return array
-		 */
-		public function getApplicationComponents()
-		{
-			return $this->repository->applicationComponents;
-		}
+
 
 		/**
 		 * Get user by username
@@ -1379,6 +1373,79 @@ namespace library\storage
 			}
 
 			return $returnSet;
+		}
+
+		/**
+		 * @return array
+		 */
+		public function getApplicationComponents()
+		{
+			return $this->repository->applicationComponents;
+		}
+
+		public function addApplicationComponent($postValues)
+		{
+			$applicationComponent = $this->createApplicationComponentFromPostValues($postValues);
+
+			$this->repository->applicationComponents[] = $applicationComponent;
+			$this->save();
+		}
+
+		private function createApplicationComponentFromPostValues($postValues)
+		{
+			if (isset($postValues['title'], $postValues['component'])) {
+				$applicationComponent = new \stdClass();
+				$applicationComponent->title = $postValues['title'];
+				$applicationComponent->slug = slugify($postValues['title']);
+				$applicationComponent->component = $postValues['component'];
+				$applicationComponent->parameters = new \stdClass();
+				if (isset($postValues['parameterNames'], $postValues['parameterValues'])) {
+					foreach ($postValues['parameterNames'] as $key => $value) {
+						$applicationComponent->parameters->$value = $postValues['parameterValues'][$key];
+					}
+				}
+				return $applicationComponent;
+			} else {
+				throw new \Exception('Trying to create application component with invalid data.');
+			}
+		}
+
+		public function getApplicationComponentBySlug($slug)
+		{
+			$applicationComponents = $this->getApplicationComponents();
+			foreach ($applicationComponents as $applicationComponent) {
+				if ($applicationComponent->slug == $slug) {
+					return $applicationComponent;
+				}
+			}
+			return null;
+		}
+
+		public function saveApplicationComponent($slug, $postValues)
+		{
+			$newApplicationComponent = $this->createApplicationComponentFromPostValues($postValues);
+
+			$applicationComponents = $this->getApplicationComponents();
+			foreach ($applicationComponents as $key => $applicationComponent) {
+				if ($applicationComponent->slug == $slug) {
+					$applicationComponents[$key] = $newApplicationComponent;
+				}
+			}
+			$this->repository->applicationComponents = $applicationComponents;
+			$this->save();
+		}
+
+		public function deleteApplicationComponentBySlug($slug)
+		{
+			$applicationComponents = $this->getApplicationComponents();
+			foreach ($applicationComponents as $key => $applicationComponent) {
+				if ($applicationComponent->slug == $slug) {
+					unset($applicationComponents[$key]);
+				}
+			}
+			$applicationComponents = array_values($applicationComponents);
+			$this->repository->applicationComponents = $applicationComponents;
+			$this->save();
 		}
 	}
 }

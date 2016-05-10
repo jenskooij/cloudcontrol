@@ -397,6 +397,32 @@ namespace library\components
 				$this->storage->deleteImageSetBySlug($request::$get['slug']);
 				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
 				exit;
+			} elseif ($relativeCmsUri == '/configuration/application-components' && in_array('configuration', $userRights)) {
+				$template = 'cms/configuration/application-components';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$this->parameters['applicationComponents'] = $this->storage->getApplicationComponents();
+			} elseif ($relativeCmsUri == '/configuration/application-components/new' && in_array('configuration', $userRights)) {
+				$template = 'cms/configuration/application-components-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				if (isset($request::$post['title'])) {
+					$this->storage->addApplicationComponent($request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
+					exit;
+				}
+			} elseif ($relativeCmsUri == '/configuration/application-components/edit' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
+				$template = 'cms/configuration/application-components-form';
+				$this->parameters['mainNavClass'] = 'configuration';
+				$applicationComponent = $this->storage->getApplicationComponentBySlug($request::$get['slug']);
+				if (isset($request::$post['title'])) {
+					$this->storage->saveApplicationComponent($request::$get['slug'], $request::$post);
+					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
+					exit;
+				}
+				$this->parameters['applicationComponent'] = $applicationComponent;
+			} elseif ($relativeCmsUri == '/configuration/application-components/delete' && isset($request::$get['slug']) && in_array('configuration', $userRights)) {
+				$this->storage->deleteApplicationComponentBySlug($request::$get['slug']);
+				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
+				exit;
 			} elseif ($relativeCmsUri == '/log-off') {
 				$_SESSION['cloudcontrol'] = null;
 				unset($_SESSION['cloudcontrol']);

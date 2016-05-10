@@ -99,7 +99,9 @@ namespace library\components
 				include($templatePath);
 				return ob_get_contents();
 			} else {
-				throw new \Exception('Couldnt find template ' . $templatePath);
+				if ($template !== null) { // If template is null, its a application component, which doesnt have a template
+					throw new \Exception('Couldnt find template ' . $templatePath);
+				}
 			}
 		}
 
