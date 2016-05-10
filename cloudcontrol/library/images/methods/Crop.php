@@ -23,7 +23,10 @@ namespace library\images\methods
 		protected $_destHeight;
 		protected $_destX = 0.0;
 		protected $_destY = 0.0;
-		
+
+		/**
+		 * @var bool|array<int,int,int>
+		 */
 		protected $_backgroundColor = false;
 	
 		public function init()
