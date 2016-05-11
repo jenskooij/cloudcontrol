@@ -2,10 +2,6 @@
 namespace library\images
 {
 
-	use library\images\methods\BoxCrop;
-	use library\images\methods\Resize;
-	use library\images\methods\SmartCrop;
-
 	/**
 	 * Class ImageResizer
 	 * @package library\images
@@ -61,21 +57,7 @@ namespace library\images
 		public function resize($imagePath='', $width='',$height='')
 		{
 			$modifier = '-r' . $width . 'x' . $height;
-			$destination = $this->modifyName($imagePath, $modifier);
-			if (file_exists($imagePath)) {
-				$image = new Image();
-				$image->LoadImage($imagePath);
-				$resize = new Resize();
-				$resize->SetWidth($width);
-				$resize->SetHeight($height);
-				$resizedImageResource = $resize->Execute($image->GetImageResource());
-				$resizedImage = new Image();
-				$resizedImage->LoadImage($resizedImageResource);
-				$resizedImage->SaveImage($destination, $resizedImage->GetImageMimeType($imagePath), 80);
-				return basename($destination);
-			} else {
-				throw new \Exception('Image doesnt exist: ' . $imagePath);
-			}
+			return $this->applyMethod('Resize', $imagePath, $width,$height, $modifier);
 		}
 
 		/**
@@ -88,21 +70,7 @@ namespace library\images
 		public function smartcrop($imagePath='', $width='',$height='')
 		{
 			$modifier = '-s' . $width . 'x' . $height;
-			$destination = $this->modifyName($imagePath, $modifier);
-			if (file_exists($imagePath)) {
-				$image = new Image();
-				$image->LoadImage($imagePath);
-				$resize = new SmartCrop();
-				$resize->SetWidth($width);
-				$resize->SetHeight($height);
-				$resizedImageResource = $resize->Execute($image->GetImageResource());
-				$resizedImage = new Image();
-				$resizedImage->LoadImage($resizedImageResource);
-				$resizedImage->SaveImage($destination, $resizedImage->GetImageMimeType($imagePath), 80);
-				return basename($destination);
-			} else {
-				throw new \Exception('Image doesnt exist: ' . $imagePath);
-			}
+			return $this->applyMethod('SmartCrop', $imagePath, $width,$height, $modifier);
 		}
 
 		/**
@@ -115,21 +83,7 @@ namespace library\images
 		public function boxcrop($imagePath='', $width='',$height='')
 		{
 			$modifier = '-b' . $width . 'x' . $height;
-			$destination = $this->modifyName($imagePath, $modifier);
-			if (file_exists($imagePath)) {
-				$image = new Image();
-				$image->LoadImage($imagePath);
-				$resize = new BoxCrop();
-				$resize->SetWidth($width);
-				$resize->SetHeight($height);
-				$resizedImageResource = $resize->Execute($image->GetImageResource());
-				$resizedImage = new Image();
-				$resizedImage->LoadImage($resizedImageResource);
-				$resizedImage->SaveImage($destination, $resizedImage->GetImageMimeType($imagePath), 80);
-				return basename($destination);
-			} else {
-				throw new \Exception('Image doesnt exist: ' . $imagePath);
-			}
+			return $this->applyMethod('BoxCrop', $imagePath, $width,$height, $modifier);
 		}
 
 		/**
@@ -167,6 +121,26 @@ namespace library\images
 				return $this->modifyName($path . '/' . $filename);
 			}
 			return $path . '/' . $filename;
+		}
+
+		private function applyMethod($method, $imagePath, $width, $height, $modifier)
+		{
+			$method = 'library\\images\\methods\\' . $method;
+			$destination = $this->modifyName($imagePath, $modifier);
+			if (file_exists($imagePath)) {
+				$image = new Image();
+				$image->LoadImage($imagePath);
+				$resize = new $method();
+				$resize->SetWidth($width);
+				$resize->SetHeight($height);
+				$resizedImageResource = $resize->Execute($image->GetImageResource());
+				$resizedImage = new Image();
+				$resizedImage->LoadImage($resizedImageResource);
+				$resizedImage->SaveImage($destination, $resizedImage->GetImageMimeType($imagePath), 80);
+				return basename($destination);
+			} else {
+				throw new \Exception('Image doesnt exist: ' . $imagePath);
+			}
 		}
 	}
 }

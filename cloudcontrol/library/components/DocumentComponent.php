@@ -54,6 +54,7 @@ namespace library\components {
 		{
 			if (isset($this->parameters['document'])) {
 				$this->parameters[$this->documentParameterName] = $this->storage->getDocumentBySlug($this->parameters['document']);
+				unset($this->parameters['document']);
 			} else {
 				throw new \Exception('When used as application component, you need to specify a document.');
 			}

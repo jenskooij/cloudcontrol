@@ -137,7 +137,7 @@ function slugify($str, $replace=array(), $delimiter='-') {
  * Dumps a var_dump of the passed arguments with <pre> tags surrounding it.
  * Dies afterwards
  *
- * @param mixed $data    The data to be displayed
+ * @param mixed ...    The data to be displayed
  */
 function dump()
 {

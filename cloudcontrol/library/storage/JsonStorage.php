@@ -457,6 +457,9 @@ namespace library\storage
 			$indices = $documentContainer['indices'];
 
 			$folder = $this->repository->documents;
+			if ($indices === null) {
+				throw new \Exception('Can\'t find folder with slug `' . $slug . '`');
+			}
 			foreach ($indices as $index) {
 				if ($folder === $this->repository->documents) {
 					$folder = $folder[$index];
