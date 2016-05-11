@@ -1,28 +1,52 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Jens
- * Date: 11-5-2016
- * Time: 10:02
- */
-
 namespace library\components;
 
 
-use library\cc\Request;
+use library\cc\Application;
 use library\storage\Storage;
 
 class FormComponent Extends BaseComponent
 {
+    /**
+     * @var null|string
+     */
     protected $documentType = null;
+    /**
+     * @var null|string
+     */
     protected $responseFolder = null;
+    /**
+     * @var string
+     */
     protected $subTemplate = 'cms/documents/document-form-form';
+    /**
+     * @var string
+     */
     protected $formParameterName = 'form';
+    /**
+     * @var string
+     */
     protected $thankYouMessage = 'Thank you for sending us your response.';
 
+    /**
+     * @var string
+     */
     private $formId;
+    /**
+     * @var null|string
+     */
     private $getPathBackup = null;
 
+    /**
+     * @var null|\stdClass
+     */
+    private $userSessionBackup = null;
+
+    /**
+     * @param Storage $storage
+     * @return void
+     * @throws \Exception
+     */
     public function run(Storage $storage)
     {
         parent::run($storage);
@@ -38,6 +62,10 @@ class FormComponent Extends BaseComponent
         $this->checkSubmit($storage);
     }
 
+    /**
+     * @param null|Application $application
+     * @throws \Exception
+     */
     public function render($application = null)
     {
         $request = $this->request;
@@ -51,8 +79,8 @@ class FormComponent Extends BaseComponent
         } else {
             unset($request::$get['path']);
         }
-        if (!empty($request::$post) && isset($request::$post['formId']) && $request::$post['formId'] === $this->formId && isset($_SESSION['FormComponent'][$this->formParameterName]) && $_SESSION['FormComponent'][$this->formParameterName] === $this->formId) {
-            $this->parameters[$this->formParameterName] = $this->thankYouMessage;
+        if ($this->isFormSubmitted($this->request)) {
+            $this->parameters[$this->formParameterName] = '<a name="' . $this->formId . '"></a>' . $this->thankYouMessage;
         } else {
             $this->parameters[$this->formParameterName] = $form;
         }
@@ -60,6 +88,10 @@ class FormComponent Extends BaseComponent
         parent::render($application);
     }
 
+    /**
+     * Checks if parameters were given in the CMS configuration and
+     * sets them to their respective fields
+     */
     private function checkParameters()
     {
         if (isset($this->parameters['documentType'])) {
@@ -88,6 +120,10 @@ class FormComponent Extends BaseComponent
         }
     }
 
+    /**
+     * Sets variables needed for rendering the form template
+     * @param $storage
+     */
     private function initialize($storage)
     {
         $this->parameters['smallestImage'] = $storage->getSmallestImageSet()->slug;
@@ -99,33 +135,37 @@ class FormComponent Extends BaseComponent
         $this->parameters['formId'] = $this->formId;
     }
 
+    /**
+     * If the form has been submitted, save the document
+     * Calls $this->postSubmit() afterwards
+     *
+     * @param Storage $storage
+     */
     private function checkSubmit($storage)
     {
-        $request = $this->request;
-        if (!empty($request::$post) && isset($request::$post['formId']) && $request::$post['formId'] === $this->formId && isset($_SESSION['FormComponent'][$this->formParameterName]) && $_SESSION['FormComponent'][$this->formParameterName] === $this->formId) {
-            $postValues = $request::$post;
-            $postValues['documentType'] = $this->documentType;
-            $postValues['path'] = $this->responseFolder;
-            $postValues['title'] = date('r') . ' - From: ' . $request::$requestUri;
-
-            $backup = null;
-            if (isset($_SESSION['cloudcontrol'])) {
-                $backup = $_SESSION['cloudcontrol'];
-            }
-            $fakeUser = new \stdClass();
-            $fakeUser->username = 'FormComponent';
-            $_SESSION['cloudcontrol'] = $fakeUser;
-
+        if ($this->isFormSubmitted($this->request)) {
+            $postValues = $this->getPostValues($this->request);
+            $this->setUserSessionBackup();
             $storage->addDocument($postValues);
-
-            if ($backup === null) {
-                unset($_SESSION['cloudcontrol']);
-            } else {
-                $_SESSION['cloudcontrol'] = $backup;
-            }
+            $this->restoreUserSessionBackup();
+            $this->postSubmit($postValues, $storage)
         }
     }
 
+    /**
+     * Hook for derived classes to take actions after
+     * submitting the form
+     *
+     * @param $postValues
+     * @param $storage
+     */
+    protected function postSubmit($postValues, $storage)
+    {}
+
+    /**
+     * Sets a unique id for this particular form, so it can recognize
+     * it when a submit occurs
+     */
     private function setFormId()
     {
         if (isset($_SESSION['FormComponent'][$this->formParameterName])) {
@@ -133,6 +173,55 @@ class FormComponent Extends BaseComponent
         } else {
             $_SESSION['FormComponent'][$this->formParameterName] = (string) microtime(true);
             $this->formId = $_SESSION['FormComponent'][$this->formParameterName];
+        }
+    }
+
+    /**
+     * Checks if this form has been submitted
+     *
+     * @param $request
+     * @return bool
+     */
+    private function isFormSubmitted($request)
+    {
+        return !empty($request::$post) && isset($request::$post['formId']) && $request::$post['formId'] === $this->formId && isset($_SESSION['FormComponent'][$this->formParameterName]) && $_SESSION['FormComponent'][$this->formParameterName] === $this->formId;
+    }
+
+    /**
+     *
+     *
+     * @param $request
+     */
+    private function getPostValues($request)
+    {
+        $postValues = $request::$post;
+        $postValues['documentType'] = $this->documentType;
+        $postValues['path'] = $this->responseFolder;
+        $postValues['title'] = date('r') . ' - From: ' . $request::$requestUri;
+    }
+
+    /**
+     * Temporarily stores the current user session in a backup variable
+     * and sets a fake user instead
+     */
+    private function setUserSessionBackup()
+    {
+        $this->userSessionBackup = isset($_SESSION['cloudcontrol']) ? $_SESSION['cloudcontrol'] : null;
+        $fakeUser = new \stdClass();
+        $fakeUser->username = 'FormComponent';
+        $_SESSION['cloudcontrol'] = $fakeUser;
+    }
+
+    /**
+     * Removes the fake user and restores the existing user
+     * session if it was there
+     */
+    private function restoreUserSessionBackup()
+    {
+        if ($this->userSessionBackup === null) {
+            unset($_SESSION['cloudcontrol']);
+        } else {
+            $_SESSION['cloudcontrol'] = $this->userSessionBackup;
         }
     }
 }
