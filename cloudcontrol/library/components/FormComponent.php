@@ -29,6 +29,11 @@ class FormComponent Extends BaseComponent
     protected $thankYouMessage = 'Thank you for sending us your response.';
 
     /**
+     * @var bool
+     */
+    protected $submitOncePerSession = false;
+
+    /**
      * @var string
      */
     private $formId;
@@ -79,7 +84,7 @@ class FormComponent Extends BaseComponent
         } else {
             unset($request::$get['path']);
         }
-        if ($this->isFormSubmitted($this->request)) {
+        if ($this->isFormSubmitted($this->request) || $this->isSubmitAllowed() === false) {
             $this->parameters[$this->formParameterName] = '<a name="' . $this->formId . '"></a>' . $this->thankYouMessage;
         } else {
             $this->parameters[$this->formParameterName] = $form;
@@ -118,6 +123,11 @@ class FormComponent Extends BaseComponent
             $this->thankYouMessage = $this->parameters['thankYouMessage'];
             unset($this->parameters['thankYouMessage']);
         }
+
+        if (isset($this->parameters['submitOncePerSession'])) {
+            $this->submitOncePerSession = $this->parameters['submitOncePerSession'] === 'true' ? true : false;
+            unset($this->parameters['submitOncePerSession']);
+        }
     }
 
     /**
@@ -143,12 +153,13 @@ class FormComponent Extends BaseComponent
      */
     private function checkSubmit($storage)
     {
-        if ($this->isFormSubmitted($this->request)) {
+        if ($this->isFormSubmitted($this->request) && $this->isSubmitAllowed()) {
             $postValues = $this->getPostValues($this->request);
             $this->setUserSessionBackup();
             $storage->addDocument($postValues);
             $this->restoreUserSessionBackup();
-            $this->postSubmit($postValues, $storage)
+            $this->setSubmitToSession();
+            $this->postSubmit($postValues, $storage);
         }
     }
 
@@ -168,11 +179,12 @@ class FormComponent Extends BaseComponent
      */
     private function setFormId()
     {
-        if (isset($_SESSION['FormComponent'][$this->formParameterName])) {
-            $this->formId = $_SESSION['FormComponent'][$this->formParameterName];
+        if (isset($_SESSION['FormComponent'][$this->formParameterName]['formId'])) {
+            $this->formId = $_SESSION['FormComponent'][$this->formParameterName]['formId'];
         } else {
-            $_SESSION['FormComponent'][$this->formParameterName] = (string) microtime(true);
-            $this->formId = $_SESSION['FormComponent'][$this->formParameterName];
+            $_SESSION['FormComponent'][$this->formParameterName]['formId'] = (string) microtime(true);
+            $_SESSION['FormComponent'][$this->formParameterName]['submitted'] = false;
+            $this->formId = $_SESSION['FormComponent'][$this->formParameterName]['formId'];
         }
     }
 
@@ -184,7 +196,7 @@ class FormComponent Extends BaseComponent
      */
     private function isFormSubmitted($request)
     {
-        return !empty($request::$post) && isset($request::$post['formId']) && $request::$post['formId'] === $this->formId && isset($_SESSION['FormComponent'][$this->formParameterName]) && $_SESSION['FormComponent'][$this->formParameterName] === $this->formId;
+        return !empty($request::$post) && isset($request::$post['formId']) && $request::$post['formId'] === $this->formId && isset($_SESSION['FormComponent'][$this->formParameterName]['formId']) && $_SESSION['FormComponent'][$this->formParameterName]['formId'] === $this->formId;
     }
 
     /**
@@ -198,6 +210,7 @@ class FormComponent Extends BaseComponent
         $postValues['documentType'] = $this->documentType;
         $postValues['path'] = $this->responseFolder;
         $postValues['title'] = date('r') . ' - From: ' . $request::$requestUri;
+        return $postValues;
     }
 
     /**
@@ -222,6 +235,20 @@ class FormComponent Extends BaseComponent
             unset($_SESSION['cloudcontrol']);
         } else {
             $_SESSION['cloudcontrol'] = $this->userSessionBackup;
+        }
+    }
+
+    private function setSubmitToSession()
+    {
+        $_SESSION['FormComponent'][$this->formParameterName]['submitted'] = true;
+    }
+
+    private function isSubmitAllowed()
+    {
+        if ($this->submitOncePerSession === true && $_SESSION['FormComponent'][$this->formParameterName]['submitted'] === true) {
+            return false;
+        } else {
+            return true;
         }
     }
 }
