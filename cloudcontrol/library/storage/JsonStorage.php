@@ -302,6 +302,7 @@ namespace library\storage
 
 		private function createDocumentFromPostValues($postValues)
 		{
+			$postValues = utf8Convert($postValues);
 			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);
 
 			$staticBricks = $documentType->bricks;
@@ -318,6 +319,7 @@ namespace library\storage
 			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
 
 			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
+
 			$documentObj->bricks = array();
 			if (isset($postValues['bricks'])) {
 				foreach ($postValues['bricks'] as $brickSlug => $brick) {
@@ -1225,8 +1227,9 @@ namespace library\storage
 		private function save() {
 			$storagePath = __DIR__ . $this->storagePath;
 			if (realpath($storagePath) !== false) {
+				$json = $this->getEncodedRepository();
 				copy($storagePath, $storagePath . '.bak');
-				file_put_contents($storagePath, json_encode($this->repository));
+				file_put_contents($storagePath, $json);
 			} else {
 				throw new \Exception('Couldnt find storagePath ' . $storagePath);
 			}
@@ -1449,6 +1452,45 @@ namespace library\storage
 			$applicationComponents = array_values($applicationComponents);
 			$this->repository->applicationComponents = $applicationComponents;
 			$this->save();
+		}
+
+		private function getEncodedRepository()
+		{
+			$json = json_encode($this->repository);
+			if ($json === false) {
+				$this->throwJsonException();
+			}
+			return $json;
+		}
+
+		private function throwJsonException()
+		{
+			$error = 'JSON Encoding failed';
+			switch (json_last_error()) {
+				case JSON_ERROR_NONE:
+					$error .= ' - No errors';
+					break;
+				case JSON_ERROR_DEPTH:
+					$error .= ' - Maximum stack depth exceeded';
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					$error .= ' - Underflow or the modes mismatch';
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					$error .= ' - Unexpected control character found';
+					break;
+				case JSON_ERROR_SYNTAX:
+					$error .= ' - Syntax error, malformed JSON';
+					break;
+				case JSON_ERROR_UTF8:
+					$error .= ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+					break;
+				default:
+					$error .= ' - Unknown error';
+					break;
+			}
+
+			throw new \Exception($error);
 		}
 	}
 }

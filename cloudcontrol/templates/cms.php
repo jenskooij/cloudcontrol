@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="<?=$request::$subfolders?>/css/cms.css"/>
 	<link rel="shortcut icon" type="image/png" href="<?=$request::$subfolders?>favicon.ico"/>
 	<meta name="viewport" content="initial-scale=1, maximum-scale=2">
+	<meta charset="UTF-8">
 </head>
 <body>
 	<header id="header" class="header">
