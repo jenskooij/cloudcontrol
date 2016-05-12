@@ -7,14 +7,14 @@
 			</li>
 		</ul>
 	</nav>
-	<form method="post" class="panel" id="documentTypesForm">
+	<form method="post" class="panel" id="documentTypesForm" autocomplete="off">
 		<div class="form-element">
 			<label for="username">Username</label>
-			<input required="required" id="username" type="text" name="username" placeholder="Username" value="<?=isset($user) ? $user->username : '' ?>" />
+			<input required="required" id="username" type="text" autocomplete="off" name="username" placeholder="Username" value="<?=isset($user) ? $user->username : '' ?>" />
 		</div>
 		<div class="form-element">
 			<label for="password">Password</label>
-			<input<?=isset($user) ? '' : ' required="required"' ?> id="password" type="password" name="password" placeholder="Password" />
+			<input<?=isset($user) ? '' : ' required="required"' ?> id="password" autocomplete="off" type="password" name="password" placeholder="Password" />
 			<input type="hidden" name="passHash" value="<?=isset($user) ? $user->password : '' ?>" />
 			<input type="hidden" name="salt" value="<?=isset($user) ? $user->salt : '' ?>" />
 		</div>
