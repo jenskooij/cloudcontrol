@@ -1,4 +1,4 @@
-[![Dependency Status](https://david-dm.org/jenskooij/cloud-control-frontend.svg)](https://david-dm.org/jenskooij/cloud-control-frontend)
+[![Dependency Status](https://david-dm.org/jenskooij/cloudcontrol.svg?path=frontend)](https://david-dm.org/jenskooij/cloudcontrol?path=frontend)
 [![npm version](https://badge.fury.io/js/cloud-control-frontend.svg)](https://badge.fury.io/js/cloud-control-frontend)
 
 # cloud-control-frontend v0.0.5
