@@ -70,7 +70,8 @@ namespace library\cc
 				$json = file_get_contents($configPath);
 				$this->config = json_decode($json);
 			} else {
-				throw new \Exception('Couldn\'t find config file in path ' . $configPath);
+				initFramework("/../../storage.json");
+				$this->config();
 			}
 		}
 

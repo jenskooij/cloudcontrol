@@ -65,6 +65,14 @@ function timeElapsedString($ptime)
 	return 0;
 }
 
+/**
+ * Converts an amount of bytes to a human readable
+ * format
+ *
+ * @param $size
+ * @param string $unit
+ * @return string
+ */
 function humanFileSize($size,$unit="") {
 	if( (!$unit && $size >= 1<<30) || $unit == "GB")
 		return number_format($size/(1<<30),2)."GB";
@@ -74,6 +82,13 @@ function humanFileSize($size,$unit="") {
 		return number_format($size/(1<<10),2)."KB";
 	return number_format($size)." bytes";
 }
+
+/**
+ * Selects the right font-awesome icon for each filetype
+ *
+ * @param $fileType
+ * @return string
+ */
 
 function iconByFileType($fileType) {
 	if (strpos($fileType, 'image') !== false) {
@@ -178,6 +193,14 @@ function initFramework($storagePath)
 	$storageDefaultPath = realpath('../_storage.json');
 	$baseTemplateDefaultPath = realpath('../library/cc/_base.php');
 	$baseTemplateTargetPath = '../templates/base.php';
+	$baseConfigDefaultPath = realpath('../library/cc/_config.json');
+	$baseConfigTargetPath = '../config.json';
+
+	// Create the initial base template
+	if (file_exists($baseConfigDefaultPath) && realpath($baseConfigTargetPath) === false) {
+		copy($baseConfigDefaultPath, $baseConfigTargetPath);
+	}
+
 	// Create the initial storage
 	if (file_exists($storageDefaultPath) && realpath($storagePath) === false) {
 		copy($storageDefaultPath, $storagePath);
@@ -188,6 +211,12 @@ function initFramework($storagePath)
 	}
 }
 
+/**
+ * Convert all values of an array to utf8
+ *
+ * @param $array
+ * @return array
+ */
 function utf8Convert($array)
 {
 	array_walk_recursive($array, function(&$item, $key){
