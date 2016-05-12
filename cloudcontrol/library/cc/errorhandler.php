@@ -85,30 +85,57 @@ function handleJsonError($file, $line)
  * @param string $httpHeader
  */
 function renderError ($message='', $file='', $line='', $code=0, $trace=array(), $httpHeader = 'HTTP/1.0 500 Internal Server Error') {
-	$file_lines = file_exists($file) ? file($file) : array();
-    $range = ($line - 15) < 0 ? range(1, 30) : range($line - 15, $line + 15);
-    $lines = array();
+    if (ob_get_contents()) ob_end_clean();
+    header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
+    header('X-Error-Message: ' . $message);
+    header('X-Error-File: ' . $file);
+    header('X-Error-Line: ' . $line);
+    if (canShowError()) {
+        $file_lines = file_exists($file) ? file($file) : array();
+        $range = ($line - 15) < 0 ? range(1, 30) : range($line - 15, $line + 15);
+        $lines = array();
 
-    foreach ($range as $line_number) {
-        if(isset($file_lines[$line_number-1])) {
-            $lines[$line_number] = $file_lines[$line_number-1];
+        foreach ($range as $line_number) {
+            if(isset($file_lines[$line_number-1])) {
+                $lines[$line_number] = $file_lines[$line_number-1];
+            }
+        }
+
+        $error = array(
+            'message' 		=> $message,
+            'file' 			=> $file,
+            'line' 			=> $line,
+            'code' 			=> $code,
+            'lines' 		=> $lines,
+            'trace' 		=> $trace,
+            'httpHeader' 	=> $httpHeader,
+        );
+        if (file_exists(realpath(__DIR__) . '/errorviewdetailed.php')) {
+            include(realpath(__DIR__) . '/errorviewdetailed.php');
+        } else {
+            header('Content-type: application/json');
+            die(json_encode($error));
+        }
+        exit;
+    } else {
+        if (file_exists(realpath(__DIR__) . '/errorviewcompact.php')) {
+            include(realpath(__DIR__) . '/errorviewcompact.php');
+        } else {
+            header('Content-type: application/json');
+            die(json_encode('An error occured.'));
         }
     }
-	if (ob_get_contents()) ob_end_clean();
-	$error = array(
-		'message' 		=> $message,
-		'file' 			=> $file,
-		'line' 			=> $line,
-		'code' 			=> $code,
-		'lines' 		=> $lines,
-		'trace' 		=> $trace,
-		'httpHeader' 	=> $httpHeader,
-	);
-	if (file_exists(realpath(__DIR__) . '/errorview.php')) {
-		include(realpath(__DIR__) . '/errorview.php');
-	} else {
-		header('Content-type: application/json');
-		die(json_encode($error));
-	}
-	exit;
+}
+
+function canShowError()
+{
+    if (file_exists('../config.json') && !isset($_SESSION['cloudcontrol'])) {
+        $config = file_get_contents('../config.json');
+        $config = json_decode($config);
+        if (isset($config->showErrorsToAll)) {
+            return $config->showErrorsToAll;
+        }
+    } else {
+        return true;
+    }
 }
