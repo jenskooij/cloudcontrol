@@ -51,7 +51,12 @@ namespace library\cc
 			self::$subfolders = str_replace('//', '/', self::$subfolders);
 			self::$requestUri = $_SERVER['REQUEST_URI'];
 			self::$queryString = $_SERVER['QUERY_STRING'];
-			self::$relativeUri = str_replace('?' . self::$queryString, '', str_replace(self::$subfolders, '', self::$requestUri));
+			if (self::$subfolders === '/') {
+				self::$relativeUri = str_replace('?' . self::$queryString, '', substr(self::$requestUri,1));
+			} else {
+				self::$relativeUri = str_replace('?' . self::$queryString, '', str_replace(self::$subfolders, '', self::$requestUri));
+			}
+
 			self::$requestParameters = explode('/', self::$relativeUri);
 			
 			self::$get = $_GET;

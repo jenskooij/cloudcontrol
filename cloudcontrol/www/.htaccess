@@ -1,6 +1,6 @@
 RewriteEngine on
 # Rewrites all urls to index.php except for these excepted file extensions
-RewriteRule !\.(js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3)$ index.php
+RewriteRule !\.(js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3|xml)$ index.php
 
 php_value session.use_trans_sid 0
 php_value session.use_only_cookies 1
