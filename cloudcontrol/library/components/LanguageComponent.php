@@ -36,6 +36,10 @@ class LanguageComponent implements Component
 
         if (!isset($_SESSION['LanguageComponent'][$this->languageParameterName])) {
             $this->detectLanguage($lang, $request);
+        } else {
+            if ($this->forceRedirect === true) {
+                $this->detectLanguage($_SESSION['LanguageComponent'][$this->languageParameterName], $request);
+            }
         }
 
         $this->parameters[$this->languageParameterName] = $_SESSION['LanguageComponent'][$this->languageParameterName];
@@ -95,9 +99,11 @@ class LanguageComponent implements Component
         $this->sessionValues = $_SESSION['LanguageComponent'];
 
         if ($this->forceRedirect === true) {
-            if (substr($request::$relativeUri, 0, 2) !== $lang && $lang !== $this->defaultLanguage) { // if default language detected, no redirect
-                header('Location: ' . $request::$subfolders . $lang . '/' . $request::$relativeUri);
-                exit;
+            if (substr($request::$relativeUri, 0, 2) !== $lang ) {
+                if ($lang !== $this->defaultLanguage) {
+                    header('Location: ' . $request::$subfolders . $lang . '/' . $request::$relativeUri);
+                    exit;
+                }
             }
         }
     }

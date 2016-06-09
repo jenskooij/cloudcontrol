@@ -86,10 +86,7 @@ function handleJsonError($file, $line)
  */
 function renderError ($message='', $file='', $line='', $code=0, $trace=array(), $httpHeader = 'HTTP/1.0 500 Internal Server Error') {
     if (ob_get_contents()) ob_end_clean();
-    header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
-    header('X-Error-Message: ' . $message);
-    header('X-Error-File: ' . $file);
-    header('X-Error-Line: ' . $line);
+
     if (canShowError()) {
         $file_lines = file_exists($file) ? file($file) : array();
         $range = ($line - 15) < 0 ? range(1, 30) : range($line - 15, $line + 15);
@@ -110,6 +107,11 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
             'trace' 		=> $trace,
             'httpHeader' 	=> $httpHeader,
         );
+
+        if (PHP_SAPI === 'cli') {
+            renderCliException($message, $file, $line, $code, $trace, $lines);
+        }
+
         if (file_exists(realpath(__DIR__) . '/errorviewdetailed.php')) {
             include(realpath(__DIR__) . '/errorviewdetailed.php');
         } else {
@@ -118,6 +120,10 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
         }
         exit;
     } else {
+        header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
+        header('X-Error-Message: ' . $message);
+        header('X-Error-File: ' . $file);
+        header('X-Error-Line: ' . $line);
         if (file_exists(realpath(__DIR__) . '/errorviewcompact.php')) {
             include(realpath(__DIR__) . '/errorviewcompact.php');
         } else {
@@ -129,6 +135,9 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
 
 function canShowError()
 {
+    if (PHP_SAPI === 'cli') {
+        return true;
+    }
     if (file_exists('../config.json') && !isset($_SESSION['cloudcontrol'])) {
         $config = file_get_contents('../config.json');
         $config = json_decode($config);
@@ -138,4 +147,40 @@ function canShowError()
     } else {
         return true;
     }
+}
+
+function renderCliException($message, $file, $line, $code, $trace, $lines)
+{
+    echo PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo '| THE FOLLOWING ERROR OCCURED                                                                                                                  |' . PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo PHP_EOL;
+    echo '  ' . $message . PHP_EOL;
+    echo PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo '| IN FILE                                                                                                                                      |' . PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo PHP_EOL;
+    echo '  ' . $file . ':' . $line . PHP_EOL;
+    echo PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo '| CONTENTS OF THE FILE                                                                                                                         |' . PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo PHP_EOL;
+    foreach($lines as $nr => $currentLine) {
+        echo ($nr == $line ? '* ' : '  ' ) . str_pad($nr, 3, "0", STR_PAD_LEFT) . ' ' . $currentLine;
+    }
+    echo PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    echo '| STACK TRACE                                                                                                                                  |' . PHP_EOL;
+    echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;
+    foreach($trace as $row) {
+        echo (isset($row['file']) ? basename($row['file']) : '') . ':'
+            . (isset($row['line']) ? $row['line'] : '') . "\t\t\t"
+            . (isset($row['class']) ? $row['class'] : ' ') . "\t\t\t"
+            . (isset($row['type']) ? $row['type'] : ' ') . "\t\t\t"
+            . (isset($row['function']) ? $row['function'] : ' ') . PHP_EOL;
+    }
+    exit;
 }
