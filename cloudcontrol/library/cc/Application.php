@@ -54,8 +54,6 @@ namespace library\cc
 
 			$this->renderApplicationComponents();
 			$this->renderSitemapComponents();
-
-			dump($this);
 		}
 
 		/**
