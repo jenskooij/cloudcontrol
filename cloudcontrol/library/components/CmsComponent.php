@@ -375,7 +375,11 @@ namespace library\components
 					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType'], true);
 					$this->parameters['bricks'] = $this->storage->getBricks();
 				} else {
-					$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
+					$documentTypes = $this->storage->getDocumentTypes();
+					if (count($documentTypes) < 1) {
+						throw new \Exception('No Document Types defined yet. <a href="' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types/new">Please do so first.</a>');
+					}
+					$this->parameters['documentTypes'] = $documentTypes;
 				}
 			} elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get['slug'])) {
 				$this->subTemplate = 'cms/documents/document-form';
