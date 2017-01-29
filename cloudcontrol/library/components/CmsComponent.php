@@ -1,651 +1,691 @@
 <?php
-namespace library\components
-{
+namespace library\components {
 
-	use library\crypt\Crypt;
-	use library\storage\Storage;
+    use library\crypt\Crypt;
+    use library\storage\Storage;
 
-	class CmsComponent extends BaseComponent
-	{
-		/**
-		 * @var \library\storage\Storage
-		 */
-		protected $storage;
-		/**
-		 * @var string
-		 */
-		protected $invalidCredentialsMsg = 'Invalid username / password combination';
-
-		/**
-		 * @var null|string
+    class CmsComponent extends BaseComponent
+    {
+        /*
+         * var \library\storage\Storage
          */
-		protected $subTemplate = null;
+        protected $storage;
 
-		/**
-		 * @param \library\storage\Storage $storage
-		 *
-		 * @return void
-		 */
-		public function run(Storage $storage)
-		{
-			$this->parameters['mainNavClass'] = 'default';
-			$this->storage = $storage;
+        const INVALID_CREDENTIALS_MESSAGE = 'Invalid username / password combination';
 
-			$remoteAddress = $_SERVER['REMOTE_ADDR'];
-			$this->checkWhiteList($remoteAddress);
-			$this->checkBlackList($remoteAddress);
+        const MAIN_NAV_CLASS = 'default';
 
-			$this->checkLogin();
+        const PARAMETER_BLACKLIST_IPS = 'blacklistIps';
+        const PARAMETER_BODY = 'body';
+        const PARAMETER_BRICK = 'brick';
+        const PARAMETER_BRICKS = 'bricks';
+        const PARAMETER_CMS_PREFIX = 'cmsPrefix';
+        const PARAMETER_DOCUMENT = 'document';
+        const PARAMETER_DOCUMENTS = 'documents';
+        const PARAMETER_DOCUMENT_TYPE = 'documentType';
+        const PARAMETER_DOCUMENT_TYPES = 'documentTypes';
+        const PARAMETER_ERROR_MESSAGE = 'errorMsg';
+        const PARAMETER_FILES = 'files';
+        const PARAMETER_IMAGE = 'image';
+        const PARAMETER_IMAGES = 'images';
+        const PARAMETER_IMAGE_SET = 'imageSet';
+        const PARAMETER_MAIN_NAV_CLASS = 'mainNavClass';
+        const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
+        const PARAMETER_SITEMAP = 'sitemap';
+        const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
+        const PARAMETER_SMALLEST_IMAGE = 'smallestImage';
+        const PARAMETER_STATIC = 'static';
+        const PARAMETER_USER = 'user';
+        const PARAMETER_USERS = 'users';
+        const PARAMETER_USER_RIGHTS = 'userRights';
+        const PARAMETER_WHITELIST_IPS = 'whitelistIps';
 
-			$this->parameters['userRights'] = $_SESSION['cloudcontrol']->rights;
+        const POST_PARAMETER_COMPONENT = 'component';
+        const POST_PARAMETER_PASSWORD = 'password';
+        const POST_PARAMETER_SAVE = 'save';
+        const POST_PARAMETER_TEMPLATE = 'template';
+        const POST_PARAMETER_TITLE = 'title';
+        const POST_PARAMETER_USERNAME = 'username';
 
-			$this->routing();
-		}
+        const GET_PARAMETER_PATH = 'path';
+        const GET_PARAMETER_SLUG = 'slug';
 
-		/**
-		 * See if a user is logged or wants to log in and
-		 * takes appropriate actions.
-		 *
-		 * @throws \Exception
-		 */
-		protected function checkLogin()
-		{
-			$request = $this->request;
-			
-			if (!isset($_SESSION['cloudcontrol'])) {
-				if (isset($request::$post['username'], $request::$post['password'])) {
-					$user = $this->storage->getUserByUsername($request::$post['username']);
-					$crypt = new Crypt();
-					if (empty($user)) {
-						$crypt->encrypt($request::$post['password'], 16); // Buy time, to avoid brute forcing
-						$this->parameters['errorMsg'] = $this->invalidCredentialsMsg;
-						$this->showLogin();
-					} else {
-						$salt = $user->salt;
-						$password = $user->password;
-						
-						$passwordCorrect = $crypt->compare($request::$post['password'], $password, $salt);
-						
-						if ($passwordCorrect) {
-							$_SESSION['cloudcontrol'] = $user;
-						} else {
-							$this->parameters['errorMsg'] = $this->invalidCredentialsMsg;
-							$this->showLogin();
-						}
-					}
-				} else {
-					$this->showLogin();
-				}
-			}
-		}
+        const FILES_PARAMETER_FILE = 'file';
 
-		/**
-		 * Overrides normal behaviour and only renders the
-		 * login screen
-		 *
-		 * @throws \Exception
-		 */
-		protected function showLogin()
-		{
-			$loginTemplatePath = 'cms/login';
-			$this->renderTemplate($loginTemplatePath);
-			ob_end_flush();
-			exit;
-		}
+        const SESSION_PARAMETER_CLOUD_CONTROL = 'cloudcontrol';
 
-		/**
-		 * As an exception, to keep the initial file structure simple
-		 * the cms implements it's own routing, apart from the regular sitemap functionality
-		 *
-		 * @throws \Exception
-		 */
-		protected function routing()
-		{
-			$relativeCmsUri = $this->getRelativeCmsUri($this->request);
+        const LOGIN_TEMPLATE_PATH = 'cms/login';
 
-			$userRights = $_SESSION['cloudcontrol']->rights;
+        const CONTENT_TYPE_APPLICATION_JSON = 'Content-type:application/json';
 
-			if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
-				$this->subTemplate = 'cms/dashboard';
-			}
+        protected $subTemplate = null;
 
-			$this->logOffRouting($this->request, $relativeCmsUri);
 
-			$this->apiRouting($relativeCmsUri);
-
-			if (in_array('documents', $userRights)) {
-				$this->documentsRouting($this->request, $relativeCmsUri);
-			}
-
-			if (in_array('sitemap', $userRights)) {
-				$this->sitemapRouting($this->request, $relativeCmsUri);
-			}
-
-			if (in_array('images', $userRights)) {
-				$this->imagesRouting($this->request, $relativeCmsUri);
-			}
-
-			if (in_array('files', $userRights)) {
-				$this->filesRouting($this->request, $relativeCmsUri);
-			}
-
-			if (in_array('configuration', $userRights)) {
-				$this->configurationRouting($this->request, $relativeCmsUri);
-			}
-
-			if ($this->subTemplate !== null) {
-				$this->parameters['body'] = $this->renderTemplate($this->subTemplate);
-			}			
-		}
-
-		/**
-		 * @param $remoteAddress
-		 * @throws \Exception
+        /**
+         * @param \library\storage\Storage $storage
+         *
+         * @return void
          */
-		private function checkWhiteList($remoteAddress)
-		{
-			if (isset($this->parameters['whitelistIps'])) {
-				$whitelistIps = explode(',', $this->parameters['whitelistIps']);
-				$whitelistIps = array_map("trim", $whitelistIps);
-				if (!in_array($remoteAddress, $whitelistIps)) {
-					throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
-				}
-			}
-		}
+        public function run(Storage $storage)
+        {
+            $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::MAIN_NAV_CLASS;
+            $this->storage = $storage;
 
-		/**
-		 * @param $remoteAddress
-		 * @throws \Exception
+            $remoteAddress = $_SERVER['REMOTE_ADDR'];
+            $this->checkWhiteList($remoteAddress);
+            $this->checkBlackList($remoteAddress);
+
+            $this->checkLogin();
+
+            $this->parameters[self::PARAMETER_USER_RIGHTS] = $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]->rights;
+
+            $this->routing();
+        }
+
+        /**
+         * See if a user is logged or wants to log in and
+         * takes appropriate actions.
+         *
+         * @throws \Exception
          */
-		private function checkBlackList($remoteAddress)
-		{
-			if (isset($this->parameters['blacklistIps'])) {
-				$blacklistIps = explode(',', $this->parameters['blacklistIps']);
-				$blacklistIps = array_map("trim", $blacklistIps);
-				if (in_array($remoteAddress, $blacklistIps)) {
-					throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
-				}
-			}
-		}
+        protected function checkLogin()
+        {
+            $request = $this->request;
 
-		/**
-		 * @param $request
-		 * @return mixed|string
+            if (!isset($_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL])) {
+                if (isset($request::$post[self::POST_PARAMETER_USERNAME], $request::$post[self::POST_PARAMETER_PASSWORD])) {
+                    $user = $this->storage->getUserByUsername($request::$post[self::POST_PARAMETER_USERNAME]);
+                    $crypt = new Crypt();
+                    if (empty($user)) {
+                        $crypt->encrypt($request::$post[self::POST_PARAMETER_PASSWORD], 16); // Buy time, to avoid brute forcing
+                        $this->parameters[self::PARAMETER_ERROR_MESSAGE] = self::INVALID_CREDENTIALS_MESSAGE;
+                        $this->showLogin();
+                    } else {
+                        $salt = $user->salt;
+                        $password = $user->password;
+
+                        $passwordCorrect = $crypt->compare($request::$post[self::POST_PARAMETER_PASSWORD], $password, $salt);
+
+                        if ($passwordCorrect) {
+                            $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = $user;
+                        } else {
+                            $this->parameters[self::PARAMETER_ERROR_MESSAGE] = self::INVALID_CREDENTIALS_MESSAGE;
+                            $this->showLogin();
+                        }
+                    }
+                } else {
+                    $this->showLogin();
+                }
+            }
+        }
+
+        /**
+         * Overrides normal behaviour and only renders the
+         * login screen
+         *
+         * @throws \Exception
          */
-		private function getRelativeCmsUri($request)
-		{
-			// TODO Use regex match parameter instead of calculating relative uri
-			$pos = strpos($request::$relativeUri, $this->parameters['cmsPrefix']);
-			$relativeCmsUri = '/';
-			if ($pos !== false) {
-				$relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters['cmsPrefix']));
-			}
-			return $relativeCmsUri;
-		}
+        protected function showLogin()
+        {
+            $loginTemplatePath = self::LOGIN_TEMPLATE_PATH;
+            $this->renderTemplate($loginTemplatePath);
+            ob_end_flush();
+            exit;
+        }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * As an exception, to keep the initial file structure simple
+         * the cms implements it's own routing, apart from the regular sitemap functionality
+         *
+         * @throws \Exception
          */
-		private function documentsRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/documents') {
-				$this->subTemplate = 'cms/documents';
-				$this->parameters['documents'] = $this->storage->getDocuments();
-				$this->parameters['mainNavClass'] = 'documents';
-			}
-			$this->documentRouting($request, $relativeCmsUri);
-			$this->folderRouting($request, $relativeCmsUri);
-		}
+        protected function routing()
+        {
+            $relativeCmsUri = $this->getRelativeCmsUri($this->request);
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+            $userRights = $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]->rights;
+
+            if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
+                $this->subTemplate = 'cms/dashboard';
+            }
+
+            $this->logOffRouting($this->request, $relativeCmsUri);
+
+            $this->apiRouting($relativeCmsUri);
+
+            if (in_array(self::PARAMETER_DOCUMENTS, $userRights)) {
+                $this->documentsRouting($this->request, $relativeCmsUri);
+            }
+
+            if (in_array(self::PARAMETER_SITEMAP, $userRights)) {
+                $this->sitemapRouting($this->request, $relativeCmsUri);
+            }
+
+            if (in_array(self::PARAMETER_IMAGES, $userRights)) {
+                $this->imagesRouting($this->request, $relativeCmsUri);
+            }
+
+            if (in_array(self::PARAMETER_FILES, $userRights)) {
+                $this->filesRouting($this->request, $relativeCmsUri);
+            }
+
+            if (in_array('configuration', $userRights)) {
+                $this->configurationRouting($this->request, $relativeCmsUri);
+            }
+
+            if ($this->subTemplate !== null) {
+                $this->parameters[self::PARAMETER_BODY] = $this->renderTemplate($this->subTemplate);
+            }
+        }
+
+        /**
+         * @param $remoteAddress
+         * @throws \Exception
          */
-		private function sitemapRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/sitemap') {
-				$this->subTemplate = 'cms/sitemap';
-				if (isset($request::$post['save'])) {
-					$this->storage->saveSitemap($request::$post);
-				}
-				$this->parameters['mainNavClass'] = 'sitemap';
-				$this->parameters['sitemap'] = $this->storage->getSitemap();
-			} elseif ($relativeCmsUri == '/sitemap/new') {
-				$this->subTemplate = 'cms/sitemap/form';
-				$this->parameters['mainNavClass'] = 'sitemap';
-				if (isset($request::$post['title'], $request::$post['template'], $request::$post['component'])) {
-					$this->storage->addSitemapItem($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/sitemap/form';
-				$this->parameters['mainNavClass'] = 'sitemap';
-				$sitemapItem = $this->storage->getSitemapItemBySlug($request::$get['slug']);
-				if (isset($request::$post['title'], $request::$post['template'], $request::$post['component'])) {
-					$this->storage->saveSitemapItem($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
-					exit;
-				}
-				$this->parameters['sitemapItem'] = $sitemapItem;
-			} elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteSitemapItemBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/sitemap');
-				exit;
-			}
-		}
+        private function checkWhiteList($remoteAddress)
+        {
+            if (isset($this->parameters[self::PARAMETER_WHITELIST_IPS])) {
+                $whitelistIps = explode(',', $this->parameters[self::PARAMETER_WHITELIST_IPS]);
+                $whitelistIps = array_map("trim", $whitelistIps);
+                if (!in_array($remoteAddress, $whitelistIps)) {
+                    throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
+                }
+            }
+        }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $remoteAddress
+         * @throws \Exception
          */
-		private function imagesRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/images') {
-				$this->subTemplate = 'cms/images';
-				$this->parameters['mainNavClass'] = 'images';
-				$this->parameters['images'] = $this->storage->getImages();
-				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
-			} elseif ($relativeCmsUri == '/images.json') {
-				header('Content-type:application/json');
-				die(json_encode($this->storage->getImages()));
-			} elseif ($relativeCmsUri == '/images/new') {
-				$this->subTemplate = 'cms/images/form';
-				$this->parameters['mainNavClass'] = 'images';
-				if (isset($_FILES['file'])) {
-					$this->storage->addImage($_FILES['file']);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/images/delete' && isset($request::$get['file'])) {
-				$this->storage->deleteImageByName($request::$get['file']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/images');
-				exit;
-			} elseif ($relativeCmsUri == '/images/show' && isset($request::$get['file'])) {
-				$this->subTemplate = 'cms/images/show';
-				$this->parameters['mainNavClass'] = 'images';
-				$this->parameters['image'] = $this->storage->getImageByName($request::$get['file']);
-			}
-		}
+        private function checkBlackList($remoteAddress)
+        {
+            if (isset($this->parameters[self::PARAMETER_BLACKLIST_IPS])) {
+                $blacklistIps = explode(',', $this->parameters[self::PARAMETER_BLACKLIST_IPS]);
+                $blacklistIps = array_map("trim", $blacklistIps);
+                if (in_array($remoteAddress, $blacklistIps)) {
+                    throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
+                }
+            }
+        }
 
-		/**
-		 * @param $relativeCmsUri
+        /**
+         * @param $request
+         * @return mixed|string
          */
-		private function apiRouting($relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/images.json') {
-				header('Content-type:application/json');
-				die(json_encode($this->storage->getImages()));
-			} elseif ($relativeCmsUri == '/files.json') {
-				header('Content-type:application/json');
-				die(json_encode($this->storage->getFiles()));
-			} elseif ($relativeCmsUri == '/documents.json') {
-				header('Content-type:application/json');
-				die(json_encode($this->storage->getDocuments()));
-			}
-		}
+        private function getRelativeCmsUri($request)
+        {
+            // TODO Use regex match parameter instead of calculating relative uri
+            $pos = strpos($request::$relativeUri, $this->parameters[self::PARAMETER_CMS_PREFIX]);
+            $relativeCmsUri = '/';
+            if ($pos !== false) {
+                $relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters[self::PARAMETER_CMS_PREFIX]));
+            }
+            return $relativeCmsUri;
+        }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function filesRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/files') {
-				$this->subTemplate = 'cms/files';
-				$this->parameters['mainNavClass'] = 'files';
-				$this->parameters['files'] = $this->storage->getFiles();
-			} elseif ($relativeCmsUri == '/files/new') {
-				$this->subTemplate = 'cms/files/form';
-				$this->parameters['mainNavClass'] = 'files';
-				if (isset($_FILES['file'])) {
-					$this->storage->addFile($_FILES['file']);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/files/get' && isset($request::$get['file'])) {
-				$this->downloadFile($request::$get['file']);
-			} elseif ($relativeCmsUri == '/files/delete' && isset($request::$get['file'])) {
-				$this->storage->deleteFileByName($request::$get['file']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/files');
-				exit;
-			}
-		}
+        private function documentsRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/documents') {
+                $this->subTemplate = 'cms/documents';
+                $this->parameters[self::PARAMETER_DOCUMENTS] = $this->storage->getDocuments();
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_DOCUMENTS;
+            }
+            $this->documentRouting($request, $relativeCmsUri);
+            $this->folderRouting($request, $relativeCmsUri);
+        }
 
-		/**
-		 * @param $slug
+        /**
+         * @param \library\cc\Request $request
+         * @param $relativeCmsUri
          */
-		private function downloadFile($slug)
-		{
-			$file = $this->storage->getFileByName($slug);
-			$path = realpath(__DIR__ . '/../../www/files/');
-			$quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
-			$size   = filesize($path . '/' . $file->file);
+        private function sitemapRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/sitemap') {
+                $this->subTemplate = 'cms/sitemap';
+                if (isset($request::$post[self::POST_PARAMETER_SAVE])) {
+                    $this->storage->saveSitemap($request::$post);
+                }
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
+                $this->parameters[self::PARAMETER_SITEMAP] = $this->storage->getSitemap();
+            } elseif ($relativeCmsUri == '/sitemap/new') {
+                $this->subTemplate = 'cms/sitemap/form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
+                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post[self::POST_PARAMETER_TEMPLATE], $request::$post[self::POST_PARAMETER_COMPONENT])) {
+                    $this->storage->addSitemapItem($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/sitemap/form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
+                $sitemapItem = $this->storage->getSitemapItemBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post[self::POST_PARAMETER_TEMPLATE], $request::$post[self::POST_PARAMETER_COMPONENT])) {
+                    $this->storage->saveSitemapItem($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_SITEMAP_ITEM] = $sitemapItem;
+            } elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteSitemapItemBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
+                exit;
+            }
+        }
 
-			header('Content-Description: File Transfer');
-			header('Content-Type: ' . $file->type);
-			header('Content-Disposition: attachment; filename=' . $quoted);
-			header('Content-Transfer-Encoding: binary');
-			header('Connection: Keep-Alive');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			header('Content-Length: ' . $size);
-
-			readfile($path . '/' . $file->file);
-			exit;
-		}
-
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function configurationRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration') {
-				$this->subTemplate = 'cms/configuration';
-				$this->parameters['mainNavClass'] = 'configuration';
-			}
+        private function imagesRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/images') {
+                $this->subTemplate = 'cms/images';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
+                $this->parameters[self::PARAMETER_IMAGES] = $this->storage->getImages();
+                $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $this->storage->getSmallestImageSet()->slug;
+            } elseif ($relativeCmsUri == '/images.json') {
+                header(self::CONTENT_TYPE_APPLICATION_JSON);
+                die(json_encode($this->storage->getImages()));
+            } elseif ($relativeCmsUri == '/images/new') {
+                $this->subTemplate = 'cms/images/form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
+                if (isset($_FILES[self::FILES_PARAMETER_FILE])) {
+                    $this->storage->addImage($_FILES[self::FILES_PARAMETER_FILE]);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/images');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/images/delete' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
+                $this->storage->deleteImageByName($request::$get[self::FILES_PARAMETER_FILE]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/images');
+                exit;
+            } elseif ($relativeCmsUri == '/images/show' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
+                $this->subTemplate = 'cms/images/show';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
+                $this->parameters[self::PARAMETER_IMAGE] = $this->storage->getImageByName($request::$get[self::FILES_PARAMETER_FILE]);
+            }
+        }
 
-			$this->usersRouting($request, $relativeCmsUri);
-			$this->documentTypesRouting($request, $relativeCmsUri);
-			$this->bricksRouting($request, $relativeCmsUri);
-			$this->imageSetRouting($request, $relativeCmsUri);
-			$this->applicationComponentRouting($request, $relativeCmsUri);
-		}
-
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
-		 * @throws \Exception
+        /**
+         * @param $relativeCmsUri
          */
-		private function documentRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/documents/new-document' && isset($request::$get['path'])) {
-				$this->subTemplate = 'cms/documents/document-form';
-				$this->parameters['mainNavClass'] = 'documents';
-				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
-				if (isset($request::$get['documentType'])) {
-					if (isset($request::$post['title'], $request::$get['documentType'], $request::$get['path'])) {
-						$this->storage->addDocument($request::$post);
-						header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-						exit;
-					}
-					$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($request::$get['documentType'], true);
-					$this->parameters['bricks'] = $this->storage->getBricks();
-				} else {
-					$documentTypes = $this->storage->getDocumentTypes();
-					if (count($documentTypes) < 1) {
-						throw new \Exception('No Document Types defined yet. <a href="' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types/new">Please do so first.</a>');
-					}
-					$this->parameters['documentTypes'] = $documentTypes;
-				}
-			} elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/documents/document-form';
-				$this->parameters['mainNavClass'] = 'documents';
-				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
-				if (isset($request::$post['title'], $request::$get['slug'])) {
-					$this->storage->saveDocument($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-					exit;
-				}
-				$this->parameters['document'] = $this->storage->getDocumentBySlug($request::$get['slug']);
-				$request::$get['path'] = $request::$get['slug'];
-				$this->parameters['documentType'] = $this->storage->getDocumentTypeBySlug($this->parameters['document']->documentTypeSlug, true);
-				$this->parameters['bricks'] = $this->storage->getBricks();
-			} elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get['slug'])) {
-				$this->parameters['smallestImage'] = $this->storage->getSmallestImageSet()->slug;
-				$this->subTemplate = 'cms/documents/brick';
-				$this->parameters['brick'] = $this->storage->getBrickBySlug($request::$get['slug']);
-				$this->parameters['static'] = $request::$get['static'] === 'true';
-				if (isset($request::$get['myBrickSlug'])) {
-					$this->parameters['myBrickSlug'] = $request::$get['myBrickSlug'];
-				}
-				$result = new \stdClass();
-				$result->body = $this->renderTemplate('cms/documents/brick');
-				$result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
-				ob_clean();
-				header('Content-type: application/json');
-				die(json_encode($result));
-			} else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get['slug'])) {
-				$this->storage->deleteDocumentBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-				exit;
-			}
-		}
+        private function apiRouting($relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/images.json') {
+                header(self::CONTENT_TYPE_APPLICATION_JSON);
+                die(json_encode($this->storage->getImages()));
+            } elseif ($relativeCmsUri == '/files.json') {
+                header(self::CONTENT_TYPE_APPLICATION_JSON);
+                die(json_encode($this->storage->getFiles()));
+            } elseif ($relativeCmsUri == '/documents.json') {
+                header(self::CONTENT_TYPE_APPLICATION_JSON);
+                die(json_encode($this->storage->getDocuments()));
+            }
+        }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function folderRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/documents/new-folder' && isset($request::$get['path'])) {
-				$this->subTemplate = 'cms/documents/folder-form';
-				$this->parameters['mainNavClass'] = 'documents';
-				if (isset($request::$post['title'], $request::$post['path'])) {
-					$this->storage->addDocumentFolder($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-					exit;
-				}
-			} else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get['slug'])) {
+        private function filesRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/files') {
+                $this->subTemplate = 'cms/files';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_FILES;
+                $this->parameters[self::PARAMETER_FILES] = $this->storage->getFiles();
+            } elseif ($relativeCmsUri == '/files/new') {
+                $this->subTemplate = 'cms/files/form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_FILES;
+                if (isset($_FILES[self::FILES_PARAMETER_FILE])) {
+                    $this->storage->addFile($_FILES[self::FILES_PARAMETER_FILE]);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/files');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/files/get' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
+                $this->downloadFile($request::$get[self::FILES_PARAMETER_FILE]);
+            } elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
+                $this->storage->deleteFileByName($request::$get[self::FILES_PARAMETER_FILE]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/files');
+                exit;
+            }
+        }
 
-				$this->subTemplate = 'cms/documents/folder-form';
-				$folder = $this->storage->getDocumentFolderBySlug($request::$get['slug']);
-
-				$path = $request::$get['slug'];
-				$path = explode('/', $path);
-				array_pop($path);
-				$path = implode('/', $path);
-
-				$request::$get['path'] = '/' . $path;
-
-				if (isset($request::$post['title'], $request::$post['content'])) {
-					$this->storage->saveDocumentFolder($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-					exit;
-				}
-
-				$this->parameters['mainNavClass'] = 'documents';
-				$this->parameters['folder'] = $folder;
-			} else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get['slug'])) {
-				$this->storage->deleteDocumentFolderBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/documents');
-				exit;
-			}
-		}
-
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $slug
          */
-		private function usersRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration/users') {
-				$this->subTemplate = 'cms/configuration/users';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['users'] = $this->storage->getUsers();
-			} elseif ($relativeCmsUri == '/configuration/users/new') {
-				$this->subTemplate = 'cms/configuration/users-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				if (isset($_POST['username'])) {
-					$this->storage->addUser($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteUserBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
-				exit;
-			} elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/configuration/users-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['user'] = $this->storage->getUserBySlug($request::$get['slug']);
-				if (isset($_POST['username'])) {
-					$this->storage->saveUser($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/users');
-					exit;
-				}
-			}
-		}
+        private function downloadFile($slug)
+        {
+            $file = $this->storage->getFileByName($slug);
+            $path = realpath(__DIR__ . '/../../www/files/');
+            $quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
+            $size = filesize($path . '/' . $file->file);
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $file->type);
+            header('Content-Disposition: attachment; filename=' . $quoted);
+            header('Content-Transfer-Encoding: binary');
+            header('Connection: Keep-Alive');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            header('Content-Length: ' . $size);
+
+            readfile($path . '/' . $file->file);
+            exit;
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function documentTypesRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration/document-types') {
-				$this->subTemplate = 'cms/configuration/document-types';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['documentTypes'] = $this->storage->getDocumentTypes();
-			} elseif ($relativeCmsUri == '/configuration/document-types/new') {
-				$this->subTemplate = 'cms/configuration/document-types-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$bricks = $this->storage->getBricks();
-				if (isset($request::$post['title'])) {
-					$this->storage->addDocumentType($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
-					exit;
-				}
-				$this->parameters['bricks'] = $bricks;
-			} elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/configuration/document-types-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$documentType = $this->storage->getDocumentTypeBySlug($request::$get['slug'], false);
-				$bricks = $this->storage->getBricks();
-				if (isset($request::$post['title'])) {
-					$this->storage->saveDocumentType($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
-					exit;
-				}
-				$this->parameters['documentType'] = $documentType;
-				$this->parameters['bricks'] = $bricks;
-			} elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteDocumentTypeBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/document-types');
-				exit;
-			}
-		}
+        private function configurationRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration') {
+                $this->subTemplate = 'cms/configuration';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+            }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+            $this->usersRouting($request, $relativeCmsUri);
+            $this->documentTypesRouting($request, $relativeCmsUri);
+            $this->bricksRouting($request, $relativeCmsUri);
+            $this->imageSetRouting($request, $relativeCmsUri);
+            $this->applicationComponentRouting($request, $relativeCmsUri);
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
+         * @throws \Exception
          */
-		private function bricksRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration/bricks') {
-				$this->subTemplate = 'cms/configuration/bricks';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['bricks'] = $this->storage->getBricks();
-			} elseif ($relativeCmsUri == '/configuration/bricks/new') {
-				$this->subTemplate = 'cms/configuration/bricks-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				if (isset($request::$post['title'])) {
-					$this->storage->addBrick($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/configuration/bricks-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$brick = $this->storage->getBrickBySlug($request::$get['slug']);
-				if (isset($request::$post['title'])) {
-					$this->storage->saveBrick($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
-					exit;
-				}
-				$this->parameters['brick'] = $brick;
-			} elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteBrickBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/bricks');
-				exit;
-			} elseif ($relativeCmsUri == '/configuration/image-set') {
-				$this->subTemplate = 'cms/configuration/image-set';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['imageSet'] = $this->storage->getImageSet();
-			}
-		}
+        private function documentRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[self::GET_PARAMETER_PATH])) {
+                $this->subTemplate = 'cms/documents/document-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_DOCUMENTS;
+                $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $this->storage->getSmallestImageSet()->slug;
+                if (isset($request::$get[self::PARAMETER_DOCUMENT_TYPE])) {
+                    if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$get[self::PARAMETER_DOCUMENT_TYPE], $request::$get[self::GET_PARAMETER_PATH])) {
+                        $this->storage->addDocument($request::$post);
+                        header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                        exit;
+                    }
+                    $this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $this->storage->getDocumentTypeBySlug($request::$get[self::PARAMETER_DOCUMENT_TYPE], true);
+                    $this->parameters[self::PARAMETER_BRICKS] = $this->storage->getBricks();
+                } else {
+                    $documentTypes = $this->storage->getDocumentTypes();
+                    if (count($documentTypes) < 1) {
+                        throw new \Exception('No Document Types defined yet. <a href="' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/document-types/new">Please do so first.</a>');
+                    }
+                    $this->parameters[self::PARAMETER_DOCUMENT_TYPES] = $documentTypes;
+                }
+            } elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/documents/document-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_DOCUMENTS;
+                $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $this->storage->getSmallestImageSet()->slug;
+                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$get[self::GET_PARAMETER_SLUG])) {
+                    $this->storage->saveDocument($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_DOCUMENT] = $this->storage->getDocumentBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                $request::$get[self::GET_PARAMETER_PATH] = $request::$get[self::GET_PARAMETER_SLUG];
+                $this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $this->storage->getDocumentTypeBySlug($this->parameters[self::PARAMETER_DOCUMENT]->documentTypeSlug, true);
+                $this->parameters[self::PARAMETER_BRICKS] = $this->storage->getBricks();
+            } elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $this->storage->getSmallestImageSet()->slug;
+                $this->subTemplate = 'cms/documents/brick';
+                $this->parameters[self::PARAMETER_BRICK] = $this->storage->getBrickBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                $this->parameters[self::PARAMETER_STATIC] = $request::$get[self::PARAMETER_STATIC] === 'true';
+                if (isset($request::$get[self::PARAMETER_MY_BRICK_SLUG])) {
+                    $this->parameters[self::PARAMETER_MY_BRICK_SLUG] = $request::$get[self::PARAMETER_MY_BRICK_SLUG];
+                }
+                $result = new \stdClass();
+                $result->body = $this->renderTemplate('cms/documents/brick');
+                $result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
+                ob_clean();
+                header(self::CONTENT_TYPE_APPLICATION_JSON);
+                die(json_encode($result));
+            } else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteDocumentBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                exit;
+            }
+        }
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function imageSetRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration/image-set') {
-				$this->subTemplate = 'cms/configuration/image-set';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['imageSet'] = $this->storage->getImageSet();
-			} elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/configuration/image-set-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$imageSet = $this->storage->getImageSetBySlug($request::$get['slug']);
-				if (isset($request::$post['title'])) {
-					$this->storage->saveImageSet($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
-					exit;
-				}
-				$this->parameters['imageSet'] = $imageSet;
-			} elseif ($relativeCmsUri == '/configuration/image-set/new') {
-				$this->subTemplate = 'cms/configuration/image-set-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				if (isset($request::$post['title'])) {
-					$this->storage->addImageSet($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteImageSetBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/image-set');
-				exit;
-			}
-		}
+        private function folderRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/documents/new-folder' && isset($request::$get[self::GET_PARAMETER_PATH])) {
+                $this->subTemplate = 'cms/documents/folder-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_DOCUMENTS;
+                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post[self::GET_PARAMETER_PATH])) {
+                    $this->storage->addDocumentFolder($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                    exit;
+                }
+            } else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
 
-		/**
-		 * @param $request
-		 * @param $relativeCmsUri
+                $this->subTemplate = 'cms/documents/folder-form';
+                $folder = $this->storage->getDocumentFolderBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+
+                $path = $request::$get[self::GET_PARAMETER_SLUG];
+                $path = explode('/', $path);
+                array_pop($path);
+                $path = implode('/', $path);
+
+                $request::$get[self::GET_PARAMETER_PATH] = '/' . $path;
+
+                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post['content'])) {
+                    $this->storage->saveDocumentFolder($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                    exit;
+                }
+
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_DOCUMENTS;
+                $this->parameters['folder'] = $folder;
+            } else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteDocumentFolderBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/documents');
+                exit;
+            }
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
          */
-		private function applicationComponentRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/configuration/application-components') {
-				$this->subTemplate = 'cms/configuration/application-components';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$this->parameters['applicationComponents'] = $this->storage->getApplicationComponents();
-			} elseif ($relativeCmsUri == '/configuration/application-components/new') {
-				$this->subTemplate = 'cms/configuration/application-components-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				if (isset($request::$post['title'])) {
-					$this->storage->addApplicationComponent($request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
-					exit;
-				}
-			} elseif ($relativeCmsUri == '/configuration/application-components/edit' && isset($request::$get['slug'])) {
-				$this->subTemplate = 'cms/configuration/application-components-form';
-				$this->parameters['mainNavClass'] = 'configuration';
-				$applicationComponent = $this->storage->getApplicationComponentBySlug($request::$get['slug']);
-				if (isset($request::$post['title'])) {
-					$this->storage->saveApplicationComponent($request::$get['slug'], $request::$post);
-					header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
-					exit;
-				}
-				$this->parameters['applicationComponent'] = $applicationComponent;
-			} elseif ($relativeCmsUri == '/configuration/application-components/delete' && isset($request::$get['slug'])) {
-				$this->storage->deleteApplicationComponentBySlug($request::$get['slug']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix'] . '/configuration/application-components');
-				exit;
-			}
-		}
+        private function usersRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration/users') {
+                $this->subTemplate = 'cms/configuration/users';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_USERS] = $this->storage->getUsers();
+            } elseif ($relativeCmsUri == '/configuration/users/new') {
+                $this->subTemplate = 'cms/configuration/users-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                if (isset($_POST[self::POST_PARAMETER_USERNAME])) {
+                    $this->storage->addUser($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/users');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteUserBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/users');
+                exit;
+            } elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/configuration/users-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_USER] = $this->storage->getUserBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                if (isset($_POST[self::POST_PARAMETER_USERNAME])) {
+                    $this->storage->saveUser($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/users');
+                    exit;
+                }
+            }
+        }
 
-		private function logOffRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/log-off') {
-				$_SESSION['cloudcontrol'] = null;
-				unset($_SESSION['cloudcontrol']);
-				header('Location: ' . $request::$subfolders . $this->parameters['cmsPrefix']);
-				exit;
-			}
-		}
-	}
+        /**
+         * @param $request
+         * @param $relativeCmsUri
+         */
+        private function documentTypesRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration/document-types') {
+                $this->subTemplate = 'cms/configuration/document-types';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_DOCUMENT_TYPES] = $this->storage->getDocumentTypes();
+            } elseif ($relativeCmsUri == '/configuration/document-types/new') {
+                $this->subTemplate = 'cms/configuration/document-types-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $bricks = $this->storage->getBricks();
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->addDocumentType($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/document-types');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_BRICKS] = $bricks;
+            } elseif ($relativeCmsUri == '/configuration/document-types/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/configuration/document-types-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $documentType = $this->storage->getDocumentTypeBySlug($request::$get[self::GET_PARAMETER_SLUG], false);
+                $bricks = $this->storage->getBricks();
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->saveDocumentType($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/document-types');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $documentType;
+                $this->parameters[self::PARAMETER_BRICKS] = $bricks;
+            } elseif ($relativeCmsUri == '/configuration/document-types/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteDocumentTypeBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/document-types');
+                exit;
+            }
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
+         */
+        private function bricksRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration/bricks') {
+                $this->subTemplate = 'cms/configuration/bricks';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_BRICKS] = $this->storage->getBricks();
+            } elseif ($relativeCmsUri == '/configuration/bricks/new') {
+                $this->subTemplate = 'cms/configuration/bricks-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->addBrick($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/bricks');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/configuration/bricks-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $brick = $this->storage->getBrickBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->saveBrick($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/bricks');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_BRICK] = $brick;
+            } elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteBrickBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/bricks');
+                exit;
+            } elseif ($relativeCmsUri == '/configuration/image-set') {
+                $this->subTemplate = 'cms/configuration/image-set';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_IMAGE_SET] = $this->storage->getImageSet();
+            }
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
+         */
+        private function imageSetRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration/image-set') {
+                $this->subTemplate = 'cms/configuration/image-set';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters[self::PARAMETER_IMAGE_SET] = $this->storage->getImageSet();
+            } elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/configuration/image-set-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $imageSet = $this->storage->getImageSetBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->saveImageSet($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/image-set');
+                    exit;
+                }
+                $this->parameters[self::PARAMETER_IMAGE_SET] = $imageSet;
+            } elseif ($relativeCmsUri == '/configuration/image-set/new') {
+                $this->subTemplate = 'cms/configuration/image-set-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->addImageSet($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/image-set');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteImageSetBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/image-set');
+                exit;
+            }
+        }
+
+        /**
+         * @param $request
+         * @param $relativeCmsUri
+         */
+        private function applicationComponentRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/configuration/application-components') {
+                $this->subTemplate = 'cms/configuration/application-components';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $this->parameters['applicationComponents'] = $this->storage->getApplicationComponents();
+            } elseif ($relativeCmsUri == '/configuration/application-components/new') {
+                $this->subTemplate = 'cms/configuration/application-components-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->addApplicationComponent($request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/application-components');
+                    exit;
+                }
+            } elseif ($relativeCmsUri == '/configuration/application-components/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->subTemplate = 'cms/configuration/application-components-form';
+                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = 'configuration';
+                $applicationComponent = $this->storage->getApplicationComponentBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                if (isset($request::$post[self::POST_PARAMETER_TITLE])) {
+                    $this->storage->saveApplicationComponent($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
+                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/application-components');
+                    exit;
+                }
+                $this->parameters['applicationComponent'] = $applicationComponent;
+            } elseif ($relativeCmsUri == '/configuration/application-components/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
+                $this->storage->deleteApplicationComponentBySlug($request::$get[self::GET_PARAMETER_SLUG]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/configuration/application-components');
+                exit;
+            }
+        }
+
+        private function logOffRouting($request, $relativeCmsUri)
+        {
+            if ($relativeCmsUri == '/log-off') {
+                $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = null;
+                unset($_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]);
+                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX]);
+                exit;
+            }
+        }
+    }
 }
