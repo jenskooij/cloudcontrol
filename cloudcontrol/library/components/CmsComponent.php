@@ -3,6 +3,7 @@ namespace library\components {
 
     use library\components\cms\DocumentRouting;
     use library\components\cms\ImagesRouting;
+    use library\components\cms\SitemapRouting;
     use library\crypt\Crypt;
     use library\storage\Storage;
 
@@ -161,7 +162,7 @@ namespace library\components {
             }
 
             if (in_array(self::PARAMETER_SITEMAP, $userRights)) {
-                $this->sitemapRouting($this->request, $relativeCmsUri);
+                new SitemapRouting($this->request, $relativeCmsUri, $this);
             }
 
             if (in_array(self::PARAMETER_IMAGES, $userRights)) {
@@ -224,44 +225,6 @@ namespace library\components {
                 $relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters[self::PARAMETER_CMS_PREFIX]));
             }
             return $relativeCmsUri;
-        }
-
-        /**
-         * @param \library\cc\Request $request
-         * @param $relativeCmsUri
-         */
-        private function sitemapRouting($request, $relativeCmsUri)
-        {
-            if ($relativeCmsUri == '/sitemap') {
-                $this->subTemplate = 'cms/sitemap';
-                if (isset($request::$post[self::POST_PARAMETER_SAVE])) {
-                    $this->storage->saveSitemap($request::$post);
-                }
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
-                $this->parameters[self::PARAMETER_SITEMAP] = $this->storage->getSitemap();
-            } elseif ($relativeCmsUri == '/sitemap/new') {
-                $this->subTemplate = 'cms/sitemap/form';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
-                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post[self::POST_PARAMETER_TEMPLATE], $request::$post[self::POST_PARAMETER_COMPONENT])) {
-                    $this->storage->addSitemapItem($request::$post);
-                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
-                    exit;
-                }
-            } elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
-                $this->subTemplate = 'cms/sitemap/form';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_SITEMAP;
-                $sitemapItem = $this->storage->getSitemapItemBySlug($request::$get[self::GET_PARAMETER_SLUG]);
-                if (isset($request::$post[self::POST_PARAMETER_TITLE], $request::$post[self::POST_PARAMETER_TEMPLATE], $request::$post[self::POST_PARAMETER_COMPONENT])) {
-                    $this->storage->saveSitemapItem($request::$get[self::GET_PARAMETER_SLUG], $request::$post);
-                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
-                    exit;
-                }
-                $this->parameters[self::PARAMETER_SITEMAP_ITEM] = $sitemapItem;
-            } elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get[self::GET_PARAMETER_SLUG])) {
-                $this->storage->deleteSitemapItemBySlug($request::$get[self::GET_PARAMETER_SLUG]);
-                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/sitemap');
-                exit;
-            }
         }
 
         /**
