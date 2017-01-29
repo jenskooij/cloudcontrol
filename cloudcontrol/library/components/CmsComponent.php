@@ -2,6 +2,7 @@
 namespace library\components {
 
     use library\components\cms\DocumentRouting;
+    use library\components\cms\ImagesRouting;
     use library\crypt\Crypt;
     use library\storage\Storage;
 
@@ -164,7 +165,7 @@ namespace library\components {
             }
 
             if (in_array(self::PARAMETER_IMAGES, $userRights)) {
-                $this->imagesRouting($this->request, $relativeCmsUri);
+                new ImagesRouting($this->request, $relativeCmsUri, $this);
             }
 
             if (in_array(self::PARAMETER_FILES, $userRights)) {
@@ -264,39 +265,6 @@ namespace library\components {
         }
 
         /**
-         * @param $request
-         * @param $relativeCmsUri
-         */
-        private function imagesRouting($request, $relativeCmsUri)
-        {
-            if ($relativeCmsUri == '/images') {
-                $this->subTemplate = 'cms/images';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
-                $this->parameters[self::PARAMETER_IMAGES] = $this->storage->getImages();
-                $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $this->storage->getSmallestImageSet()->slug;
-            } elseif ($relativeCmsUri == '/images.json') {
-                header(self::CONTENT_TYPE_APPLICATION_JSON);
-                die(json_encode($this->storage->getImages()));
-            } elseif ($relativeCmsUri == '/images/new') {
-                $this->subTemplate = 'cms/images/form';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
-                if (isset($_FILES[self::FILES_PARAMETER_FILE])) {
-                    $this->storage->addImage($_FILES[self::FILES_PARAMETER_FILE]);
-                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/images');
-                    exit;
-                }
-            } elseif ($relativeCmsUri == '/images/delete' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
-                $this->storage->deleteImageByName($request::$get[self::FILES_PARAMETER_FILE]);
-                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/images');
-                exit;
-            } elseif ($relativeCmsUri == '/images/show' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
-                $this->subTemplate = 'cms/images/show';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_IMAGES;
-                $this->parameters[self::PARAMETER_IMAGE] = $this->storage->getImageByName($request::$get[self::FILES_PARAMETER_FILE]);
-            }
-        }
-
-        /**
          * @param $relativeCmsUri
          */
         private function apiRouting($relativeCmsUri)
@@ -381,7 +349,6 @@ namespace library\components {
             $this->imageSetRouting($request, $relativeCmsUri);
             $this->applicationComponentRouting($request, $relativeCmsUri);
         }
-
 
 
         /**
