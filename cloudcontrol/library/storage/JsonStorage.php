@@ -40,6 +40,7 @@ namespace library\storage
 			} else {
 				// Here is some logic for the initialisation of a new clone of the framework
 				initFramework($storagePath);
+				$this->config();
 			}
 		}
 
