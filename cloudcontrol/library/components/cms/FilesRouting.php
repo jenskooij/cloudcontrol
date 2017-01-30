@@ -22,23 +22,13 @@ class FilesRouting implements CmsRouting
 	public function __construct($request, $relativeCmsUri, $cmsComponent)
 	{
 		if ($relativeCmsUri == '/files') {
-			$cmsComponent->subTemplate = 'cms/files';
-			$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
-			$cmsComponent->setParameter(CmsComponent::PARAMETER_FILES, $cmsComponent->storage->getFiles());
+			$this->overviewRoute($cmsComponent);
 		} elseif ($relativeCmsUri == '/files/new') {
-			$cmsComponent->subTemplate = 'cms/files/form';
-			$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
-			if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-				$cmsComponent->storage->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
-				header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
-				exit;
-			}
+			$this->newRoute($request, $cmsComponent);
 		} elseif ($relativeCmsUri == '/files/get' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
-			$this->downloadFile($request::$get[CmsComponent::FILES_PARAMETER_FILE], $cmsComponent);
+			$this->downloadRoute($request::$get[CmsComponent::FILES_PARAMETER_FILE], $cmsComponent);
 		} elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
-			$cmsComponent->storage->deleteFileByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
-			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
-			exit;
+			$this->deleteRoute($request, $cmsComponent);
 		}
 	}
 
@@ -46,7 +36,7 @@ class FilesRouting implements CmsRouting
 	 * @param $slug
 	 * @param $cmsComponent
 	 */
-	private function downloadFile($slug, $cmsComponent)
+	private function downloadRoute($slug, $cmsComponent)
 	{
 		$file = $cmsComponent->storage->getFileByName($slug);
 		$path = realpath(__DIR__ . '/../../../www/files/');
@@ -64,6 +54,42 @@ class FilesRouting implements CmsRouting
 		header('Content-Length: ' . $size);
 
 		readfile($path . '/' . $file->file);
+		exit;
+	}
+
+	/**
+	 * @param $cmsComponent
+	 */
+	private function overviewRoute($cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/files';
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_FILES, $cmsComponent->storage->getFiles());
+	}
+
+	/**
+	 * @param $request
+	 * @param $cmsComponent
+	 */
+	private function newRoute($request, $cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/files/form';
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
+		if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
+			$cmsComponent->storage->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
+			exit;
+		}
+	}
+
+	/**
+	 * @param $request
+	 * @param $cmsComponent
+	 */
+	private function deleteRoute($request, $cmsComponent)
+	{
+		$cmsComponent->storage->deleteFileByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
+		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
 		exit;
 	}
 
