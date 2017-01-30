@@ -2,7 +2,8 @@
 namespace library\components {
 
     use library\components\cms\DocumentRouting;
-    use library\components\cms\ImagesRouting;
+	use library\components\cms\FilesRouting;
+	use library\components\cms\ImagesRouting;
     use library\components\cms\SitemapRouting;
     use library\crypt\Crypt;
     use library\storage\Storage;
@@ -170,7 +171,7 @@ namespace library\components {
             }
 
             if (in_array(self::PARAMETER_FILES, $userRights)) {
-                $this->filesRouting($this->request, $relativeCmsUri);
+                new FilesRouting($this->request, $relativeCmsUri, $this);
             }
 
             if (in_array('configuration', $userRights)) {
@@ -242,57 +243,6 @@ namespace library\components {
                 header(self::CONTENT_TYPE_APPLICATION_JSON);
                 die(json_encode($this->storage->getDocuments()));
             }
-        }
-
-        /**
-         * @param $request
-         * @param $relativeCmsUri
-         */
-        private function filesRouting($request, $relativeCmsUri)
-        {
-            if ($relativeCmsUri == '/files') {
-                $this->subTemplate = 'cms/files';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_FILES;
-                $this->parameters[self::PARAMETER_FILES] = $this->storage->getFiles();
-            } elseif ($relativeCmsUri == '/files/new') {
-                $this->subTemplate = 'cms/files/form';
-                $this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::PARAMETER_FILES;
-                if (isset($_FILES[self::FILES_PARAMETER_FILE])) {
-                    $this->storage->addFile($_FILES[self::FILES_PARAMETER_FILE]);
-                    header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/files');
-                    exit;
-                }
-            } elseif ($relativeCmsUri == '/files/get' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
-                $this->downloadFile($request::$get[self::FILES_PARAMETER_FILE]);
-            } elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[self::FILES_PARAMETER_FILE])) {
-                $this->storage->deleteFileByName($request::$get[self::FILES_PARAMETER_FILE]);
-                header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX] . '/files');
-                exit;
-            }
-        }
-
-        /**
-         * @param $slug
-         */
-        private function downloadFile($slug)
-        {
-            $file = $this->storage->getFileByName($slug);
-            $path = realpath(__DIR__ . '/../../www/files/');
-            $quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
-            $size = filesize($path . '/' . $file->file);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: ' . $file->type);
-            header('Content-Disposition: attachment; filename=' . $quoted);
-            header('Content-Transfer-Encoding: binary');
-            header('Connection: Keep-Alive');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Pragma: public');
-            header('Content-Length: ' . $size);
-
-            readfile($path . '/' . $file->file);
-            exit;
         }
 
         /**
