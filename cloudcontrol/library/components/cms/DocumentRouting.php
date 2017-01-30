@@ -10,7 +10,7 @@ namespace library\components\cms;
 
 use library\components\CmsComponent;
 
-class DocumentRouting
+class DocumentRouting implements CmsRouting
 {
     /**
      * DocumentRouting constructor.

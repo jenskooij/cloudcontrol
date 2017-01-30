@@ -10,7 +10,7 @@ namespace library\components\cms;
 
 use library\components\CmsComponent;
 
-class ImagesRouting
+class ImagesRouting implements CmsRouting
 {
 
     /**

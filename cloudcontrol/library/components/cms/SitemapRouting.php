@@ -11,7 +11,7 @@ namespace library\components\cms;
 
 use library\components\CmsComponent;
 
-class SitemapRouting
+class SitemapRouting implements CmsRouting
 {
 
     /**

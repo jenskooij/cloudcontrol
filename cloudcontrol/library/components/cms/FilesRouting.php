@@ -10,7 +10,7 @@ namespace library\components\cms;
 use library\cc\Request;
 use library\components\CmsComponent;
 
-class FilesRouting
+class FilesRouting implements CmsRouting
 {
 	/**
 	 * FilesRouting constructor.
