@@ -338,6 +338,7 @@ class Repository
                     DELETE FROM documents
                           WHERE path = ' . $db->quote($path) . '
                 ');
+                $stmt->execute();
             } elseif ($documentToDelete->type == 'folder') {
                 $folderPathWithWildcard = $path . '%';
                 $stmt = $this->getDbStatement('
@@ -346,9 +347,8 @@ class Repository
                             AND substr(`path`, ' . (strlen($path) + 1) . ', 1) = "/")
                             OR path = ' . $db->quote($path) . '
                 ');
+                $stmt->execute();
             }
         }
-
-        $stmt->execute();
     }
 }
