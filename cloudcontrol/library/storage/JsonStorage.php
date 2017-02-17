@@ -204,7 +204,11 @@ namespace library\storage
 
             $container = $this->getDocumentContainerByPath($oldPath);
             $documentObject = $this->createDocumentFromPostValues($postValues);
-            $newPath = $container->path . $documentObject->slug;
+            if ($container->path === '/') {
+                $newPath = $container->path . $documentObject->slug;
+            } else {
+                $newPath = $container->path . '/' . $documentObject->slug;
+            }
             $documentObject->path = $newPath;
             $this->repository->saveDocument($documentObject);
         }
@@ -212,7 +216,12 @@ namespace library\storage
 		public function addDocument($postValues)
 		{
 			$documentObject = $this->createDocumentFromPostValues($postValues);
-            $documentObject->path = $postValues['path'] . $documentObject->slug;
+            if ($postValues['path'] === '/') {
+                $documentObject->path = $postValues['path'] . $documentObject->slug;
+            } else {
+                $documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
+            }
+
             $this->repository->saveDocument($documentObject);
 		}
 
@@ -298,39 +307,13 @@ namespace library\storage
 		 */
 		public function addDocumentFolder($postValues)
 		{
-			$documentFolderObject = $this->createDocumentFolderFromPostValues($postValues);
-			if ($postValues['path'] == '' || $postValues['path'] == '/') {
-				// Check folder duplicate child
-				foreach ($this->repository->documents as $document) {
-					if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
-						// TODO make it so it doesnt throw an exception, but instead shows a warning
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$this->repository->documents[] = $documentFolderObject;
-			} else {
-				$documentContainer = $this->getDocumentContainerByPath($postValues['path']);
-				$documentContainerArray = $documentContainer['indices'];
-				$containerFolder = $documentContainer['containerFolder'];
-				$folder = $this->repository->documents;
-				foreach ($documentContainerArray as $index) {
-					if ($folder === $this->repository->documents) {
-						$folder = $folder[$index];
-					} else {
-						$folder = $folder->content[$index];
-					}
-
-				}
-				// Check folder duplicate child
-				foreach ($containerFolder->content as $document) {
-					if ($document->slug == $documentFolderObject->slug && $document->type == 'folder') {
-						// TODO make it so it doesnt throw an exception, but instead shows a warning
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$folder->content[] = $documentFolderObject;
-			}
-			$this->save();
+            $documentFolderObject = $this->createDocumentFolderFromPostValues($postValues);
+            if ($postValues['path'] === '/') {
+                $documentFolderObject->path = $postValues['path'] . $documentFolderObject->slug;
+            } else {
+                $documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
+            }
+            $this->repository->saveDocument($documentFolderObject);
 		}
 
 		/**
@@ -342,29 +325,8 @@ namespace library\storage
 		 */
 		public function deleteDocumentFolderBySlug($slug)
 		{
-			$documentContainer = $this->getDocumentContainerByPath($slug);
-			$indices = $documentContainer['indices'];
-
-			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$previousFolder = $folder;
-					$folder = $folder->content[$index];
-				}
-			}
-
-			if ($previousFolder === $this->repository->documents) {
-				unset($this->repository->documents[end($indices)]);
-				$this->repository->documents = array_values($this->repository->documents);
-			} else {
-				unset($previousFolder->content[end($indices)]);
-				$previousFolder->content = array_values($previousFolder->content);
-			}
-
-			$this->save();
+            $path = '/' . $slug;
+			$this->repository->deleteDocumentByPath($path);
 		}
 
 		/**
@@ -377,22 +339,8 @@ namespace library\storage
 		 */
 		public function getDocumentFolderBySlug($slug)
 		{
-			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
-			$indices = $documentContainer['indices'];
-
-			$folder = $this->repository->documents;
-			if ($indices === null) {
-				throw new \Exception('Can\'t find folder with slug `' . $slug . '`');
-			}
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$folder = $folder->content[$index];
-				}
-			}
-
-			return $folder;
+            $path = '/' . $slug;
+			return $this->repository->getDocumentByPath($path);
 		}
 
 		/**
@@ -404,41 +352,7 @@ namespace library\storage
 		 */
 		public function saveDocumentFolder($postValues)
 		{
-			$documentFolderObject = $this->createDocumentFolderFromPostValues($postValues);
-
-			$documentContainer = $this->getDocumentContainerByPath($_GET['slug']);
-			$indices = $documentContainer['indices'];
-
-			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$previousFolder = $folder;
-					$folder = $folder->content[$index];
-				}
-			}
-
-			if ($previousFolder === $this->repository->documents) {
-				// Check for duplicates
-				foreach ($this->repository->documents as $index => $document) {
-					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'folder') {
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$this->repository->documents[end($indices)] = $documentFolderObject;
-			} else {
-				// Check for duplicates
-				foreach ($previousFolder->content as $index => $document) {
-					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'folder') {
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$previousFolder->content[end($indices)] = $documentFolderObject ;
-			}
-
-			$this->save();
+            $this->addDocumentFolder($postValues);
 		}
 
 		/**
@@ -465,7 +379,7 @@ namespace library\storage
 		private function createDocumentFolderFromPostValues($postValues)
 		{
 			if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
-				$documentFolderObject = new \stdClass();
+				$documentFolderObject = new Document();
 				$documentFolderObject->title = $postValues['title'];
 				$documentFolderObject->slug = slugify($postValues['title']);
 				$documentFolderObject->type = 'folder';

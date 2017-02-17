@@ -24,6 +24,9 @@ class Document
     protected $fields;
     protected $bricks;
     protected $dynamicBricks;
+    protected $content;
+
+    protected $dbHandle;
 
     protected $jsonEncodedFields = array('fields', 'bricks', 'dynamicBricks');
 
@@ -34,6 +37,17 @@ class Document
             } else {
                 return $this->$name;
             }
+        } elseif ($name === 'content') {
+            if ($this->dbHandle === null) {
+                throw new \Exception('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
+            } else {
+                if ($this->content === null) {
+                    $this->getContent();
+                }
+                return $this->content;
+            }
+        } elseif ($name === 'repository') {
+            throw new \Exception('Trying to get protected property repository.');
         }
         return $this->$name;
     }
@@ -41,7 +55,40 @@ class Document
     public function __set($name, $value) {
         if (in_array($name, $this->jsonEncodedFields)) {
             $this->$name = json_encode($value);
+        } elseif ($name === 'content') {
+            // Dont do anything for now..
+            return;
         }
+
         $this->$name = $value;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function getContent()
+    {
+        $folderPathWithWildcard = $this->path . '%';
+        $sql = '    SELECT *
+                      FROM documents
+                     WHERE `path` LIKE ' . $this->dbHandle->quote($folderPathWithWildcard) . '
+                       AND substr(`path`, ' . (strlen($this->path) + 2) . ') NOT LIKE "%/%"
+                       AND substr(`path`, ' . (strlen($this->path) + 1) . ', 1) = "/"
+                       AND path != ' . $this->dbHandle->quote($this->path) . '
+                    ';
+        $stmt = $this->dbHandle->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $this->dbHandle->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        $contents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
+        foreach ($contents as $key => $document) {
+            if ($document->type === 'folder') {
+                $document->dbHandle = $this->dbHandle;
+                $contents[$key] = $document;
+            }
+        }
+        $this->content = $contents;
     }
 }

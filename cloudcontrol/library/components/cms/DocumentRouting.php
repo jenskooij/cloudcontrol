@@ -147,7 +147,7 @@ class DocumentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function newFolderRoute($request, $cmsComponent)
 	{

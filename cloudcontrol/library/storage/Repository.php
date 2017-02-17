@@ -196,11 +196,33 @@ class Repository
 
     public function getDocuments()
     {
-        return $this->fetchAllDocuments('
+        return $this->getDocumentsByPath('/');
+    }
+
+    public function getDocumentsByPath($folderPath)
+    {
+        $db = $this->getContentDbHandle();
+        $folderPathWithWildcard = $folderPath . '%';
+
+        $stmt = $this->getDbStatement('
             SELECT *
               FROM documents
+             WHERE `path` LIKE ' . $db->quote($folderPathWithWildcard) . '
+               AND substr(`path`, ' . (strlen($folderPath) + 1) . ') NOT LIKE "%/%"
+               AND path != ' . $db->quote($folderPath) . '
+          ORDER BY `type` DESC, `path` ASC
         ');
+
+        $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
+        foreach ($documents as $key => $document) {
+            if ($document->type === 'folder') {
+                $document->dbHandle = $db;
+                $documents[$key] = $document;
+            }
+        }
+        return $documents;
     }
+
 
     /**
      * @param $path
@@ -213,7 +235,7 @@ class Repository
             return false;
         }
         $slugLength = strlen($document->slug);
-        $containerPath = substr($path,0,-$slugLength);
+        $containerPath = substr($path, 0, -$slugLength);
         if ($containerPath === '/') {
             return $this->getRootFolder();
         }
@@ -225,21 +247,28 @@ class Repository
      * @param $path
      * @return bool|Document
      */
-    public function getDocumentByPath($path) {
+    public function getDocumentByPath($path)
+    {
         $db = $this->getContentDbHandle();
-        return $this->fetchDocument('
+        $document = $this->fetchDocument('
             SELECT *
               FROM documents
              WHERE path = ' . $db->quote($path) . '
         ');
+        if ($document instanceof Document && $document->type === 'folder') {
+            $document->dbHandle = $db;
+        }
+        return $document;
     }
 
-    protected function fetchAllDocuments($sql) {
+    protected function fetchAllDocuments($sql)
+    {
         $stmt = $this->getDbStatement($sql);
         return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
     }
 
-    protected function fetchDocument($sql) {
+    protected function fetchDocument($sql)
+    {
         $stmt = $this->getDbStatement($sql);
         return $stmt->fetchObject('\library\storage\Document');
     }
@@ -302,10 +331,24 @@ class Repository
     public function deleteDocumentByPath($path)
     {
         $db = $this->getContentDbHandle();
-        $stmt = $this->getDbStatement('
-            DELETE FROM documents
-                  WHERE path = ' . $db->quote($path) . '
-        ');
+        $documentToDelete = $this->getDocumentByPath($path);
+        if ($documentToDelete instanceof Document) {
+            if ($documentToDelete->type == 'document') {
+                $stmt = $this->getDbStatement('
+                    DELETE FROM documents
+                          WHERE path = ' . $db->quote($path) . '
+                ');
+            } elseif ($documentToDelete->type == 'folder') {
+                $folderPathWithWildcard = $path . '%';
+                $stmt = $this->getDbStatement('
+                    DELETE FROM documents
+                          WHERE (path LIKE ' . $db->quote($folderPathWithWildcard) . '
+                            AND substr(`path`, ' . (strlen($path) + 1) . ', 1) = "/")
+                            OR path = ' . $db->quote($path) . '
+                ');
+            }
+        }
+
         $stmt->execute();
     }
 }
