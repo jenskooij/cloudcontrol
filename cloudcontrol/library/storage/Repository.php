@@ -3,7 +3,13 @@
  * User: Jens
  * Date: 30-1-2017
  * Time: 20:15
- *
+ */
+
+namespace library\storage;
+
+/**
+ * Class Repository
+ * @package library\storage
  * @property array sitemap
  * @property array applicationComponents
  * @property array documentTypes
@@ -13,10 +19,6 @@
  * @property array files
  * @property array users
  */
-
-namespace library\storage;
-
-
 class Repository
 {
     protected $storagePath;

@@ -7,7 +7,14 @@
 
 namespace library\storage;
 
-
+/**
+ * Class Document
+ * @package library\storage
+ * @property array fields
+ * @property array bricks
+ * @property array dynamicBricks
+ * @property array content
+ */
 class Document
 {
     public $id;
