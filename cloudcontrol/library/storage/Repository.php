@@ -90,13 +90,20 @@ class Repository
         $this->save();
     }
 
+    /**
+     * Load filebased subset and return it's contents
+     *
+     * @param $name
+     * @return mixed|string
+     * @throws \Exception
+     */
     public function __get($name)
     {
         if (isset($this->$name)) {
             if (in_array($name, $this->fileBasedSubsets)) {
                 return $this->$name;
             } else {
-                dump();
+                throw new \Exception('Trying to get undefined property from Repository: ' . $name);
             }
         } else {
             if (in_array($name, $this->fileBasedSubsets)) {
@@ -107,6 +114,12 @@ class Repository
         }
     }
 
+    /**
+     * Set filebased subset contents
+     * @param $name
+     * @param $value
+     * @throws \Exception
+     */
     public function __set($name, $value)
     {
         if (in_array($name, $this->fileBasedSubsets)) {
@@ -118,6 +131,9 @@ class Repository
         }
     }
 
+    /**
+     * Persist all subsets
+     */
     public function save()
     {
         $this->sitemapChanges ? $this->saveSubset('sitemap') : null;
@@ -130,6 +146,10 @@ class Repository
         $this->usersChanges ? $this->saveSubset('users') : null;
     }
 
+    /**
+     * Persist subset to disk
+     * @param $subset
+     */
     protected function saveSubset($subset)
     {
         $json = json_encode($this->$subset);
@@ -139,6 +159,11 @@ class Repository
         $this->$changes = false;
     }
 
+    /**
+     * Load subset from disk
+     * @param $subset
+     * @return mixed|string
+     */
     protected function loadSubset($subset)
     {
         $subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
@@ -194,11 +219,21 @@ class Repository
         return $this->contentDbHandle;
     }
 
+    /**
+     * Get all documents
+     * @return array
+     */
     public function getDocuments()
     {
         return $this->getDocumentsByPath('/');
     }
 
+    /**
+     * Get all documents and folders in a certain path
+     * @param $folderPath
+     * @return array
+     * @throws \Exception
+     */
     public function getDocumentsByPath($folderPath)
     {
         $db = $this->getContentDbHandle();
@@ -261,12 +296,24 @@ class Repository
         return $document;
     }
 
+    /**
+     * Return the results of the query as array of Documents
+     * @param $sql
+     * @return array
+     * @throws \Exception
+     */
     protected function fetchAllDocuments($sql)
     {
         $stmt = $this->getDbStatement($sql);
         return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
     }
 
+    /**
+     * Return the result of the query as Document
+     * @param $sql
+     * @return mixed
+     * @throws \Exception
+     */
     protected function fetchDocument($sql)
     {
         $stmt = $this->getDbStatement($sql);
@@ -274,6 +321,7 @@ class Repository
     }
 
     /**
+     * Prepare the sql statement
      * @param $sql
      * @return \PDOStatement
      * @throws \Exception
@@ -290,6 +338,10 @@ class Repository
         return $stmt;
     }
 
+    /**
+     * Create a (non-existent) root folder Document and return it
+     * @return Document
+     */
     protected function getRootFolder()
     {
         $rootFolder = new Document();
@@ -299,9 +351,11 @@ class Repository
     }
 
     /**
-     * @param $path
+     * Save the document to the database
      * @param Document $documentObject
      * @return bool
+     * @throws \Exception
+     * @internal param $path
      */
     public function saveDocument($documentObject)
     {
@@ -328,6 +382,12 @@ class Repository
         return $result;
     }
 
+    /**
+     * Delete the document from the database
+     * If it's a folder, also delete it's contents
+     * @param $path
+     * @throws \Exception
+     */
     public function deleteDocumentByPath($path)
     {
         $db = $this->getContentDbHandle();

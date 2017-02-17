@@ -76,6 +76,12 @@ namespace library\storage
 			return $return;
 		}
 
+        /**
+         * Get user by slug
+         *
+         * @param $slug
+         * @return array
+         */
 		public function getUserBySlug($slug)
 		{
 			$return = array();
@@ -91,11 +97,23 @@ namespace library\storage
 			return $return;
 		}
 
+        /**
+         * Get all users
+         *
+         * @return mixed
+         */
 		public function getUsers()
 		{
 			return $this->repository->users;
 		}
 
+        /**
+         * Save user
+         *
+         * @param $slug
+         * @param $postValues
+         * @throws \Exception
+         */
 		public function saveUser($slug, $postValues)
 		{
 			$userObj = $this->createUserFromPostValues($postValues);
@@ -116,6 +134,12 @@ namespace library\storage
 			$this->save();
 		}
 
+        /**
+         * Add user
+         *
+         * @param $postValues
+         * @throws \Exception
+         */
 		public function addUser($postValues)
 		{
 			$userObj = $this->createUserFromPostValues($postValues);
@@ -130,6 +154,11 @@ namespace library\storage
 			$this->save();
 		}
 
+        /**
+         * Delete user by slug
+         * @param $slug
+         * @throws \Exception
+         */
 		public function deleteUserBySlug($slug)
 		{
 			$userToDelete = $this->getUserBySlug($slug);
@@ -146,6 +175,12 @@ namespace library\storage
 			$this->save();
 		}
 
+        /**
+         * Create user from POST values
+         * @param $postValues
+         * @return \stdClass
+         * @throws \Exception
+         */
 		private function createUserFromPostValues($postValues)
 		{
 			if (isset($postValues['username'])) {
