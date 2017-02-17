@@ -86,9 +86,9 @@ class FormComponent Extends BaseComponent
 	 */
 	public function render($application = null)
 	{
-		$request = $this->setPathBackup($get);
+		$request = $this->setPathBackup();
 		$form = $this->renderTemplate($this->subTemplate);
-		$this->resetPathBackup($get, $request);
+		$this->resetPathBackup($request);
 		$this->setFormParameter($form);
 
 		parent::render($application);
@@ -310,7 +310,7 @@ class FormComponent Extends BaseComponent
 	 * @param $get
 	 * @param $request
 	 */
-	private function resetPathBackup($get, $request)
+	private function resetPathBackup($request)
 	{
 		if ($this->getPathBackup !== null) {
 			$request::$get[self::GET_PARAMETER_PATH] = $this->getPathBackup;
