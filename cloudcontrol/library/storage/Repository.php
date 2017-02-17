@@ -64,6 +64,12 @@ class Repository
         }
     }
 
+    /**
+     * Creates the folder in which to create all storage related files
+     *
+     * @param $storagePath
+     * @return bool
+     */
     public static function create($storagePath)
     {
         return mkdir($storagePath);
@@ -186,5 +192,120 @@ class Repository
             $this->contentDbHandle = new \PDO('sqlite:' . $this->storagePath . DIRECTORY_SEPARATOR . 'content.db');
         }
         return $this->contentDbHandle;
+    }
+
+    public function getDocuments()
+    {
+        return $this->fetchAllDocuments('
+            SELECT *
+              FROM documents
+        ');
+    }
+
+    /**
+     * @param $path
+     * @return bool|Document
+     */
+    public function getDocumentContainerByPath($path)
+    {
+        $document = $this->getDocumentByPath($path);
+        if ($document === false) {
+            return false;
+        }
+        $slugLength = strlen($document->slug);
+        $containerPath = substr($path,0,-$slugLength);
+        if ($containerPath === '/') {
+            return $this->getRootFolder();
+        }
+        $containerFolder = $this->getDocumentByPath($containerPath);
+        return $containerFolder;
+    }
+
+    /**
+     * @param $path
+     * @return bool|Document
+     */
+    public function getDocumentByPath($path) {
+        $db = $this->getContentDbHandle();
+        return $this->fetchDocument('
+            SELECT *
+              FROM documents
+             WHERE path = ' . $db->quote($path) . '
+        ');
+    }
+
+    protected function fetchAllDocuments($sql) {
+        $stmt = $this->getDbStatement($sql);
+        return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
+    }
+
+    protected function fetchDocument($sql) {
+        $stmt = $this->getDbStatement($sql);
+        return $stmt->fetchObject('\library\storage\Document');
+    }
+
+    /**
+     * @param $sql
+     * @return \PDOStatement
+     * @throws \Exception
+     */
+    protected function getDbStatement($sql)
+    {
+        $db = $this->getContentDbHandle();
+        $stmt = $db->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $db->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        return $stmt;
+    }
+
+    protected function getRootFolder()
+    {
+        $rootFolder = new Document();
+        $rootFolder->path = '/';
+        $rootFolder->type = 'folder';
+        return $rootFolder;
+    }
+
+    /**
+     * @param $path
+     * @param Document $documentObject
+     * @return bool
+     */
+    public function saveDocument($documentObject)
+    {
+        $db = $this->getContentDbHandle();
+        $stmt = $this->getDbStatement('
+            INSERT OR REPLACE INTO documents (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
+            VALUES(
+              ' . $db->quote($documentObject->path) . ',
+              ' . $db->quote($documentObject->title) . ',
+              ' . $db->quote($documentObject->slug) . ',
+              ' . $db->quote($documentObject->type) . ',
+              ' . $db->quote($documentObject->documentType) . ',
+              ' . $db->quote($documentObject->documentTypeSlug) . ',
+              ' . $db->quote($documentObject->state) . ',
+              ' . $db->quote($documentObject->lastModificationDate) . ',
+              ' . $db->quote($documentObject->creationDate) . ',
+              ' . $db->quote($documentObject->lastModifiedBy) . ',
+              ' . $db->quote(json_encode($documentObject->fields)) . ',
+              ' . $db->quote(json_encode($documentObject->bricks)) . ',
+              ' . $db->quote(json_encode($documentObject->dynamicBricks)) . '
+            )
+        ');
+        $result = $stmt->execute();
+        return $result;
+    }
+
+    public function deleteDocumentByPath($path)
+    {
+        $db = $this->getContentDbHandle();
+        $stmt = $this->getDbStatement('
+            DELETE FROM documents
+                  WHERE path = ' . $db->quote($path) . '
+        ');
+        $stmt->execute();
     }
 }

@@ -2,16 +2,19 @@
 namespace library\storage
 {
 
-	use library\crypt\Crypt;
-	use library\images\ImageResizer;
+    use library\crypt\Crypt;
+    use library\images\ImageResizer;
 
-	/**
+    /**
 	 * Class JsonStorage
 	 * @package library\storage
 	 */
 	class JsonStorage implements Storage
 	{
 		private $storageDir;
+        /**
+         * @var Repository
+         */
 		private $repository;
 
 		/**
@@ -181,7 +184,7 @@ namespace library\storage
 		 */
 		public function getDocuments()
 		{
-			return $this->repository->documents;
+			return $this->repository->getDocuments();
 		}
 
 		/**
@@ -191,121 +194,32 @@ namespace library\storage
 		 */
 		public function getDocumentBySlug($slug)
 		{
-			$documentContainer = $this->getDocumentContainerByPath('/' . $slug);
-			$indices = $documentContainer['indices'];
-
-			if ($indices === null) {
-				$emptyReturn = new \stdClass();
-				$emptyReturn->title = 'Not found';
-				$emptyReturn->type = null;
-				$emptyReturn->state = 'published';
-				return $emptyReturn;
-			}
-
-			$folder = $this->repository->documents;
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$folder = $folder->content[$index];
-				}
-			}
-
-			return $folder;
+            $path = '/' . $slug;
+			return $this->repository->getDocumentByPath($path);
 		}
 
 		public function saveDocument($postValues)
 		{
-			$documentFolderObject = $this->createDocumentFromPostValues($postValues);
+            $oldPath = '/' . $postValues['path'];
 
-			$documentContainer = $this->getDocumentContainerByPath($_GET['slug']);
-			$indices = $documentContainer['indices'];
-
-			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$previousFolder = $folder;
-					$folder = $folder->content[$index];
-				}
-			}
-
-			if ($previousFolder === $this->repository->documents) {
-				// Check for duplicates
-				foreach ($this->repository->documents as $index => $document) {
-					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'document') {
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$this->repository->documents[end($indices)] = $documentFolderObject;
-			} else {
-				// Check for duplicates
-				foreach ($previousFolder->content as $index => $document) {
-					if (end($indices) !== $index && $document->slug == $documentFolderObject->slug && $document->type == 'document') {
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$previousFolder->content[end($indices)] = $documentFolderObject ;
-			}
-
-			$this->save();
-		}
+            $container = $this->getDocumentContainerByPath($oldPath);
+            $documentObject = $this->createDocumentFromPostValues($postValues);
+            $newPath = $container->path . $documentObject->slug;
+            $documentObject->path = $newPath;
+            $this->repository->saveDocument($documentObject);
+        }
 
 		public function addDocument($postValues)
 		{
-			$documentFolderObject = $this->createDocumentFromPostValues($postValues);
-			if ($postValues['path'] == '' || $postValues['path'] == '/') {
-				// Check folder duplicate child
-				foreach ($this->repository->documents as $document) {
-					if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
-						// TODO make it so it doesnt throw an exception, but instead shows a warning
-						throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-					}
-				}
-				$this->repository->documents[] = $documentFolderObject;
-			} else {
-				// Check folder duplicate child
-				$containerFolder = $this->getDocumentFolderBySlug($postValues['path']);
-				if (isset($containerFolder->content)) {
-					foreach ($containerFolder->content as $document) {
-						if ($document->slug == $documentFolderObject->slug && $document->type == 'document') {
-							// TODO make it so it doesnt throw an exception, but instead shows a warning
-							throw new \Exception('Duplicate slug: ' . $document->slug . ' in folder ' . $postValues['path']);
-						}
-					}
-				}
-				$containerFolder->content[] = $documentFolderObject;
-			}
-			$this->save();
+			$documentObject = $this->createDocumentFromPostValues($postValues);
+            $documentObject->path = $postValues['path'] . $documentObject->slug;
+            $this->repository->saveDocument($documentObject);
 		}
 
 		public function deleteDocumentBySlug($slug)
 		{
-			$documentContainer = $this->getDocumentContainerByPath($slug);
-			$indices = $documentContainer['indices'];
-
-			$folder = $this->repository->documents;
-			$previousFolder = $this->repository->documents;
-			foreach ($indices as $index) {
-				if ($folder === $this->repository->documents) {
-					$folder = $folder[$index];
-				} else {
-					$previousFolder = $folder;
-					$folder = $folder->content[$index];
-				}
-			}
-
-			if ($previousFolder === $this->repository->documents) {
-				unset($this->repository->documents[end($indices)]);
-				$this->repository->documents = array_values($this->repository->documents);
-			} else {
-				unset($previousFolder->content[end($indices)]);
-				$previousFolder->content = array_values($previousFolder->content);
-			}
-
-			$this->save();
+            $path = '/' . $slug;
+			$this->repository->deleteDocumentByPath($path);
 		}
 
 		private function createDocumentFromPostValues($postValues)
@@ -315,7 +229,7 @@ namespace library\storage
 
 			$staticBricks = $documentType->bricks;
 
-			$documentObj = new \stdClass();
+			$documentObj = new Document();
 			$documentObj->title = $postValues['title'];
 			$documentObj->slug = slugify($postValues['title']);
 			$documentObj->type = 'document';
@@ -537,61 +451,7 @@ namespace library\storage
 		 */
 		private function getDocumentContainerByPath($path)
 		{
-			$slugs = explode('/', $path);
-			$slugs = array_filter($slugs);
-			end($slugs);
-			$lastKey = key($slugs);
-			$root = $this->repository->documents;
-			$i = 0;
-			$returnArray = array();
-			$noMatches = 0;
-			$foundDocument = null;
-			$document = null;
-			$previousDocument = null;
-			foreach ($slugs as $slug) {
-				$matched = false;
-				$previousDocument = null;
-				end($root);
-				$lastSubKey = key($root);
-				foreach ($root as $index => $document) {
-					if ($slug == $document->slug) {
-						if ($i != $lastKey && $document->type == 'folder') {
-							$returnArray[] = $index;
-							$root = $root[$index]->content;
-							$matched = true;
-						} else {
-							$foundDocument = $document;
-							$returnArray[] = $index;
-							$matched = true;
-						}
-					}
-
-					if ($lastSubKey != $index) {
-						$previousDocument = $document;
-					}
-				}
-				if ($matched === true) {
-					$noMatches += 1;
-				} else {
-					return array(
-							'containerFolder' => new \stdClass(),
-							'indices' => null,
-							'document' => new \stdClass(),
-							'previousDocument' => new \stdClass()
-					);
-				}
-				$i += 1;
-			}
-			if ($noMatches > 0) {
-				return array(
-					'containerFolder' => $document,
-					'indices' => $returnArray,
-					'document' => $foundDocument,
-					'previousDocument' => $previousDocument
-				);
-			} else {
-				throw new \Exception('Invalid path: ' . $path);
-			}
+            return $this->repository->getDocumentContainerByPath($path);
 		}
 
 		/**

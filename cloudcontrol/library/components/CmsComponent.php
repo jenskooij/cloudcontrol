@@ -11,8 +11,8 @@ namespace library\components {
 
 	class CmsComponent extends BaseComponent
 	{
-		/*
-		 * var \library\storage\Storage
+		/**
+		 * @var \library\storage\JsonStorage
 		 */
 		public $storage;
 
