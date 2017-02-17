@@ -109,7 +109,7 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
         );
 
         if (PHP_SAPI === 'cli') {
-            renderCliException($message, $file, $line, $code, $trace, $lines);
+            renderCliException($message, $file, $line, $trace, $lines);
         }
 
         if (file_exists(realpath(__DIR__) . '/errorviewdetailed.php')) {
@@ -149,7 +149,7 @@ function canShowError()
     }
 }
 
-function renderCliException($message, $file, $line, $code, $trace, $lines)
+function renderCliException($message, $file, $line, $trace, $lines)
 {
     echo PHP_EOL;
     echo '------------------------------------------------------------------------------------------------------------------------------------------------' . PHP_EOL;

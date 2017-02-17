@@ -3,7 +3,6 @@ namespace library\components;
 
 
 use library\cc\Request;
-use library\storage\Storage;
 
 class LanguageComponent implements Component
 {
@@ -124,7 +123,7 @@ class LanguageComponent implements Component
     /*
      * These functions are required by the interface, but not for the functionality
      */
-    public function run(Storage $storage) {}
+    public function run(JsonStorage $storage) {}
     public function render() {}
     public function get() {}
 }

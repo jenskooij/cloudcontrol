@@ -68,7 +68,7 @@ namespace library\cc
 				$json = file_get_contents($configPath);
 				$this->config = json_decode($json);
 			} else {
-				initFramework("/../../storage.json");
+				initFramework();
 				$this->config();
 			}
 		}

@@ -185,10 +185,8 @@ END;
 /**
  * Initializes the framework by creating the default
  * storage and base template
- *
- * @param string $storagePath
  */
-function initFramework($storagePath)
+function initFramework()
 {
 	$baseTemplateDefaultPath = realpath('../library/cc/install/_base.php');
 	$baseTemplateTargetPath = '../templates/base.php';
@@ -214,7 +212,7 @@ function initFramework($storagePath)
  */
 function utf8Convert($array)
 {
-	array_walk_recursive($array, function(&$item, $key){
+	array_walk_recursive($array, function(&$item){
 		if(!mb_detect_encoding($item, 'utf-8', true)){
 			$item = utf8_encode($item);
 		}

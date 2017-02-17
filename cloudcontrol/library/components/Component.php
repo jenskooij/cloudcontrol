@@ -3,7 +3,7 @@ namespace library\components
 {
 
 	use library\cc\Request;
-	use library\storage\Storage;
+	use library\storage\JsonStorage;
 
 	/**
 	 * Interface Component
@@ -22,11 +22,10 @@ namespace library\components
 		function __construct($template, Request $request, $parameters, $matchedSitemapItem);
 
 		/**
-		 * @param \library\storage\Storage $storage
-		 *
+		 * @param JsonStorage $storage
 		 * @return mixed
 		 */
-		function run(Storage $storage);
+		function run(JsonStorage $storage);
 
 		/**
 		 * @return void

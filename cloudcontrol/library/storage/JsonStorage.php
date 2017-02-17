@@ -38,7 +38,7 @@ namespace library\storage
 		{
 			$storagePath = __DIR__ . '/../../' . $this->storageDir;
 			if (realpath($storagePath) === false) {
-				initFramework($storagePath);
+				initFramework();
 				if (Repository::create($storagePath)) {
 					$repository = new Repository($storagePath);
 					$repository->init();
@@ -1283,45 +1283,6 @@ namespace library\storage
 			$applicationComponents = array_values($applicationComponents);
 			$this->repository->applicationComponents = $applicationComponents;
 			$this->save();
-		}
-
-		private function getEncodedRepository()
-		{
-			$json = json_encode($this->repository);
-			if ($json === false) {
-				$this->throwJsonException();
-			}
-			return $json;
-		}
-
-		private function throwJsonException()
-		{
-			$error = 'JSON Encoding failed';
-			switch (json_last_error()) {
-				case JSON_ERROR_NONE:
-					$error .= ' - No errors';
-					break;
-				case JSON_ERROR_DEPTH:
-					$error .= ' - Maximum stack depth exceeded';
-					break;
-				case JSON_ERROR_STATE_MISMATCH:
-					$error .= ' - Underflow or the modes mismatch';
-					break;
-				case JSON_ERROR_CTRL_CHAR:
-					$error .= ' - Unexpected control character found';
-					break;
-				case JSON_ERROR_SYNTAX:
-					$error .= ' - Syntax error, malformed JSON';
-					break;
-				case JSON_ERROR_UTF8:
-					$error .= ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-					break;
-				default:
-					$error .= ' - Unknown error';
-					break;
-			}
-
-			throw new \Exception($error);
 		}
 	}
 }

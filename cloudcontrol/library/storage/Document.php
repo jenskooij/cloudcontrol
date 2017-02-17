@@ -14,6 +14,7 @@ namespace library\storage;
  * @property array bricks
  * @property array dynamicBricks
  * @property array content
+ * @property-write resource dbHandle
  */
 class Document
 {
@@ -53,7 +54,7 @@ class Document
                 }
                 return $this->content;
             }
-        } elseif ($name === 'repository') {
+        } elseif ($name === 'dbHandle') {
             throw new \Exception('Trying to get protected property repository.');
         }
         return $this->$name;
