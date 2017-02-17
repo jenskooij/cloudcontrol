@@ -111,7 +111,7 @@ class FormComponent Extends BaseComponent
 	/**
 	 * Sets variables needed for rendering the form template
 	 *
-	 * @param $storage
+	 * @param Storage $storage
 	 */
 	private function initialize($storage)
 	{
@@ -171,7 +171,7 @@ class FormComponent Extends BaseComponent
 	/**
 	 * Checks if this form has been submitted
 	 *
-	 * @param $request
+	 * @param \library\cc\Request $request
 	 *
 	 * @return bool
 	 */
@@ -181,9 +181,8 @@ class FormComponent Extends BaseComponent
 	}
 
 	/**
-	 *
-	 *
-	 * @param $request
+	 * @param \library\cc\Request $request
+	 * @return array
 	 */
 	private function getPostValues($request)
 	{
@@ -307,8 +306,7 @@ class FormComponent Extends BaseComponent
 	}
 
 	/**
-	 * @param $get
-	 * @param $request
+	 * @param \library\cc\Request $request
 	 */
 	private function resetPathBackup($request)
 	{
