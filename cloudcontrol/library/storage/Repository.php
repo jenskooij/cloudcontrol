@@ -47,8 +47,12 @@ class Repository
     protected $users;
     protected $usersChanges = false;
 
+    protected $contentDbHandle;
+
     /**
      * Repository constructor.
+     * @param $storagePath
+     * @throws \Exception
      */
     public function __construct($storagePath)
     {
@@ -65,27 +69,18 @@ class Repository
         return mkdir($storagePath);
     }
 
+    /**
+     * Initiates default storage
+     * @throws \Exception
+     */
     public function init()
     {
         $storageDefaultPath = realpath('../library/cc/install/_storage.json');
-        $json = file_get_contents($storageDefaultPath);
-        $json = json_decode($json);
-        $this->sitemap = $json->sitemap;
-        $this->sitemapChanges = true;
-        $this->applicationComponents = $json->applicationComponents;
-        $this->applicationComponentsChanges = true;
-        $this->documentTypes = $json->documentTypes;
-        $this->documentTypesChanges = true;
-        $this->bricks = $json->bricks;
-        $this->bricksChanges = true;
-        $this->imageSet = $json->imageSet;
-        $this->imageSetChanges = true;
-        $this->images = $json->images;
-        $this->imagesChanges = true;
-        $this->files = $json->files;
-        $this->filesChanges = true;
-        $this->users = $json->users;
-        $this->usersChanges = true;
+        $contentSqlPath = realpath('../library/cc/install/content.sql');
+
+        $this->initConfigStorage($storageDefaultPath);
+        $this->initContentDb($contentSqlPath);
+
         $this->save();
     }
 
@@ -145,5 +140,51 @@ class Repository
         $json = json_decode($json);
         $this->$subset = $json;
         return $json;
+    }
+
+    /**
+     * @param $contentSqlPath
+     */
+    protected function initContentDb($contentSqlPath)
+    {
+        $db = $this->getContentDbHandle();
+        $sql = file_get_contents($contentSqlPath);
+        $db->exec($sql);
+    }
+
+    /**
+     * @param $storageDefaultPath
+     */
+    protected function initConfigStorage($storageDefaultPath)
+    {
+        $json = file_get_contents($storageDefaultPath);
+        $json = json_decode($json);
+        $this->sitemap = $json->sitemap;
+        $this->sitemapChanges = true;
+        $this->applicationComponents = $json->applicationComponents;
+        $this->applicationComponentsChanges = true;
+        $this->documentTypes = $json->documentTypes;
+        $this->documentTypesChanges = true;
+        $this->bricks = $json->bricks;
+        $this->bricksChanges = true;
+        $this->imageSet = $json->imageSet;
+        $this->imageSetChanges = true;
+        $this->images = $json->images;
+        $this->imagesChanges = true;
+        $this->files = $json->files;
+        $this->filesChanges = true;
+        $this->users = $json->users;
+        $this->usersChanges = true;
+    }
+
+    /**
+     * @return \PDO
+     */
+    protected function getContentDbHandle()
+    {
+        if ($this->contentDbHandle === null) {
+            $this->contentDbHandle = new \PDO('sqlite:' . $this->storagePath . DIRECTORY_SEPARATOR . 'content.db');
+        }
+        return $this->contentDbHandle;
     }
 }
