@@ -3,6 +3,8 @@
 *.idea/*
 npm-debug.log
 
+# Storage
+cloudcontrol/storage
 
 # Project specific files
 cloudcontrol/.git

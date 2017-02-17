@@ -11,17 +11,17 @@ namespace library\storage
 	 */
 	class JsonStorage implements Storage
 	{
-		private $storagePath;
+		private $storageDir;
 		private $repository;
 
 		/**
 		 * JsonStorage constructor.
 		 *
-		 * @param $storagePath
+		 * @param $storageDir
 		 */
-		public function __construct($storagePath)
+		public function __construct($storageDir)
 		{
-			$this->storagePath = $storagePath;
+			$this->storageDir = $storageDir;
 			$this->config();
 		}
 
@@ -33,15 +33,20 @@ namespace library\storage
 		 */
 		private function config()
 		{
-			$storagePath = __DIR__ . $this->storagePath;
-			if (realpath($storagePath) !== false) {
-				$jsonString = file_get_contents($storagePath);
-				$this->repository = json_decode($jsonString);
-			} else {
-				// Here is some logic for the initialisation of a new clone of the framework
+			$storagePath = __DIR__ . '/../../' . $this->storageDir;
+			if (realpath($storagePath) === false) {
 				initFramework($storagePath);
-				$this->config();
+				if (Repository::create($storagePath)) {
+					$repository = new Repository($storagePath);
+					$repository->init();
+					$this->repository = $repository;
+				} else {
+					throw new \Exception('Could not create repository directory: ' . $storagePath);
+				}
+			} else {
+				$this->repository = new Repository($storagePath);
 			}
+
 		}
 
 
@@ -116,7 +121,9 @@ namespace library\storage
 			if (!empty($doesItExist)) {
 				throw new \Exception('Trying to add username that already exists.');
 			}
-			$this->repository->users[] = $userObj;
+            $users = $this->repository->users;
+            $users[] = $userObj;
+            $this->repository->users = $users;
 			$this->save();
 		}
 
@@ -633,8 +640,9 @@ namespace library\storage
 		public function addSitemapItem($postValues) 
 		{
 			$sitemapObject = $this->createSitemapItemFromPostValues($postValues);
-			
-			$this->repository->sitemap[] = $sitemapObject;
+			$sitemap = $this->repository->sitemap;
+			$sitemap[] = $sitemapObject;
+			$this->repository->sitemap = $sitemap;
 			$this->save();
 		}
 
@@ -787,7 +795,10 @@ namespace library\storage
 				$imageObject->size = $postValues['size'];
 				$imageObject->set = $fileNames;
 
-				$this->repository->images[] = $imageObject;
+                $images = $this->repository->images;
+				$images[] = $imageObject;
+                $this->repository->images = $images;
+
 				$this->save();
 			} else {
 				throw new \Exception('Error moving uploaded file');
@@ -872,7 +883,9 @@ namespace library\storage
 				$file->type = $postValues['type'];
 				$file->size = $postValues['size'];
 
-				$this->repository->files[] = $file;
+                $files = $this->repository->files;
+				$files[] = $file;
+                $this->repository->files = $files;
 				$this->save();
 			} else {
 				throw new \Exception('Error moving uploaded file');
@@ -970,8 +983,11 @@ namespace library\storage
 		public function addDocumentType($postValues)
 		{
 			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
-			
-			$this->repository->documentTypes[] = $documentTypeObject;
+
+            $documentTypes = $this->repository->documentTypes;
+            $documentTypes[] = $documentTypeObject;
+            $this->repository->documentTypes = $documentTypes;
+
 			$this->save();
 		}
 
@@ -1115,8 +1131,11 @@ namespace library\storage
 		public function addBrick($postValues)
 		{
 			$brickObject = $this->createBrickFromPostValues($postValues);
-			
-			$this->repository->bricks[] = $brickObject;
+
+            $bricks = $this->repository->bricks;
+            $bricks[] = $brickObject;
+            $this->repository->bricks = $bricks;
+
 			$this->save();
 		}
 
@@ -1221,19 +1240,11 @@ namespace library\storage
 		 */
 		/**
 		 * Save changes made to the repository
-		 * in the storagepath
 		 *
 		 * @throws \Exception
 		 */
 		private function save() {
-			$storagePath = __DIR__ . $this->storagePath;
-			if (realpath($storagePath) !== false) {
-				$json = $this->getEncodedRepository();
-				copy($storagePath, $storagePath . '.bak');
-				file_put_contents($storagePath, $json);
-			} else {
-				throw new \Exception('Couldnt find storagePath ' . $storagePath);
-			}
+			$this->repository->save();
 		}
 
 		/*
@@ -1328,7 +1339,9 @@ namespace library\storage
 		{
 			$imageSetObject = $this->createImageSetFromPostValues($postValues);
 
-			$this->repository->imageSet[] = $imageSetObject;
+            $imageSet = $this->repository->imageSet;
+            $imageSet[] = $imageSetObject;
+            $this->repository->imageSet = $imageSet;
 
 			$this->save();
 		}
@@ -1393,8 +1406,10 @@ namespace library\storage
 		public function addApplicationComponent($postValues)
 		{
 			$applicationComponent = $this->createApplicationComponentFromPostValues($postValues);
+			$applicationComponents = $this->repository->applicationComponents;
+			$applicationComponents[] = $applicationComponent;
+			$this->repository->applicationComponents = $applicationComponents;
 
-			$this->repository->applicationComponents[] = $applicationComponent;
 			$this->save();
 		}
 

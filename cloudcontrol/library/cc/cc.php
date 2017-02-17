@@ -190,7 +190,6 @@ END;
  */
 function initFramework($storagePath)
 {
-	$storageDefaultPath = realpath('../library/cc/install/_storage.json');
 	$baseTemplateDefaultPath = realpath('../library/cc/install/_base.php');
 	$baseTemplateTargetPath = '../templates/base.php';
 	$baseConfigDefaultPath = realpath('../library/cc/install/_config.json');
@@ -201,10 +200,6 @@ function initFramework($storagePath)
 		copy($baseConfigDefaultPath, $baseConfigTargetPath);
 	}
 
-	// Create the initial storage
-	if (file_exists($storageDefaultPath) && realpath($storagePath) === false) {
-		copy($storageDefaultPath, $storagePath);
-	}
 	// Create the initial base template
 	if (file_exists($baseTemplateDefaultPath) && realpath($baseTemplateTargetPath) === false) {
 		copy($baseTemplateDefaultPath, $baseTemplateTargetPath);

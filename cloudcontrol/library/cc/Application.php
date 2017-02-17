@@ -79,7 +79,7 @@ namespace library\cc
 		private function storage()
 		{
 			if ($this->getStorageType() == 'json') {
-				$this->storage = new JsonStorage($this->getStoragePath());
+				$this->storage = new JsonStorage($this->getStorageDir());
 			}
 		}
 
@@ -241,6 +241,11 @@ namespace library\cc
 		public function getStoragePath()
 		{
 			return $this->config->storagePath;
+		}
+
+		public function getStorageDir()
+		{
+			return $this->config->storageDir;
 		}
 
 		public function getApplicationComponents()
