@@ -278,9 +278,13 @@ namespace library\storage
 							$brickArray[] = $brickObj;
 						}
 
-						$documentObj->bricks[$brickSlug] = $brickArray;
+                        $bricks = $documentObj->bricks;
+						$bricks[$brickSlug] = $brickArray;
+                        $documentObj->bricks = $bricks;
 					} else {
-						$documentObj->bricks[$brickSlug] = $brick;
+                        $bricks = $documentObj->bricks;
+						$bricks[$brickSlug] = $brick;
+                        $documentObj->bricks = $bricks;
 					}
 				}
 			}
@@ -291,7 +295,9 @@ namespace library\storage
 						$brickObj = new \stdClass();
 						$brickObj->type = $brickTypeSlug;
 						$brickObj->fields = $brickContent;
-						$documentObj->dynamicBricks[] = $brickObj;
+                        $dynamicBricks = $documentObj->dynamicBricks;
+						$dynamicBricks[] = $brickObj;
+                        $documentObj->dynamicBricks = $dynamicBricks;
 					}
 				}
 			}
