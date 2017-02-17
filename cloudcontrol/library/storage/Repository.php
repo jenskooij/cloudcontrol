@@ -3,6 +3,15 @@
  * User: Jens
  * Date: 30-1-2017
  * Time: 20:15
+ *
+ * @property array sitemap
+ * @property array applicationComponents
+ * @property array documentTypes
+ * @property array bricks
+ * @property array imageSet
+ * @property array images
+ * @property array files
+ * @property array users
  */
 
 namespace library\storage;
