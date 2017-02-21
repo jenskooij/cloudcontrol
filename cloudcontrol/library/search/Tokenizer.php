@@ -2,108 +2,38 @@
 /**
  * User: jensk
  * Date: 21-2-2017
- * Time: 10:38
+ * Time: 16:23
  */
 
 namespace library\search;
 
 
-use library\storage\Document;
-
 class Tokenizer
 {
-	/**
-	 * @var Document
-	 */
-	protected $document;
-
+	protected $inputString;
 	protected $tokenVector = array();
 
 	/**
 	 * Tokenizer constructor.
 	 *
-	 * @param \library\storage\Document $document
+	 * @param string $string Should preferably be parsed wit \library\search\CharacterFilter
+	 * @see \library\search\CharacterFilter
 	 */
-	public function __construct(Document $document)
+	public function __construct($string)
 	{
-		$this->document = $document;
+		$this->inputString = $string;
 		$this->tokenize();
 	}
 
-	private function tokenize()
+	protected function tokenize()
 	{
-		$this->tokenizeTitle();
-		$this->tokenizeFields();
-		$this->tokenizeBricks();
-		$this->tokenizeDynamicBricks();
-		$this->tokenVector = array_filter($this->tokenVector);
-		arsort($this->tokenVector);
-	}
-
-	private function tokenizeTitle()
-	{
-		$this->tokenizeString($this->document->title);
-	}
-
-	private function tokenizeString($string)
-	{
-		$string = new CharacterFilter($string);
-		$tokens = explode(' ', $string);
+		$tokens = explode(' ', $this->inputString);
 		foreach ($tokens as $token) {
 			$this->addTokenToVector($token);
 		}
 	}
 
-	private function tokenizeFields()
-	{
-		$fields = $this->document->fields;
-		foreach ($fields as $field) {
-			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field);
-		}
-	}
-
-	private function tokenizeField($field)
-	{
-		foreach ($field as $value) {
-			$this->tokenizeString($value);
-		}
-	}
-
-	private function tokenizeBricks()
-	{
-		$bricks = $this->document->bricks;
-		foreach ($bricks as $brickSlug => $brick) {
-			$this->tokenizeBrick($brick);
-		}
-	}
-
-	private function tokenizeBrick($brick)
-	{
-		$fields  = $brick->fields;
-		foreach ($fields as $field) {
-			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field);
-		}
-	}
-
-	private function tokenizeDynamicBricks()
-	{
-		$dynamicBricks = $this->document->dynamicBricks;
-		foreach ($dynamicBricks as $brick) {
-			$this->tokenizeBrick($brick);
-		}
-	}
-
-	public function getTokens()
-	{
-		return $this->tokenVector;
-	}
-
-	/**
-	 * @param $token
-	 */
-	private function addTokenToVector($token)
+	protected function addTokenToVector($token)
 	{
 		if (!empty($token)) {
 			if (isset($this->tokenVector[$token])) {
@@ -113,4 +43,14 @@ class Tokenizer
 			}
 		}
 	}
+
+	/**
+	 * @return array
+	 */
+	public function getTokenVector()
+	{
+		return $this->tokenVector;
+	}
+
+
 }

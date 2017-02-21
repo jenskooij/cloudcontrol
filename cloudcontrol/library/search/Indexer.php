@@ -75,7 +75,7 @@ class Indexer
 	public function updateIndex()
 	{
 		$this->createDocumentTermCount();
-		dump($this->getSearchDbHandle()->errorInfo());
+		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
 	}
 
 	private function applyFilters($tokens)
@@ -112,7 +112,7 @@ class Indexer
 	{
 		$documents = $this->storage->getDocuments();
 		foreach ($documents as $document) {
-			$tokenizer = new Tokenizer($document);
+			$tokenizer = new DocumentTokenizer($document);
 			$tokens = $tokenizer->getTokens();
 			$documentTermCount = $this->applyFilters($tokens);
 			$this->storeDocumentTermCount($document, $documentTermCount);
