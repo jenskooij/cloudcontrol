@@ -25,7 +25,9 @@ class Indexer extends SearchDbConnected
 
 	public function updateIndex()
 	{
+		$this->resetIndex();
 		$this->createDocumentTermCount();
+		$this->createDocumentTermFrequency();
 		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
 	}
 
@@ -59,6 +61,9 @@ class Indexer extends SearchDbConnected
 		}
 	}
 
+	/**
+	 * Count how often a term is used in a document
+	 */
 	private function createDocumentTermCount()
 	{
 		$documents = $this->storage->getDocuments();
@@ -68,5 +73,78 @@ class Indexer extends SearchDbConnected
 			$documentTermCount = $this->applyFilters($tokens);
 			$this->storeDocumentTermCount($document, $documentTermCount);
 		}
+	}
+
+	/**
+	 * Calculate, relatively how often a term is used in a document
+	 * Where relativly means compared to the total of terms, how often is term X
+	 * used. For example:
+	 * doc1 has the following terms:
+	 * - term1 (count 2)
+	 * - term2 (count 1)
+	 * The total count of terms = 3
+	 * The frequency of term1 in doc1 is:
+	 * count of term 1 / total count of terms
+	 * =
+	 * 2 / 3 = 0.66666666667
+	 */
+	private function createDocumentTermFrequency()
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			SELECT documentPath, SUM(count) as totalTermCount
+			  FROM term_count
+		  GROUP BY documentPath
+		');
+		$stmt->execute();
+		$totalTermCountPerDocument = $stmt->fetchAll(\PDO::FETCH_CLASS);
+		foreach ($totalTermCountPerDocument as $document) {
+			$termsForDocument = $this->getTermsForDocument($document->documentPath);
+			foreach ($termsForDocument as $term) {
+				$frequency = intval($term->count) / $document->totalTermCount;
+				$this->storeDocumentTermFrequency($document->documentPath, $term->term, $frequency);
+			}
+		}
+	}
+
+	private function getTermsForDocument($documentPath)
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			SELECT `term`, `count`
+			  FROM `term_count`
+			 WHERE `documentPath` = :documentPath
+		');
+		$stmt->bindValue(':documentPath', $documentPath);
+		$stmt->execute();
+		return $stmt->fetchAll(\PDO::FETCH_CLASS);
+	}
+
+	/**
+	 * Resets the entire index
+	 */
+	private function resetIndex()
+	{
+		$db = $this->getSearchDbHandle();
+		$sql = '
+			DELETE FROM term_count;
+			DELETE FROM term_frequency;
+			UPDATE `sqlite_sequence` SET `seq`= 0 WHERE `name`=\'term_count\';
+			UPDATE `sqlite_sequence` SET `seq`= 0 WHERE `name`=\'term_frequency\';
+		';
+		$db->exec($sql);
+	}
+
+	private function storeDocumentTermFrequency($documentPath, $term, $frequency)
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			INSERT INTO `term_frequency` (documentPath, term, frequency)
+				 VALUES(:documentPath, :term, :frequency);
+		');
+		$stmt->bindValue(':documentPath', $documentPath);
+		$stmt->bindValue(':term', $term);
+		$stmt->bindValue(':frequency', $frequency);
+		$stmt->execute();
 	}
 }

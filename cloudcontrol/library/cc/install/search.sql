@@ -1,8 +1,12 @@
 BEGIN TRANSACTION;
 CREATE TABLE `term_count` (
-	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`documentPath`	TEXT,
 	`term`	TEXT,
 	`count`	INTEGER
+);
+CREATE TABLE `term_frequency` (
+	`documentPath`	TEXT,
+	`term`	TEXT,
+	`frequency`	NUMERIC
 );
 COMMIT;
