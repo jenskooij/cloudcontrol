@@ -1,6 +1,5 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
  * User: jensk
  * Date: 21-2-2017
  * Time: 10:29
@@ -11,7 +10,7 @@ namespace library\search;
 
 use library\storage\JsonStorage;
 
-class Indexer
+class Indexer extends SearchDbConnected
 {
 	/**
 	 * @var \library\storage\JsonStorage
@@ -23,54 +22,6 @@ class Indexer
 		'EnglishStopWords'
 	);
 	protected $storageDir;
-	/**
-	 * @var resource
-	 */
-	protected $searchDbHandle;
-
-	/**
-	 * Indexer constructor.
-	 *
-	 * @param \library\storage\JsonStorage $storage
-	 */
-	public function __construct(JsonStorage $storage)
-	{
-		$this->storageDir = $storage->getStorageDir();
-		$this->storage = $storage;
-		$this->initializeDb();
-	}
-
-	private function initializeDb()
-	{
-		if (!$this->isDatabaseConfigured()) {
-			$this->configureDatabase();
-		}
-	}
-
-	private function configureDatabase()
-	{
-		$db = $this->getSearchDbHandle();
-		$sqlPath = __DIR__ . DIRECTORY_SEPARATOR . '../cc/install/search.sql';
-		$searchSql = file_get_contents($sqlPath);
-		$db->exec($searchSql);
-	}
-
-	private function isDatabaseConfigured()
-	{
-		$db = $this->getSearchDbHandle();
-		$stmt = $db->query('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'term_count\';');
-		$result = $stmt->fetchAll();
-		return !empty($result);
-	}
-
-	protected function getSearchDbHandle()
-	{
-		if ($this->searchDbHandle === null) {
-			$path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->storageDir . DIRECTORY_SEPARATOR;
-			$this->searchDbHandle = new \PDO('sqlite:' . $path . 'search.db');
-		}
-		return $this->searchDbHandle;
-	}
 
 	public function updateIndex()
 	{
