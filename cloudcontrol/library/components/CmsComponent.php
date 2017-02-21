@@ -5,6 +5,7 @@ namespace library\components {
 	use library\components\cms\DocumentRouting;
 	use library\components\cms\FilesRouting;
 	use library\components\cms\ImagesRouting;
+	use library\components\cms\SearchRouting;
 	use library\components\cms\SitemapRouting;
 	use library\crypt\Crypt;
 	use library\storage\JsonStorage;
@@ -40,6 +41,7 @@ namespace library\components {
 		const PARAMETER_IMAGE_SET = 'imageSet';
 		const PARAMETER_MAIN_NAV_CLASS = 'mainNavClass';
 		const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
+		const PARAMETER_SEARCH = 'search';
 		const PARAMETER_SITEMAP = 'sitemap';
 		const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
 		const PARAMETER_SMALLEST_IMAGE = 'smallestImage';
@@ -144,6 +146,7 @@ namespace library\components {
 			$this->imageRouting($userRights, $relativeCmsUri);
 			$this->filesRouting($userRights, $relativeCmsUri);
 			$this->configurationRouting($userRights, $relativeCmsUri);
+			$this->searchRouting($userRights, $relativeCmsUri);
 
 			$this->renderBody();
 		}
@@ -348,6 +351,13 @@ namespace library\components {
 				$this->invalidCredentials($crypt, $request);
 			} else {
 				$this->checkPassword($user, $crypt, $request);
+			}
+		}
+
+		private function searchRouting($userRights, $relativeCmsUri)
+		{
+			if (in_array(self::PARAMETER_SEARCH, $userRights)) {
+				new SearchRouting($this->request, $relativeCmsUri, $this);
 			}
 		}
 	}
