@@ -44,8 +44,13 @@ class CharacterFilter
 	 */
 	private function filterSpecialCharacters($string)
 	{
-		$string = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string);
-		$string = preg_replace("/[^a-zA-Z0-9 ]/", '', $string);
+		$string = strip_tags($string);
+		$string = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string); // Remove special alphanumeric characters
+		$string = str_replace(array('+', '=', '!', ',', '.',';', ':', '?'), ' ', $string); // Replace sentence breaking charaters with spaces
+		$string = preg_replace("/[\r\n]+/", " ", $string); // Replace multiple newlines with a single space.
+		$string = preg_replace("/[\t]+/", " ", $string); // Replace multiple tabs with a single space.
+		$string = preg_replace("/[^a-zA-Z0-9 ]/", '', $string); // Filter out everything that is not alphanumeric or a space
+		$string = preg_replace('!\s+!', ' ', $string); // Replace multiple spaces with a single space
 		return $string;
 	}
 
