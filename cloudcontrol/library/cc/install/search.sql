@@ -9,4 +9,8 @@ CREATE TABLE `term_frequency` (
 	`term`	TEXT,
 	`frequency`	NUMERIC
 );
+CREATE TABLE `inverse_document_frequency` (
+	`term`	TEXT,
+	`inverseDocumentFrequency`	NUMERIC
+);
 COMMIT;

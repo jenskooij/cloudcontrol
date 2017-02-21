@@ -30,18 +30,7 @@ class Search extends SearchDbConnected
 		$tokenVector = $this->tokenizer->getTokenVector();
 		$tokens = array_keys($tokenVector);
 		foreach ($tokens as $token) {
-			$db = $this->getSearchDbHandle();
-			$stmt = $db->prepare('
-				SELECT *
-				  FROM term_count
-				 WHERE term = :term
-			  ORDER BY count DESC
-			');
-			$stmt->bindValue(':term', $token);
-			$stmt->execute();
-			$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			dump('SHOULD CREATE TERM FREQUENCY TABLE');
-			dump($result);
+			dump('TODO implement search based on : pageRank = tfForDoc("query") * idf("query")');
 		}
 	}
 }

@@ -28,6 +28,7 @@ class Indexer extends SearchDbConnected
 		$this->resetIndex();
 		$this->createDocumentTermCount();
 		$this->createDocumentTermFrequency();
+		$this->createInverseDocumentFrequency();
 		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
 	}
 
@@ -129,8 +130,10 @@ class Indexer extends SearchDbConnected
 		$sql = '
 			DELETE FROM term_count;
 			DELETE FROM term_frequency;
+			DELETE FROM inverse_document_frequency;
 			UPDATE `sqlite_sequence` SET `seq`= 0 WHERE `name`=\'term_count\';
 			UPDATE `sqlite_sequence` SET `seq`= 0 WHERE `name`=\'term_frequency\';
+			UPDATE `sqlite_sequence` SET `seq`= 0 WHERE `name`=\'inverse_document_frequency\';
 		';
 		$db->exec($sql);
 	}
@@ -145,6 +148,64 @@ class Indexer extends SearchDbConnected
 		$stmt->bindValue(':documentPath', $documentPath);
 		$stmt->bindValue(':term', $term);
 		$stmt->bindValue(':frequency', $frequency);
+		$stmt->execute();
+	}
+
+	private function createInverseDocumentFrequency()
+	{
+		/**
+		 * Formula to calculate:
+		 * IDF = log(totalDocuments / documentsThatContainTheTerm)
+		 */
+		$totalDocuments = $this->getTotalDocumentCount();
+		$allTerms = $this->getAllUniqueTerms();
+
+		foreach ($allTerms as $term) {
+			$documentsThatContainTheTerm = $this->getDocumentsThatContainTheTerm($term->term);
+			$inverseDocumentFrequency = log($totalDocuments / $documentsThatContainTheTerm->totalCount);
+			$this->storeInverseTermFrequency($term->term, $inverseDocumentFrequency);
+		}
+	}
+
+	private function getTotalDocumentCount()
+	{
+		return $this->storage->getTotalDocumentCount();
+	}
+
+	private function getAllUniqueTerms()
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			SELECT `term`
+			  FROM `term_count`
+		  GROUP BY `term`
+		');
+		$stmt->execute();
+		return $stmt->fetchAll(\PDO::FETCH_CLASS);
+	}
+
+	private function getDocumentsThatContainTheTerm($term)
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			SELECT COUNT(`documentPath`) as totalCount
+			  FROM `term_count`
+			 WHERE `term` = :term
+		');
+		$stmt->bindValue(':term', $term);
+		$stmt->execute();
+		return $stmt->fetch(\PDO::FETCH_OBJ);
+	}
+
+	private function storeInverseTermFrequency($term, $inverseDocumentFrequency)
+	{
+		$db = $this->getSearchDbHandle();
+		$stmt = $db->prepare('
+			INSERT INTO `inverse_document_frequency` (term, inverseDocumentFrequency)
+				 VALUES(:term, :inverseDocumentFrequency);
+		');
+		$stmt->bindValue(':term', $term);
+		$stmt->bindValue(':inverseDocumentFrequency', $inverseDocumentFrequency);
 		$stmt->execute();
 	}
 }

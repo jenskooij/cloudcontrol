@@ -298,7 +298,21 @@ class Repository
         return $document;
     }
 
-    /**
+	public function getTotalDocumentCount()
+	{
+		$db = $this->getContentDbHandle();
+		$stmt = $db->query('
+			SELECT count(*)
+			  FROM documents
+		');
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
+		if (!is_array($result )) {
+			return 0;
+		}
+		return current($result);
+	}
+
+	/**
      * Return the results of the query as array of Documents
      * @param $sql
      * @return array

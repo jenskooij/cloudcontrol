@@ -222,6 +222,11 @@ namespace library\storage
 			return $this->repository->getDocuments();
 		}
 
+		public function getTotalDocumentCount()
+		{
+			return $this->repository->getTotalDocumentCount();
+		}
+
 		/**
 		 * @param string $slug
 		 * @return mixed
