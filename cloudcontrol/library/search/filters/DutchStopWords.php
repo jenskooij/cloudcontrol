@@ -32,9 +32,12 @@ class DutchStopWords implements Filter
 	{
 		foreach ($this->dutchStopWords as $dutchStopWord) {
 			if (isset($this->tokens[$dutchStopWord])) {
+				$this->tokens[$dutchStopWord] = null;
 				unset($this->tokens[$dutchStopWord]);
 			}
 		}
+		$this->tokens = array_filter($this->tokens);
+		asort($this->tokens);
 		return $this->tokens;
 	}
 }

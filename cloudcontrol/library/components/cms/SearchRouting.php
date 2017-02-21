@@ -30,12 +30,18 @@ class SearchRouting implements CmsRouting
 		}
 	}
 
+	/**
+	 * @param \library\components\CmsComponent $cmsComponent
+	 */
 	private function overviewRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/search';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
 	}
 
+	/**
+	 * @param \library\components\CmsComponent $cmsComponent
+	 */
 	private function updateIndexRoute($cmsComponent)
 	{
 		$indexer = new Indexer($cmsComponent->storage);

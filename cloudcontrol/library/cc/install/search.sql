@@ -1,0 +1,8 @@
+BEGIN TRANSACTION;
+CREATE TABLE `term_count` (
+	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`documentPath`	TEXT,
+	`term`	TEXT,
+	`count`	INTEGER
+);
+COMMIT;

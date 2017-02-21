@@ -36,6 +36,7 @@ class Tokenizer
 		$this->tokenizeFields();
 		$this->tokenizeBricks();
 		$this->tokenizeDynamicBricks();
+		$this->tokenVector = array_filter($this->tokenVector);
 		arsort($this->tokenVector);
 	}
 
@@ -49,11 +50,7 @@ class Tokenizer
 		$string = new CharacterFilter($string);
 		$tokens = explode(' ', $string);
 		foreach ($tokens as $token) {
-			if (isset($this->tokenVector[$token])) {
-				$this->tokenVector[$token] += 1;
-			} else {
-				$this->tokenVector[$token] = 1;
-			}
+			$this->addTokenToVector($token);
 		}
 	}
 
@@ -101,5 +98,19 @@ class Tokenizer
 	public function getTokens()
 	{
 		return $this->tokenVector;
+	}
+
+	/**
+	 * @param $token
+	 */
+	private function addTokenToVector($token)
+	{
+		if (!empty($token)) {
+			if (isset($this->tokenVector[$token])) {
+				$this->tokenVector[$token] += 1;
+			} else {
+				$this->tokenVector[$token] = 1;
+			}
+		}
 	}
 }

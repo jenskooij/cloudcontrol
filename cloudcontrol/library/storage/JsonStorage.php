@@ -676,6 +676,14 @@ namespace library\storage
 			return $files;
 		}
 
+		/**
+		 * @return mixed
+		 */
+		public function getStorageDir()
+		{
+			return $this->storageDir;
+		}
+
 		private function compareFiles($a, $b)
 		{
 			return strcmp($a->file, $b->file);
