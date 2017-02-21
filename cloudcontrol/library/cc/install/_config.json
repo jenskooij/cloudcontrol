@@ -1,5 +1,6 @@
 {
   "storageType": "json",
   "storagePath": "/../../storage.json",
+  "storageDir": "storage",
   "showErrorsToAll": true
 }
