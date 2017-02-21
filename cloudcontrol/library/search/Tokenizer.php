@@ -97,4 +97,9 @@ class Tokenizer
 			$this->tokenizeBrick($brick);
 		}
 	}
+
+	public function getTokens()
+	{
+		return $this->tokenVector;
+	}
 }

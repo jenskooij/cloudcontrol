@@ -18,6 +18,11 @@ class Indexer
 	 */
 	protected $storage;
 
+	protected $filters = array(
+		'DutchStopWords',
+		'EnglishStopWords'
+	);
+
 	/**
 	 * Indexer constructor.
 	 *
@@ -34,8 +39,21 @@ class Indexer
 		$documents = $this->storage->getDocuments();
 		foreach ($documents as $document) {
 			$tokenizer = new Tokenizer($document);
+			$tokens = $tokenizer->getTokens();
+			$tokens = $this->applyFilters($tokens);
+			dump($tokens);
 			dump($tokenizer);
 		}
+	}
+
+	private function applyFilters($tokens)
+	{
+		foreach ($this->filters as $filterName) {
+			$filterClassName = '\library\search\filters\\' . $filterName;
+			$filter = new $filterClassName($tokens);
+			$tokens = $filter->getFilterResults();
+		}
+		return $tokens;
 	}
 
 }
