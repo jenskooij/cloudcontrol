@@ -17,8 +17,6 @@ class Tokenizer
 	 */
 	protected $document;
 
-	private static $ignoreTokens = array('en');
-
 	protected $tokenVector = array();
 
 	/**
@@ -34,11 +32,11 @@ class Tokenizer
 
 	private function tokenize()
 	{
-		// TODO tokenize title
 		$this->tokenizeTitle();
-		// TODO tokenize fields
-		// TODO tokenize bricks
-		// TODO tokenize dynamicBricks
+		$this->tokenizeFields();
+		$this->tokenizeBricks();
+		$this->tokenizeDynamicBricks();
+		arsort($this->tokenVector);
 	}
 
 	private function tokenizeTitle()
@@ -56,6 +54,47 @@ class Tokenizer
 			} else {
 				$this->tokenVector[$token] = 1;
 			}
+		}
+	}
+
+	private function tokenizeFields()
+	{
+		$fields = $this->document->fields;
+		foreach ($fields as $field) {
+			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
+			$this->tokenizeField($field);
+		}
+	}
+
+	private function tokenizeField($field)
+	{
+		foreach ($field as $value) {
+			$this->tokenizeString($value);
+		}
+	}
+
+	private function tokenizeBricks()
+	{
+		$bricks = $this->document->bricks;
+		foreach ($bricks as $brickSlug => $brick) {
+			$this->tokenizeBrick($brick);
+		}
+	}
+
+	private function tokenizeBrick($brick)
+	{
+		$fields  = $brick->fields;
+		foreach ($fields as $field) {
+			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
+			$this->tokenizeField($field);
+		}
+	}
+
+	private function tokenizeDynamicBricks()
+	{
+		$dynamicBricks = $this->document->dynamicBricks;
+		foreach ($dynamicBricks as $brick) {
+			$this->tokenizeBrick($brick);
 		}
 	}
 }
