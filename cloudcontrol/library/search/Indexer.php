@@ -10,6 +10,7 @@ namespace library\search;
 
 use library\search\indexer\InverseDocumentFrequency;
 use library\search\indexer\TermCount;
+use library\search\indexer\TermFieldLengthNorm;
 use library\search\indexer\TermFrequency;
 
 class Indexer extends SearchDbConnected
@@ -25,6 +26,7 @@ class Indexer extends SearchDbConnected
 		$this->resetIndex();
 		$this->createDocumentTermCount();
 		$this->createDocumentTermFrequency();
+		$this->createTermFieldLengthNorm();
 		$this->createInverseDocumentFrequency();
 		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
 	}
@@ -76,5 +78,11 @@ class Indexer extends SearchDbConnected
 	private function getTotalDocumentCount()
 	{
 		return $this->storage->getTotalDocumentCount();
+	}
+
+	private function createTermFieldLengthNorm()
+	{
+		$termFieldLengthNorm = new TermFieldLengthNorm($this->getSearchDbHandle());
+		$termFieldLengthNorm->execute();
 	}
 }

@@ -35,13 +35,7 @@ class TermFrequency
 	public function execute()
 	{
 		$db = $this->dbHandle;
-		$stmt = $db->prepare('
-			SELECT documentPath, field, SUM(count) as totalTermCount
-			  FROM term_count
-		  GROUP BY documentPath, field
-		');
-		$stmt->execute();
-		$totalTermCountPerDocument = $stmt->fetchAll(\PDO::FETCH_CLASS);
+		$totalTermCountPerDocument = $this->getTotalTermCountPerDocument($db);
 		foreach ($totalTermCountPerDocument as $documentField) {
 			$termsForDocumentField = $this->getTermsForDocumentField($documentField->documentPath, $documentField->field);
 			foreach ($termsForDocumentField as $term) {
@@ -78,6 +72,24 @@ class TermFrequency
 		$stmt->bindValue(':term', $term);
 		$stmt->bindValue(':frequency', $frequency);
 		$stmt->execute();
+	}
+
+	/**
+	 * @param $db
+	 *
+	 * @return mixed
+	 */
+	private function getTotalTermCountPerDocument($db)
+	{
+		$stmt = $db->prepare('
+			SELECT documentPath, field, SUM(count) as totalTermCount
+			  FROM term_count
+		  GROUP BY documentPath, field
+		');
+		$stmt->execute();
+		$totalTermCountPerDocument = $stmt->fetchAll(\PDO::FETCH_CLASS);
+
+		return $totalTermCountPerDocument;
 	}
 
 }
