@@ -32,9 +32,15 @@ class EnglishStopWords implements Filter
 	public function getFilterResults()
 	{
 		foreach ($this->englishStopWords as $englishStopWord) {
-			if (isset($this->tokens[$englishStopWord])) {
-				$this->tokens[$englishStopWord] = null;
-				//unset($this->tokens[$englishStopWord]);
+			foreach ($this->tokens as $field => $tokens) {
+				if (isset($tokens[$englishStopWord])) {
+					$tokens[$englishStopWord] = null;
+					unset($tokens[$englishStopWord]);
+					$tokens = array_filter($tokens);
+					asort($tokens);
+				}
+
+				$this->tokens[$field] = $tokens;
 			}
 		}
 		$this->tokens = array_filter($this->tokens);

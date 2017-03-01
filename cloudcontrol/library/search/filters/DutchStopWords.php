@@ -31,9 +31,15 @@ class DutchStopWords implements Filter
 	public function getFilterResults()
 	{
 		foreach ($this->dutchStopWords as $dutchStopWord) {
-			if (isset($this->tokens[$dutchStopWord])) {
-				$this->tokens[$dutchStopWord] = null;
-				unset($this->tokens[$dutchStopWord]);
+			foreach ($this->tokens as $field => $tokens) {
+				if (isset($tokens[$dutchStopWord])) {
+					$tokens[$dutchStopWord] = null;
+					unset($tokens[$dutchStopWord]);
+					$tokens = array_filter($tokens);
+					asort($tokens);
+				}
+
+				$this->tokens[$field] = $tokens;
 			}
 		}
 		$this->tokens = array_filter($this->tokens);

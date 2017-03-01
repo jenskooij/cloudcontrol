@@ -44,24 +44,24 @@ class DocumentTokenizer
 	{
 		$filteredString = new CharacterFilter($this->document->title);
 		$tokenizer = new Tokenizer($filteredString);
-		$this->addTokenVectorToVector($tokenizer->getTokenVector());
+		$this->addTokenVectorToVector($tokenizer->getTokenVector(), 'title');
 	}
 
 	private function tokenizeFields()
 	{
 		$fields = $this->document->fields;
-		foreach ($fields as $field) {
+		foreach ($fields as $fieldName => $field) {
 			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field);
+			$this->tokenizeField($field, $fieldName);
 		}
 	}
 
-	private function tokenizeField($field)
+	private function tokenizeField($field, $fieldName)
 	{
 		foreach ($field as $value) {
 			$filteredString = new CharacterFilter($value);
 			$tokenizer = new Tokenizer($filteredString);
-			$this->addTokenVectorToVector($tokenizer->getTokenVector());
+			$this->addTokenVectorToVector($tokenizer->getTokenVector(), $fieldName);
 		}
 	}
 
@@ -69,24 +69,24 @@ class DocumentTokenizer
 	{
 		$bricks = $this->document->bricks;
 		foreach ($bricks as $brickSlug => $brick) {
-			$this->tokenizeBrick($brick);
+			$this->tokenizeBrick($brick, $brickSlug);
 		}
 	}
 
-	private function tokenizeBrick($brick)
+	private function tokenizeBrick($brick, $brickSlug)
 	{
 		$fields  = $brick->fields;
-		foreach ($fields as $field) {
+		foreach ($fields as $fieldName => $field) {
 			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field);
+			$this->tokenizeField($field, $brickSlug . '__' . $fieldName);
 		}
 	}
 
 	private function tokenizeDynamicBricks()
 	{
 		$dynamicBricks = $this->document->dynamicBricks;
-		foreach ($dynamicBricks as $brick) {
-			$this->tokenizeBrick($brick);
+		foreach ($dynamicBricks as $key => $brick) {
+			$this->tokenizeBrick($brick, 'dynamicBricks__' . $brick->type . $key);
 		}
 	}
 
@@ -96,24 +96,25 @@ class DocumentTokenizer
 	}
 
 	/**
-	 * @param     $token
-	 * @param int $count
+	 * @param     		$token
+	 * @param string    $field
+	 * @param int 		$count
 	 */
-	private function addTokenToVector($token, $count = 1)
+	private function addTokenToVector($token, $field, $count = 1)
 	{
 		if (!empty($token)) {
 			if (isset($this->tokenVector[$token])) {
-				$this->tokenVector[$token] += $count;
+				$this->tokenVector[$field][$token] += $count;
 			} else {
-				$this->tokenVector[$token] = $count;
+				$this->tokenVector[$field][$token] = $count;
 			}
 		}
 	}
 
-	private function addTokenVectorToVector($tokenVector)
+	private function addTokenVectorToVector($tokenVector, $field)
 	{
 		foreach ($tokenVector as $token => $count) {
-			$this->addTokenToVector($token, $count);
+			$this->addTokenToVector($token, $field, $count);
 		}
 	}
 }

@@ -19,6 +19,11 @@ abstract class SearchDbConnected
 	protected $searchDbHandle;
 
 	/**
+	 * @var \library\storage\JsonStorage
+	 */
+	protected $storage;
+
+	/**
 	 * Indexer constructor.
 	 *
 	 * @param \library\storage\JsonStorage $storage
