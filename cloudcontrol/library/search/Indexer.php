@@ -20,14 +20,25 @@ class Indexer extends SearchDbConnected
 		'EnglishStopWords'
 	);
 	protected $storageDir;
+	protected $loggingStart;
+	protected $log;
+	protected $lastLog;
 
 	public function updateIndex()
 	{
+		$this->startLogging();
+		$this->addLog('Indexing start. Clearing index.');
 		$this->resetIndex();
+		$this->addLog('Index cleared. Start Document Term Count.');
 		$this->createDocumentTermCount();
+		$this->addLog('Start Document Term Count done. Start Document Term Frequency.');
 		$this->createDocumentTermFrequency();
+		$this->addLog('Document Term Frequency done. Start Term Field Length Norm.');
 		$this->createTermFieldLengthNorm();
+		$this->addLog('Term Field Length Norm done. Start Inverse Document Frequency.');
 		$this->createInverseDocumentFrequency();
+		$this->addLog('Inverse Document Frequency done. Indexing complete.');
+		dump(PHP_EOL . $this->log);
 		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
 	}
 
@@ -84,5 +95,17 @@ class Indexer extends SearchDbConnected
 	{
 		$termFieldLengthNorm = new TermFieldLengthNorm($this->getSearchDbHandle());
 		$termFieldLengthNorm->execute();
+	}
+
+	private function startLogging()
+	{
+		$this->loggingStart = time();
+	}
+
+	private function addLog($string)
+	{
+		$currentTime = time();
+		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 75, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 's since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 's since start.' . PHP_EOL;
+		$this->lastLog = time();
 	}
 }
