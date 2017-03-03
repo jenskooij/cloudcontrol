@@ -32,56 +32,34 @@ class InverseDocumentFrequency
 	 */
 	public function execute()
 	{
-		$totalDocuments = $this->documentCount;
-		$allTerms = $this->getAllUniqueTerms();
-
-		foreach ($allTerms as $term) {
-			$documentsThatContainTheTerm = $this->getDocumentsThatContainTheTerm($term->term);
-			$inverseDocumentFrequency = 1 + log($totalDocuments / ($documentsThatContainTheTerm->totalCount + 1));
-			$this->storeInverseTermFrequency($term->term, $inverseDocumentFrequency);
-		}
+		$documentCount = $this->documentCount;
+		$this->storeInverseTermFrequency($documentCount);
 	}
 
-	protected function getAllUniqueTerms()
+	private function storeInverseTermFrequency($documentCount)
 	{
 		$db = $this->dbHandle;
-		$stmt = $db->prepare('
-			SELECT `term`
-			  FROM `term_count`
-		  GROUP BY `term`
-		');
-		$stmt->execute();
-		return $stmt->fetchAll(\PDO::FETCH_CLASS);
-	}
-
-	protected function getDocumentsThatContainTheTerm($term)
-	{
-		$db = $this->dbHandle;
+		$db->sqliteCreateFunction('log', 'log', 1);
 		$sql = '
-			SELECT COUNT(documentPath) as totalCount
-			  FROM (SELECT documentPath, term FROM term_count GROUP BY documentPath, term) as `term_count`
-			 WHERE `term` = :term
+		INSERT INTO inverse_document_frequency (term, inverseDocumentFrequency)
+		SELECT DISTINCT term_count.term, (1 + log(:documentCount / ((
+					SELECT COUNT(documentPath)
+					  FROM term_count as tc
+					 WHERE tc.term = term_count.term
+				  GROUP BY documentPath, term
+				) + 1))) as inverseDocumentFrequency
+		   FROM term_count
 		';
-		$stmt = $db->prepare($sql);
-		if ($stmt === false) {
+		if (!$stmt = $db->prepare($sql)) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
-		$stmt->bindValue(':term', $term);
-		$stmt->execute();
-		return $stmt->fetch(\PDO::FETCH_OBJ);
-	}
-
-	protected function storeInverseTermFrequency($term, $inverseDocumentFrequency)
-	{
-		$db = $this->dbHandle;
-		$stmt = $db->prepare('
-			INSERT INTO `inverse_document_frequency` (term, inverseDocumentFrequency)
-				 VALUES(:term, :inverseDocumentFrequency);
-		');
-		$stmt->bindValue(':term', $term);
-		$stmt->bindValue(':inverseDocumentFrequency', $inverseDocumentFrequency);
-		$stmt->execute();
+		$stmt->bindValue(':documentCount', $documentCount);
+		if (!$stmt->execute()) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
 	}
 }

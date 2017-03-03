@@ -79,11 +79,12 @@ class Indexer extends SearchDbConnected
 
 	private function createInverseDocumentFrequency()
 	{
+		$this->addLog('--get total documents');
 		$documentCount = $this->getTotalDocumentCount();
+		$this->addLog('--do inverse');
 		$inverseDocumentFrequency = new InverseDocumentFrequency($this->getSearchDbHandle(), $documentCount);
 		$inverseDocumentFrequency->execute();
-
-
+		$this->addLog('--done');
 	}
 
 	private function getTotalDocumentCount()
