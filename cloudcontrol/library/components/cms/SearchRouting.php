@@ -44,7 +44,10 @@ class SearchRouting implements CmsRouting
 	 */
 	private function updateIndexRoute($cmsComponent)
 	{
+		$cmsComponent->subTemplate = 'cms/search/update-index';
 		$indexer = new Indexer($cmsComponent->storage);
-		$indexer->updateIndex();
+		$log = $indexer->updateIndex();
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_LOG, $log);
 	}
 }

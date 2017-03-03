@@ -27,26 +27,30 @@ class Indexer extends SearchDbConnected
 	public function updateIndex()
 	{
 		$this->startLogging();
-		$this->addLog('Indexing start. Clearing index.');
+		$this->addLog('Indexing start.');
+		$this->addLog('Clearing index.');
 		$this->resetIndex();
-		$this->addLog('Index cleared. Start Document Term Count.');
-		$this->createDocumentTermCount();
-		$this->addLog('Start Document Term Count done. Start Document Term Frequency.');
+		$this->addLog('Retrieving documents to be indexed.');
+		$documents = $this->storage->getDocuments();
+		$this->addLog('Start Document Term Count for ' . count($documents) . ' documents');
+		$this->createDocumentTermCount($documents);
+		$this->addLog('Start Document Term Frequency.');
 		$this->createDocumentTermFrequency();
-		$this->addLog('Document Term Frequency done. Start Term Field Length Norm.');
+		$this->addLog('Start Term Field Length Norm.');
 		$this->createTermFieldLengthNorm();
-		$this->addLog('Term Field Length Norm done. Start Inverse Document Frequency.');
+		$this->addLog('Start Inverse Document Frequency.');
 		$this->createInverseDocumentFrequency();
-		$this->addLog('Inverse Document Frequency done. Indexing complete.');
+		$this->addLog('Indexing complete.');
 		return $this->log;
 	}
 
 	/**
 	 * Count how often a term is used in a document
+	 *
+	 * @param $documents
 	 */
-	private function createDocumentTermCount()
+	private function createDocumentTermCount($documents)
 	{
-		$documents = $this->storage->getDocuments();
 		$termCount = new TermCount($this->getSearchDbHandle(), $documents, $this->filters);
 		$termCount->execute();
 	}
@@ -103,7 +107,7 @@ class Indexer extends SearchDbConnected
 	private function addLog($string)
 	{
 		$currentTime = round(microtime(true) * 1000);
-		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 75, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
+		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 50, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
 		$this->lastLog = round(microtime(true) * 1000);
 	}
 }

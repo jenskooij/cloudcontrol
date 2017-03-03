@@ -1,4 +1,4 @@
-<section class="search">
+<section class="dashboard search">
 	<h2><i class="fa fa-search"></i> Search</h2>
 	<nav class="actions">
 		<ul>

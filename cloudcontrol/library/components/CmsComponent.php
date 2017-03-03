@@ -42,6 +42,7 @@ namespace library\components {
 		const PARAMETER_MAIN_NAV_CLASS = 'mainNavClass';
 		const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
 		const PARAMETER_SEARCH = 'search';
+		const PARAMETER_SEARCH_LOG = "searchLog";
 		const PARAMETER_SITEMAP = 'sitemap';
 		const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
 		const PARAMETER_SMALLEST_IMAGE = 'smallestImage';

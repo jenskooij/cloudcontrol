@@ -1,0 +1,14 @@
+.search {
+  h2 {
+    color: $search-color;
+
+    a {
+      color:$search-color;
+
+      &:hover {
+        color:lighten($search-color, 10%);
+        text-decoration:none;
+      }
+    }
+  }
+}
