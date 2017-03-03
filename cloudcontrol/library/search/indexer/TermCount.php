@@ -55,21 +55,22 @@ class TermCount
 		$db = $this->dbHandle;
 		$sql = '
 			INSERT INTO `term_count` (`documentPath`, `term`, `count`, `field`)
-				 VALUES (:documentPath, :term, :count, :field);
-		';
-		$stmt = $db->prepare($sql);
-		$stmt->bindValue(':documentPath', $document->path);
-		foreach ($documentTermCount as $field => $fieldTermCount) {
-			$stmt->bindValue(':field', $field);
-			foreach ($fieldTermCount as $term => $count) {
-				$stmt->bindValue(':term', $term);
-				$stmt->bindValue(':count', $count);
-				if (!$stmt->execute()) {
-					$errorInfo = $db->errorInfo();
-					$errorMsg = $errorInfo[2];
-					throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-				}
+				 VALUES ';
+		$values = array();
+		$quotedDocumentPath = $db->quote($document->path);
+		foreach ($documentTermCount as $field => $countArray) {
+			$quotedField = $db->quote($field);
+			foreach ($countArray as $term => $count) {
+				$values[] = $quotedDocumentPath . ', ' . $db->quote($term) . ', ' . $db->quote($count) . ', ' . $quotedField;
 			}
+		}
+		$sql .= '(' . implode('),' . PHP_EOL . '(', $values) . ');';
+
+		$stmt = $db->prepare($sql);
+		if (!$stmt->execute()) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
 	}
 }

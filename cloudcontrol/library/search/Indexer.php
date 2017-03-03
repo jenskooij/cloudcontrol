@@ -100,14 +100,14 @@ class Indexer extends SearchDbConnected
 
 	private function startLogging()
 	{
-		$this->loggingStart = time();
+		$this->loggingStart = round(microtime(true) * 1000);
 		$this->lastLog = $this->loggingStart;
 	}
 
 	private function addLog($string)
 	{
-		$currentTime = time();
-		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 75, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 's since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 's since start.' . PHP_EOL;
-		$this->lastLog = time();
+		$currentTime = round(microtime(true) * 1000);
+		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 75, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
+		$this->lastLog = round(microtime(true) * 1000);
 	}
 }
