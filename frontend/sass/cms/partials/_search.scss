@@ -11,4 +11,16 @@
       }
     }
   }
+
+  .message {
+    @extend %panel;
+
+    &.warning {
+      color: $files-color;
+    }
+
+    &.valid {
+      color: $images-color;
+    }
+  }
 }

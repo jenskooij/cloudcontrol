@@ -43,6 +43,7 @@ namespace library\components {
 		const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
 		const PARAMETER_SEARCH = 'search';
 		const PARAMETER_SEARCH_LOG = "searchLog";
+		const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";
 		const PARAMETER_SITEMAP = 'sitemap';
 		const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
 		const PARAMETER_SMALLEST_IMAGE = 'smallestImage';

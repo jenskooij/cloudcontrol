@@ -7,4 +7,13 @@
 			</li>
 		</ul>
 	</nav>
+    <? if ($searchNeedsUpdate) : ?>
+    <div class="message warning">
+        <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+    </div>
+    <? else : ?>
+        <div class="message valid">
+            <i class="fa fa-fheck"></i> Search index is in sync with documents.
+        </div>
+    <? endif ?>
 </section>

@@ -110,4 +110,24 @@ class Indexer extends SearchDbConnected
 		$this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 50, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
 		$this->lastLog = round(microtime(true) * 1000);
 	}
+
+	public function getIndexedDocuments()
+	{
+		$db = $this->getSearchDbHandle();
+		$sql = '
+			SELECT count(DISTINCT documentPath) as indexedDocuments
+			  FROM term_frequency
+		';
+		if (!$stmt = $db->query($sql)) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		if (!$result = $stmt->fetch(\PDO::FETCH_COLUMN)) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		return $result;
+	}
 }
