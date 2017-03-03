@@ -33,6 +33,8 @@ class Search extends SearchDbConnected
 
 	/**
 	 * @param Tokenizer $tokenizer
+	 *
+	 * @return array
 	 */
 	public function getDocumentsForTokenizer(Tokenizer $tokenizer)
 	{
@@ -40,10 +42,10 @@ class Search extends SearchDbConnected
 		$resultsPerTokens = $this->queryTokens();
 
 		$flatResults = $this->flattenResults($resultsPerTokens);
+		$flatResults = $this->applyQueryCoordination($flatResults);
 		usort($flatResults, array($this, "scoreCompare"));
 
-		dump($flatResults);
-		dump("TODO: queryNorm & coord");
+		return $flatResults;
 	}
 
 	private function queryTokens()
@@ -142,5 +144,46 @@ class Search extends SearchDbConnected
 		}
 		$result = $stmt->fetch(\PDO::FETCH_OBJ);
 		return $result->queryNorm == null ? 1 : $result->queryNorm;
+	}
+
+	private function getTokenWeights()
+	{
+		$db = $this->getSearchDbHandle();
+		$tokenVector = $this->tokenizer->getTokenVector();
+		$tokens = array_keys($tokenVector);
+		foreach ($tokens as $key => $token) {
+			$tokens[$key] = $db->quote($token);
+		}
+		$terms = implode(',', $tokens);
+		$sql = '
+			SELECT *
+			  FROM inverse_document_frequency
+			 WHERE term in (' . $terms . ');
+		';
+		if(!$stmt = $db->prepare($sql)) {
+			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+		}
+		if (!$stmt->execute()) {
+			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+		}
+		$returnArray = array();
+		$results = $stmt->fetchAll(\PDO::FETCH_CLASS, 'stdClass');
+		foreach ($results as $result) {
+			$returnArray[$result->term] = $result->inverseDocumentFrequency;
+		}
+		return $returnArray;
+	}
+
+	private function applyQueryCoordination($flatResults)
+	{
+		$tokenVector = $this->tokenizer->getTokenVector();
+		$tokens = array_keys($tokenVector);
+		$tokenCount = count($tokens);
+		foreach ($flatResults as $key => $result) {
+			$matchCount = count($result->matchingTokens);
+			$result->score = ($matchCount / $tokenCount) * $result->score;
+			$flatResults[$key] = $result;
+		}
+		return $flatResults;
 	}
 }

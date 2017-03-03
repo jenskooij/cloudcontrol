@@ -29,8 +29,9 @@ class SearchComponent extends BaseComponent
 			$filteredQuery = new CharacterFilter($query);
 			$tokenizer = new Tokenizer($filteredQuery);
 			$search = new Search($storage);
+			$startTime = microtime();
 			$results = $search->getDocumentsForTokenizer($tokenizer);
-			dump($results);
+			dump(microtime() - $startTime, $results);
 		}
 	}
 
