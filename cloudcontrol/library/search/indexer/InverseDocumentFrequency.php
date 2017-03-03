@@ -1,6 +1,5 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
  * User: jensk
  * Date: 1-3-2017
  * Time: 11:41
@@ -28,15 +27,10 @@ class InverseDocumentFrequency
 
 	/**
 	 * Formula to calculate:
-	 * idf(t) = 1 + log ( totalDocuments / (documentsThatContainTheTerm + 1))
+	 * 		idf(t) = 1 + log ( totalDocuments / (documentsThatContainTheTerm + 1))
+	 * @throws \Exception
 	 */
 	public function execute()
-	{
-		$documentCount = $this->documentCount;
-		$this->storeInverseTermFrequency($documentCount);
-	}
-
-	private function storeInverseTermFrequency($documentCount)
 	{
 		$db = $this->dbHandle;
 		$db->sqliteCreateFunction('log', 'log', 1);
@@ -55,7 +49,7 @@ class InverseDocumentFrequency
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
-		$stmt->bindValue(':documentCount', $documentCount);
+		$stmt->bindValue(':documentCount', $this->documentCount);
 		if (!$stmt->execute()) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
