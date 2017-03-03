@@ -20,7 +20,7 @@ namespace library\search;
  *			· norm(t,d)
  *		) (t in q)
  *
- *
+ * @see https://www.elastic.co/guide/en/elasticsearch/guide/current/practical-scoring-function.html
  * @package library\search
  */
 class Search extends SearchDbConnected
@@ -144,34 +144,6 @@ class Search extends SearchDbConnected
 		}
 		$result = $stmt->fetch(\PDO::FETCH_OBJ);
 		return $result->queryNorm == null ? 1 : $result->queryNorm;
-	}
-
-	private function getTokenWeights()
-	{
-		$db = $this->getSearchDbHandle();
-		$tokenVector = $this->tokenizer->getTokenVector();
-		$tokens = array_keys($tokenVector);
-		foreach ($tokens as $key => $token) {
-			$tokens[$key] = $db->quote($token);
-		}
-		$terms = implode(',', $tokens);
-		$sql = '
-			SELECT *
-			  FROM inverse_document_frequency
-			 WHERE term in (' . $terms . ');
-		';
-		if(!$stmt = $db->prepare($sql)) {
-			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
-		}
-		if (!$stmt->execute()) {
-			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
-		}
-		$returnArray = array();
-		$results = $stmt->fetchAll(\PDO::FETCH_CLASS, 'stdClass');
-		foreach ($results as $result) {
-			$returnArray[$result->term] = $result->inverseDocumentFrequency;
-		}
-		return $returnArray;
 	}
 
 	private function applyQueryCoordination($flatResults)
