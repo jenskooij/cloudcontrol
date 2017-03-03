@@ -100,6 +100,7 @@ class Indexer extends SearchDbConnected
 	private function startLogging()
 	{
 		$this->loggingStart = time();
+		$this->lastLog = $this->loggingStart;
 	}
 
 	private function addLog($string)
