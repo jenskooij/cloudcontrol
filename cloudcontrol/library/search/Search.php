@@ -11,14 +11,14 @@ namespace library\search;
  * Class Search
  * Formula:
  * score(q,d)  =
-		queryNorm(q)
-		· coord(q,d)
-		· ∑ (
-			tf(t in d)
-			· idf(t)²
-			· t.getBoost()
-			· norm(t,d)
-		) (t in q)
+ *		queryNorm(q)
+ *		· coord(q,d)
+ *		· ∑ (
+ *			tf(t in d)
+ *			· idf(t)²
+ *			· t.getBoost()
+ *			· norm(t,d)
+ *		) (t in q)
  *
  *
  * @package library\search
@@ -43,26 +43,30 @@ class Search extends SearchDbConnected
 		usort($flatResults, array($this, "scoreCompare"));
 
 		dump($flatResults);
+		dump("TODO: queryNorm & coord");
 	}
 
 	private function queryTokens()
 	{
 		$tokenVector = $this->tokenizer->getTokenVector();
 		$tokens = array_keys($tokenVector);
+		$queryNorm = $this->getQueryNorm($tokens);
 		$results = array();
 		foreach ($tokens as $token) {
-			$results[$token] = $this->getResultsForToken($token);
+			$results[$token] = $this->getResultsForToken($token, $queryNorm);
 		}
 		return $results;
 	}
 
-	public function getResultsForToken($token) {
+	public function getResultsForToken($token, $queryNorm) {
 		$db = $this->getSearchDbHandle();
 		$sql = '
-			SELECT (SUM(term_frequency.frequency) --TF
-				    * inverse_document_frequency.inverseDocumentFrequency -- IDF
-				    * SUM(term_frequency.termNorm) -- norm
-				    ) as score,
+			SELECT (:queryNorm * 
+						(SUM(term_frequency.frequency) --TF
+						* inverse_document_frequency.inverseDocumentFrequency -- IDF
+						* SUM(term_frequency.termNorm) -- norm
+						) 
+				    )as score,
 				   SUM(term_frequency.frequency) as TF,
 				   inverse_document_frequency.inverseDocumentFrequency as IDF,
 				   SUM(term_frequency.termNorm) as norm,
@@ -78,6 +82,7 @@ class Search extends SearchDbConnected
 			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 		}
 		$stmt->bindValue(':query', $token);
+		$stmt->bindValue(':queryNorm', $queryNorm);
 		if (!$stmt->execute()) {
 			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 		}
@@ -114,5 +119,28 @@ class Search extends SearchDbConnected
 			return 0;
 		}
 		return ($a->score > $b->score) ? -1 : 1;
+	}
+
+	private function getQueryNorm($tokens)
+	{
+		$db = $this->getSearchDbHandle();
+		$db->sqliteCreateFunction('sqrt', 'sqrt', 1);
+		foreach ($tokens as $key => $token) {
+			$tokens[$key] = $db->quote($token);
+		}
+		$terms = implode(',', $tokens);
+		$sql = '
+			SELECT (1 / sqrt(SUM(inverseDocumentFrequency))) as queryNorm
+			  FROM inverse_document_frequency
+			 WHERE term IN (' . $terms . ') 
+		';
+		if(!$stmt = $db->prepare($sql)) {
+			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+		}
+		if (!$stmt->execute()) {
+			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+		}
+		$result = $stmt->fetch(\PDO::FETCH_OBJ);
+		return $result->queryNorm == null ? 1 : $result->queryNorm;
 	}
 }
