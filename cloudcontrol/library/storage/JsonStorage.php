@@ -689,6 +689,11 @@ namespace library\storage
 			return $this->storageDir;
 		}
 
+		public function getContentDbHandle()
+		{
+			return $this->repository->getContentDbHandle();
+		}
+
 		private function compareFiles($a, $b)
 		{
 			return strcmp($a->file, $b->file);

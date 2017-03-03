@@ -99,4 +99,14 @@ class Document
         }
         $this->content = $contents;
     }
+
+	/**
+	 *
+	 */
+	function __toString()
+	{
+		return 'Document:' . $this->title;
+	}
+
+
 }

@@ -88,7 +88,7 @@ class Search extends SearchDbConnected
 		if (!$stmt->execute()) {
 			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 		}
-		return $stmt->fetchAll(\PDO::FETCH_CLASS, 'stdClass');
+		return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\search\SearchResult');
 	}
 
 	/**
@@ -105,10 +105,11 @@ class Search extends SearchDbConnected
 					$finalResults[$result->documentPath]->score += $result->score;
 					$finalResults[$result->documentPath]->matchingTokens[] = $token;
 				} else {
-					$resultObj = new \stdClass();
+					$resultObj = new SearchResult();
 					$resultObj->documentPath = $result->documentPath;
 					$resultObj->matchingTokens = array($token);
 					$resultObj->score = floatval($result->score);
+					$resultObj->setStorage($this->storage);
 					$finalResults[$result->documentPath] = $resultObj;
 				}
 			}

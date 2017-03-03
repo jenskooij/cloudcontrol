@@ -15,7 +15,8 @@ use library\storage\JsonStorage;
 
 class SearchComponent extends BaseComponent
 {
-	const PARAMETER_QUERY = "q";
+	protected $searchParameterName = 'q';
+	protected $searchResultsParameterName = 'searchResults';
 
 	/**
 	 * @param \library\storage\JsonStorage $storage
@@ -23,15 +24,31 @@ class SearchComponent extends BaseComponent
 	public function run(JsonStorage $storage)
 	{
 		parent::run($storage);
+
+		$this->checkParameters();
+
 		$request = $this->request;
-		if (isset($request::$get[self::PARAMETER_QUERY])) {
-			$query = $request::$get[self::PARAMETER_QUERY];
+		if (isset($request::$get[$this->searchParameterName])) {
+			$query = $request::$get[$this->searchParameterName];
 			$filteredQuery = new CharacterFilter($query);
 			$tokenizer = new Tokenizer($filteredQuery);
 			$search = new Search($storage);
-			$startTime = microtime();
 			$results = $search->getDocumentsForTokenizer($tokenizer);
-			dump(microtime() - $startTime, $results);
+			$this->parameters[$this->searchResultsParameterName] = $results;
+		}
+	}
+
+	/**
+	 * Checks to see if any parameters were defined in the cms and acts according
+	 */
+	private function checkParameters()
+	{
+		if (isset($this->parameters['searchParameterName'])) {
+			$this->searchParameterName = $this->parameters['searchParameterName'];
+		}
+
+		if (isset($this->parameters['searchResultsParameterName'])) {
+			$this->searchParameterName = $this->parameters['searchResultsParameterName'];
 		}
 	}
 

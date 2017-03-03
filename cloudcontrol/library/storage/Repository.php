@@ -213,7 +213,7 @@ class Repository
     /**
      * @return \PDO
      */
-    protected function getContentDbHandle()
+    public function getContentDbHandle()
     {
         if ($this->contentDbHandle === null) {
             $this->contentDbHandle = new \PDO('sqlite:' . $this->storagePath . DIRECTORY_SEPARATOR . 'content.db');
