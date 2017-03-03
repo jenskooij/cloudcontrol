@@ -26,6 +26,8 @@ class TermFrequency
 
 	/**
 	 * TermFrequency constructor.
+	 *
+	 * @param \PDO $dbHandle
 	 */
 	public function __construct($dbHandle)
 	{
@@ -38,10 +40,19 @@ class TermFrequency
 		$totalTermCountPerDocument = $this->getTotalTermCountPerDocument($db);
 		foreach ($totalTermCountPerDocument as $documentField) {
 			$termsForDocumentField = $this->getTermsForDocumentField($documentField->documentPath, $documentField->field);
+			$sql = '
+				INSERT INTO term_frequency (documentPath, field, term, frequency)
+					 VALUES 
+			';
+			$quotedDocumentPath = $db->quote($documentField->documentPath);
+			$quotedField = $db->quote($documentField->field);
+			$values = array();
 			foreach ($termsForDocumentField as $term) {
 				$frequency = intval($term->count) / $documentField->totalTermCount;
-				$this->storeDocumentTermFrequency($documentField->documentPath, $term->term, $frequency, $documentField->field);
+				$values[] = $quotedDocumentPath . ','  . $quotedField . ', ' . $db->quote($term->term) . ', ' . $db->quote($frequency);
 			}
+			$sql .= '(' . implode('),' . PHP_EOL . '(', $values) . ');';
+			$db->query($sql);
 		}
 	}
 
@@ -58,20 +69,6 @@ class TermFrequency
 		$stmt->bindValue(':field', $field);
 		$stmt->execute();
 		return $stmt->fetchAll(\PDO::FETCH_CLASS);
-	}
-
-	private function storeDocumentTermFrequency($documentPath, $term, $frequency, $field)
-	{
-		$db = $this->dbHandle;
-		$stmt = $db->prepare('
-			INSERT INTO `term_frequency` (documentPath, field, term, frequency)
-				 VALUES(:documentPath, :field, :term, :frequency);
-		');
-		$stmt->bindValue(':documentPath', $documentPath);
-		$stmt->bindValue(':field', $field);
-		$stmt->bindValue(':term', $term);
-		$stmt->bindValue(':frequency', $frequency);
-		$stmt->execute();
 	}
 
 	/**

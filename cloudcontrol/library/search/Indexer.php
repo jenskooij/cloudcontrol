@@ -38,8 +38,7 @@ class Indexer extends SearchDbConnected
 		$this->addLog('Term Field Length Norm done. Start Inverse Document Frequency.');
 		$this->createInverseDocumentFrequency();
 		$this->addLog('Inverse Document Frequency done. Indexing complete.');
-		dump(PHP_EOL . $this->log);
-		dump('Continue here: https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Example_of_tf.E2.80.93idf', $this->getSearchDbHandle()->errorInfo());
+		return $this->log;
 	}
 
 	/**
@@ -79,12 +78,9 @@ class Indexer extends SearchDbConnected
 
 	private function createInverseDocumentFrequency()
 	{
-		$this->addLog('--get total documents');
 		$documentCount = $this->getTotalDocumentCount();
-		$this->addLog('--do inverse');
 		$inverseDocumentFrequency = new InverseDocumentFrequency($this->getSearchDbHandle(), $documentCount);
 		$inverseDocumentFrequency->execute();
-		$this->addLog('--done');
 	}
 
 	private function getTotalDocumentCount()
