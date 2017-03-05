@@ -123,7 +123,8 @@ class Indexer extends SearchDbConnected
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
-		if (!$result = $stmt->fetch(\PDO::FETCH_COLUMN)) {
+		$result = $stmt->fetch(\PDO::FETCH_COLUMN);
+		if (false === $result) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
