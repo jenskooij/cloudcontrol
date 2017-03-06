@@ -103,7 +103,7 @@ class DocumentTokenizer
 	private function addTokenToVector($token, $field, $count = 1)
 	{
 		if (!empty($token)) {
-			if (isset($this->tokenVector[$token])) {
+			if (isset($this->tokenVector[$field][$token])) {
 				$this->tokenVector[$field][$token] += $count;
 			} else {
 				$this->tokenVector[$field][$token] = $count;

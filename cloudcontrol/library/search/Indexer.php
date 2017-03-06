@@ -15,6 +15,7 @@ use library\search\indexer\TermFrequency;
 
 class Indexer extends SearchDbConnected
 {
+	const SQLITE_MAX_COMPOUND_SELECT = 100;
 	protected $filters = array(
 		'DutchStopWords',
 		'EnglishStopWords'

@@ -9,6 +9,7 @@ namespace library\search\indexer;
 
 
 use library\search\DocumentTokenizer;
+use library\search\Indexer;
 
 class TermCount
 {
@@ -53,21 +54,42 @@ class TermCount
 	protected function storeDocumentTermCount($document, $documentTermCount)
 	{
 		$db = $this->dbHandle;
-		$sql = '
+		$sqlStart = '
 			INSERT INTO `term_count` (`documentPath`, `term`, `count`, `field`)
 				 VALUES ';
+		$sql = $sqlStart;
 		$values = array();
 		$quotedDocumentPath = $db->quote($document->path);
+		$i = 0;
 		foreach ($documentTermCount as $field => $countArray) {
 			$quotedField = $db->quote($field);
 			foreach ($countArray as $term => $count) {
 				$values[] = $quotedDocumentPath . ', ' . $db->quote($term) . ', ' . $db->quote($count) . ', ' . $quotedField;
+				$i += 1;
+				if ($i >= Indexer::SQLITE_MAX_COMPOUND_SELECT) {
+					$this->executeStoreDocumentTermCount($values, $sql, $db);
+					$values = array();
+					$sql = $sqlStart;
+					$i = 0;
+				}
 			}
 		}
+		$this->executeStoreDocumentTermCount($values, $sql, $db);
+	}
+
+	/**
+	 * @param $values
+	 * @param $sql
+	 * @param $db
+	 *
+	 * @throws \Exception
+	 */
+	protected function executeStoreDocumentTermCount($values, $sql, $db)
+	{
 		$sql .= '(' . implode('),' . PHP_EOL . '(', $values) . ');';
 
 		$stmt = $db->prepare($sql);
-		if (!$stmt->execute()) {
+		if ($stmt === false || !$stmt->execute()) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
