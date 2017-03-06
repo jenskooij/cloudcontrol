@@ -32,6 +32,11 @@ class Search extends SearchDbConnected
 	protected $tokenizer;
 	protected $results = array();
 
+	protected $filters = array(
+		'DutchStopWords',
+		'EnglishStopWords'
+	);
+
 	/**
 	 * @param Tokenizer $tokenizer
 	 *
@@ -53,14 +58,24 @@ class Search extends SearchDbConnected
 
 	private function queryTokens()
 	{
-		$tokenVector = $this->tokenizer->getTokenVector();
-		$tokens = array_keys($tokenVector);
+		$tokens = $this->getTokens();
+
 		$queryNorm = $this->getQueryNorm($tokens);
 		$results = array();
 		foreach ($tokens as $token) {
 			$results[$token] = $this->getResultsForToken($token, $queryNorm);
 		}
 		return $results;
+	}
+
+	protected function applyFilters($tokens)
+	{
+		foreach ($this->filters as $filterName) {
+			$filterClassName = '\library\search\filters\\' . $filterName;
+			$filter = new $filterClassName($tokens);
+			$tokens = $filter->getFilterResults();
+		}
+		return $tokens;
 	}
 
 	public function getResultsForToken($token, $queryNorm) {
@@ -165,8 +180,7 @@ class Search extends SearchDbConnected
 
 	private function getSearchSuggestions()
 	{
-		$tokenVector = $this->tokenizer->getTokenVector();
-		$tokens = array_keys($tokenVector);
+		$tokens = $this->getTokens();
 		$allResults = array();
 		foreach ($tokens as $token) {
 			$db = $this->getSearchDbHandle();
@@ -193,5 +207,22 @@ class Search extends SearchDbConnected
 			$allResults = array_merge($result, $allResults);
 		}
 		return $allResults;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getTokens()
+	{
+		$tokenVector = array(
+			'query' => array(),
+		);
+		$tokenVector['query'] = $this->tokenizer->getTokenVector();
+		$tokens = $this->applyFilters($tokenVector);
+		if (!empty($tokens)) {
+			$tokens = array_keys($tokens['query']);
+		}
+
+		return $tokens;
 	}
 }
