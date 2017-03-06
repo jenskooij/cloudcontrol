@@ -5,7 +5,7 @@
  * Time: 16:56
  */
 
-namespace library\search;
+namespace library\search\results;
 
 
 use library\storage\Document;

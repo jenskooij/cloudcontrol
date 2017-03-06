@@ -6,6 +6,7 @@
  */
 
 namespace library\search;
+use library\search\results\SearchResult;
 
 /**
  * Class Search
@@ -44,6 +45,10 @@ class Search extends SearchDbConnected
 		$flatResults = $this->flattenResults($resultsPerTokens);
 		$flatResults = $this->applyQueryCoordination($flatResults);
 		usort($flatResults, array($this, "scoreCompare"));
+
+		if (empty($flatResults)) {
+			$flatResults = $this->getSearchSuggestions($tokenizer);
+		}
 
 		return $flatResults;
 	}
@@ -88,7 +93,7 @@ class Search extends SearchDbConnected
 		if (!$stmt->execute()) {
 			throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 		}
-		return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\search\SearchResult');
+		return $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\search\results\SearchResult');
 	}
 
 	/**
@@ -158,5 +163,33 @@ class Search extends SearchDbConnected
 			$flatResults[$key] = $result;
 		}
 		return $flatResults;
+	}
+
+	private function getSearchSuggestions()
+	{
+		$tokenVector = $this->tokenizer->getTokenVector();
+		$tokens = array_keys($tokenVector);
+		$allResults = array();
+		foreach ($tokens as $token) {
+			$db = $this->getSearchDbHandle();
+			$db->sqliteCreateFunction('levenshtein', 'levenshtein', 2);
+			$sql = '
+				SELECT term, levenshtein(term, :token) as edit_distance
+				  FROM inverse_document_frequency
+			  ORDER BY edit_distance ASC
+			  	 LIMIT 0, 1
+			';
+			$stmt = $db->prepare($sql);
+			if ($stmt === false) {
+				throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+			}
+			$stmt->bindValue(':token', $token);
+			if ($stmt === false | !$stmt->execute()) {
+				throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+			}
+			$result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\search\results\SearchSuggestion');
+			$allResults = array_merge($result, $allResults);
+		}
+		return $allResults;
 	}
 }
