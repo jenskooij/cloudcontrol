@@ -74,7 +74,9 @@ class TermCount
 				}
 			}
 		}
-		$this->executeStoreDocumentTermCount($values, $sql, $db);
+		if (count($values) != 0) {
+			$this->executeStoreDocumentTermCount($values, $sql, $db);
+		}
 	}
 
 	/**

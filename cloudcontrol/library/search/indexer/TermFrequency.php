@@ -60,7 +60,9 @@ class TermFrequency
 					$values = array();
 				}
 			}
-			$this->executeStore($sql, $values, $db);
+			if (count($values) != 0) {
+				$this->executeStore($sql, $values, $db);
+			}
 		}
 	}
 
