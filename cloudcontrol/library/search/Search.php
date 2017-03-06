@@ -46,9 +46,7 @@ class Search extends SearchDbConnected
 		$flatResults = $this->applyQueryCoordination($flatResults);
 		usort($flatResults, array($this, "scoreCompare"));
 
-		if (empty($flatResults)) {
-			$flatResults = $this->getSearchSuggestions($tokenizer);
-		}
+		$flatResults = array_merge($this->getSearchSuggestions($tokenizer), $flatResults);
 
 		return $flatResults;
 	}
@@ -174,10 +172,14 @@ class Search extends SearchDbConnected
 			$db = $this->getSearchDbHandle();
 			$db->sqliteCreateFunction('levenshtein', 'levenshtein', 2);
 			$sql = '
-				SELECT term, levenshtein(term, :token) as edit_distance
-				  FROM inverse_document_frequency
-			  ORDER BY edit_distance ASC
-			  	 LIMIT 0, 1
+				SELECT *
+				  FROM (
+				  	SELECT :token as original, term, levenshtein(term, :token) as editDistance
+				  	  FROM inverse_document_frequency
+			  	  ORDER BY editDistance ASC
+			  	     LIMIT 0, 1
+			  	     )
+			  	   WHERE editDistance > 0
 			';
 			$stmt = $db->prepare($sql);
 			if ($stmt === false) {

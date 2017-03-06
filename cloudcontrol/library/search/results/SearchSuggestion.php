@@ -11,5 +11,7 @@ namespace library\search\results;
 
 class SearchSuggestion
 {
-
+	public $original;
+	public $term;
+	public $editDistance;
 }
