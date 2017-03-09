@@ -10,6 +10,9 @@ namespace library\search\indexer;
 
 class InverseDocumentFrequency
 {
+	/**
+	 * @var \PDO
+	 */
 	protected $dbHandle;
 	protected $documentCount;
 
@@ -36,21 +39,19 @@ class InverseDocumentFrequency
 		$db->sqliteCreateFunction('log', 'log', 1);
 		$sql = '
 		INSERT INTO inverse_document_frequency (term, inverseDocumentFrequency)
-		SELECT DISTINCT term_count.term, (1 + log(:documentCount / ((
-					SELECT COUNT(documentPath)
-					  FROM term_count as tc
-					 WHERE tc.term = term_count.term
-				  GROUP BY documentPath, term
-				) + 1))) as inverseDocumentFrequency
-		   FROM term_count
+		SELECT DISTINCT term, (1+(log(:documentCount / COUNT(documentPath) + 1))) as inverseDocumentFrequency
+					  FROM term_count
+				  GROUP BY term
 		';
+
 		if (!$stmt = $db->prepare($sql)) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
 		$stmt->bindValue(':documentCount', $this->documentCount);
-		if (!$stmt->execute()) {
+		$result = $stmt->execute();
+		if ($result === false) {
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
