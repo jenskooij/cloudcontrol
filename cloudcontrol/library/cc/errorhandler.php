@@ -113,8 +113,10 @@ function renderError ($message='', $file='', $line='', $code=0, $trace=array(), 
         }
 
         if (file_exists(realpath(__DIR__) . '/errorviewdetailed.php')) {
+            header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
             include(realpath(__DIR__) . '/errorviewdetailed.php');
         } else {
+            header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
             header('Content-type: application/json');
             die(json_encode($error));
         }

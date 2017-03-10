@@ -28,6 +28,8 @@ class SearchRouting implements CmsRouting
 			$this->overviewRoute($cmsComponent);
 		} elseif ($relativeCmsUri === '/search/update-index') {
 			$this->updateIndexRoute($cmsComponent);
+		} elseif ($relativeCmsUri === '/search/ajax-update-index') {
+			$this->ajaxUpdateIndexRoute($request, $cmsComponent);
 		}
 	}
 
@@ -50,9 +52,46 @@ class SearchRouting implements CmsRouting
 	private function updateIndexRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/search/update-index';
-		$indexer = new Indexer($cmsComponent->storage);
-		$log = $indexer->updateIndex();
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_LOG, $log);
+	}
+
+	private function ajaxUpdateIndexRoute($request, $cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/search/update-index';
+		if (isset($request::$get['step'])) {
+			$indexer = new Indexer($cmsComponent->storage);
+			$step = $request::$get['step'];
+			if ($step == 'resetIndex') {
+				$indexer->resetIndex();
+				$this->showJson('done');
+			} elseif ($step == 'createDocumentTermCount') {
+				$documents = $cmsComponent->storage->getDocuments();
+				$indexer->createDocumentTermCount($documents);
+				$this->showJson('done');
+			} else if ($step == 'createDocumentTermFrequency') {
+				$indexer->createDocumentTermFrequency();
+				$this->showJson('done');
+			} else if ($step == 'createTermFieldLengthNorm') {
+				$indexer->createTermFieldLengthNorm();
+				$this->showJson('done');
+			} else if ($step == 'createInverseDocumentFrequency') {
+				$indexer->createInverseDocumentFrequency();
+				$this->showJson('done');
+			} else if ($step == 'replaceOldIndex') {
+				$indexer->replaceOldIndex();
+				$this->showJson('done');
+			} else {
+				$this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error');
+			}
+		} else {
+			$this->showJson('No step defined.', 'HTTP/1.0 500 Internal Server Error');
+		}
+	}
+
+	private function showJson($obj, $httpHeader = 'HTTP/1.0 200 OK') {
+		header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
+		header('Content-type: application/json');
+		die(json_encode($obj));
+		exit;
 	}
 }

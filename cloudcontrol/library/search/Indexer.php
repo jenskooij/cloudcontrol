@@ -54,14 +54,14 @@ class Indexer extends SearchDbConnected
 	 *
 	 * @param $documents
 	 */
-	private function createDocumentTermCount($documents)
+	public function createDocumentTermCount($documents)
 	{
 		$termCount = new TermCount($this->getSearchDbHandle(), $documents, $this->filters);
 		$termCount->execute();
 	}
 
 
-	private function createDocumentTermFrequency()
+	public function createDocumentTermFrequency()
 	{
 		$termFrequency = new TermFrequency($this->getSearchDbHandle());
 		$termFrequency->execute();
@@ -71,7 +71,7 @@ class Indexer extends SearchDbConnected
 	/**
 	 * Resets the entire index
 	 */
-	private function resetIndex()
+	public function resetIndex()
 	{
 		$db = $this->getSearchDbHandle();
 		$sql = '
@@ -85,7 +85,7 @@ class Indexer extends SearchDbConnected
 		$db->exec($sql);
 	}
 
-	private function createInverseDocumentFrequency()
+	public function createInverseDocumentFrequency()
 	{
 		$documentCount = $this->getTotalDocumentCount();
 		$inverseDocumentFrequency = new InverseDocumentFrequency($this->getSearchDbHandle(), $documentCount);
@@ -97,7 +97,7 @@ class Indexer extends SearchDbConnected
 		return $this->storage->getTotalDocumentCount();
 	}
 
-	private function createTermFieldLengthNorm()
+	public function createTermFieldLengthNorm()
 	{
 		$termFieldLengthNorm = new TermFieldLengthNorm($this->getSearchDbHandle());
 		$termFieldLengthNorm->execute();
@@ -125,10 +125,17 @@ class Indexer extends SearchDbConnected
 		return $this->searchDbHandle;
 	}
 
-	protected function replaceOldIndex()
+	public function replaceOldIndex()
 	{
 		$this->searchDbHandle = null;
 		$path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->storageDir . DIRECTORY_SEPARATOR;
 		rename($path . self::SEARCH_TEMP_DB, $path . 'search.db');
 	}
+
+	function __destruct()
+	{
+		$this->searchDbHandle = null;
+	}
+
+
 }

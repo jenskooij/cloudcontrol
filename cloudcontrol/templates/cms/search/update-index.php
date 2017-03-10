@@ -7,6 +7,12 @@
 			</li>
 		</ul>
 	</nav>
-	<h3>Index Log</h3>
-	<textarea disabled="disabled" rows="8" class="search-log"><?=$searchLog?></textarea>
+	<div class="search-progress">
+		<h3 class="index-status" id="search_index_status">Initializing...</h3>
+		<div id="search_index_progress_bar" class="progress-bar active" data-progress="1">
+			<div class="progress"></div>
+		</div>
+		<a class="btn show-log-button" id="search_index_show_log" href="#" onclick="document.getElementById('search_index_log').style.display='block';document.getElementById('search_index_show_log').style.display='none';return false;">Show log</a>
+		<ul id="search_index_log" class="search-index-log"></ul>
+	</div>
 </section>
