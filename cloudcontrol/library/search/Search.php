@@ -32,12 +32,19 @@ class Search extends SearchDbConnected
 	protected $tokenizer;
 	protected $results = array();
 
+	/**
+	 * An array containing classes implementing \library\search\Filters
+	 * These will be applied to all tokenizers
+	 * @var array
+	 */
 	protected $filters = array(
 		'DutchStopWords',
 		'EnglishStopWords'
 	);
 
 	/**
+	 * Returns an array of SeachResult and / or SearchSuggestion objects,
+	 * based on the tokens in the Tokenizer
 	 * @param Tokenizer $tokenizer
 	 *
 	 * @return array
@@ -56,6 +63,12 @@ class Search extends SearchDbConnected
 		return $flatResults;
 	}
 
+	/**
+	 * Returns the amount of distinct documents
+	 * that are currently in the search index.
+	 * @return int
+	 * @throws \Exception
+	 */
 	public function getIndexedDocuments()
 	{
 		$db = $this->getSearchDbHandle();
@@ -74,9 +87,15 @@ class Search extends SearchDbConnected
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
 		}
-		return $result;
+		return intval($result);
 	}
 
+	/**
+	 * Queries each token present in the Tokenizer
+	 * and returns SearchResult objects for the found
+	 * documents
+	 * @return array
+	 */
 	private function queryTokens()
 	{
 		$tokens = $this->getTokens();
@@ -89,6 +108,13 @@ class Search extends SearchDbConnected
 		return $results;
 	}
 
+	/**
+	 * Applies the Filter objects in the the filter array to the
+	 * tokens in the Tokenizer
+	 * @param $tokens
+	 *
+	 * @return mixed
+	 */
 	protected function applyFilters($tokens)
 	{
 		foreach ($this->filters as $filterName) {
@@ -99,6 +125,15 @@ class Search extends SearchDbConnected
 		return $tokens;
 	}
 
+	/**
+	 * Queries the search index for a given token
+	 * and the query norm.
+	 * @param $token
+	 * @param $queryNorm
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getResultsForToken($token, $queryNorm) {
 		$db = $this->getSearchDbHandle();
 		$sql = '
@@ -163,6 +198,13 @@ class Search extends SearchDbConnected
 		return ($a->score > $b->score) ? -1 : 1;
 	}
 
+	/**
+	 * Calculates the query norm for all tokens in the Tokenizer
+	 * @param $tokens
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
 	private function getQueryNorm($tokens)
 	{
 		$db = $this->getSearchDbHandle();
@@ -186,6 +228,12 @@ class Search extends SearchDbConnected
 		return $result->queryNorm == null ? 1 : $result->queryNorm;
 	}
 
+	/**
+	 * Applies query coordination to all results
+	 * @param $flatResults
+	 *
+	 * @return mixed
+	 */
 	private function applyQueryCoordination($flatResults)
 	{
 		$tokenVector = $this->tokenizer->getTokenVector();
@@ -199,6 +247,12 @@ class Search extends SearchDbConnected
 		return $flatResults;
 	}
 
+	/**
+	 * Uses the levenshtein algorithm to determine the term that is
+	 * closest to the token that was input for the search
+	 * @return array
+	 * @throws \Exception
+	 */
 	private function getSearchSuggestions()
 	{
 		$tokens = $this->getTokens();
@@ -231,6 +285,7 @@ class Search extends SearchDbConnected
 	}
 
 	/**
+	 * Retrieves all tokens from the tokenizer
 	 * @return array
 	 */
 	private function getTokens()

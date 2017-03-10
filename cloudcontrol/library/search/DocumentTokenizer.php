@@ -17,6 +17,9 @@ class DocumentTokenizer
 	 */
 	protected $document;
 
+	/**
+	 * @var array
+	 */
 	protected $tokenVector = array();
 
 	/**
@@ -30,6 +33,9 @@ class DocumentTokenizer
 		$this->tokenize();
 	}
 
+	/**
+	 * Execute tokenization of all document fields
+	 */
 	private function tokenize()
 	{
 		$this->tokenizeTitle();
@@ -96,6 +102,7 @@ class DocumentTokenizer
 	}
 
 	/**
+	 * Add a token to the existing tokenvector
 	 * @param     		$token
 	 * @param string    $field
 	 * @param int 		$count
@@ -111,6 +118,11 @@ class DocumentTokenizer
 		}
 	}
 
+	/**
+	 * Add a complete token vector to the existing one.
+	 * @param $tokenVector
+	 * @param $field
+	 */
 	private function addTokenVectorToVector($tokenVector, $field)
 	{
 		foreach ($tokenVector as $token => $count) {

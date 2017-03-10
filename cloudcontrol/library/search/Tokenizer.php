@@ -7,7 +7,10 @@
 
 namespace library\search;
 
-
+/**
+ * Class Tokenizer
+ * @package library\search
+ */
 class Tokenizer
 {
 	protected $inputString;

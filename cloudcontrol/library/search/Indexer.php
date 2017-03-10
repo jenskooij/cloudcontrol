@@ -13,6 +13,13 @@ use library\search\indexer\TermCount;
 use library\search\indexer\TermFieldLengthNorm;
 use library\search\indexer\TermFrequency;
 
+/**
+ * Class Indexer
+ * Responsible for creating the search index based on the
+ * existing documents
+ *
+ * @package library\search
+ */
 class Indexer extends SearchDbConnected
 {
 	const SQLITE_MAX_COMPOUND_SELECT = 100;
@@ -21,12 +28,28 @@ class Indexer extends SearchDbConnected
 		'EnglishStopWords'
 	);
 	protected $storageDir;
+	/**
+	 * @var int
+	 */
 	protected $loggingStart;
+	/**
+	 * @var string
+	 */
 	protected $log;
+	/**
+	 * @var int
+	 */
 	protected $lastLog;
 
 	const SEARCH_TEMP_DB = 'search_tmp.db';
 
+	/**
+	 * Creates a new temporary search db, cleans it if it exists
+	 * then calculates and stores the search index in this db
+	 * and finally if indexing completed replaces the current search
+	 * db with the temporary one. Returns the log in string format.
+	 * @return string
+	 */
 	public function updateIndex()
 	{
 		$this->startLogging();
@@ -60,7 +83,10 @@ class Indexer extends SearchDbConnected
 		$termCount->execute();
 	}
 
-
+	/**
+	 * Calculate the frequency index for a term with
+	 * a field
+	 */
 	public function createDocumentTermFrequency()
 	{
 		$termFrequency = new TermFrequency($this->getSearchDbHandle());
@@ -85,6 +111,11 @@ class Indexer extends SearchDbConnected
 		$db->exec($sql);
 	}
 
+	/**
+	 * Calculates the inverse document frequency for each
+	 * term. This is a representation of how often a certain
+	 * term is used in comparison to all terms.
+	 */
 	public function createInverseDocumentFrequency()
 	{
 		$documentCount = $this->getTotalDocumentCount();
@@ -92,23 +123,39 @@ class Indexer extends SearchDbConnected
 		$inverseDocumentFrequency->execute();
 	}
 
+	/**
+	 * @return int|mixed
+	 */
 	private function getTotalDocumentCount()
 	{
 		return $this->storage->getTotalDocumentCount();
 	}
 
+	/**
+	 * Calculates the Term Field Length Norm.
+	 * This is an index determining how important a
+	 * term is, based on the total length of the field
+	 * it comes from.
+	 */
 	public function createTermFieldLengthNorm()
 	{
 		$termFieldLengthNorm = new TermFieldLengthNorm($this->getSearchDbHandle());
 		$termFieldLengthNorm->execute();
 	}
 
+	/**
+	 * Stores the time the indexing started in memory
+	 */
 	private function startLogging()
 	{
 		$this->loggingStart = round(microtime(true) * 1000);
 		$this->lastLog = $this->loggingStart;
 	}
 
+	/**
+	 * Adds a logline with the time since last log
+	 * @param $string
+	 */
 	private function addLog($string)
 	{
 		$currentTime = round(microtime(true) * 1000);
@@ -116,6 +163,11 @@ class Indexer extends SearchDbConnected
 		$this->lastLog = round(microtime(true) * 1000);
 	}
 
+	/**
+	 * Creates the SQLite \PDO object if it doesnt
+	 * exist and returns it.
+	 * @return \PDO
+	 */
 	protected function getSearchDbHandle()
 	{
 		if ($this->searchDbHandle === null) {
@@ -125,17 +177,13 @@ class Indexer extends SearchDbConnected
 		return $this->searchDbHandle;
 	}
 
+	/**
+	 * Replaces the old search index database with the new one.
+	 */
 	public function replaceOldIndex()
 	{
 		$this->searchDbHandle = null;
 		$path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->storageDir . DIRECTORY_SEPARATOR;
 		rename($path . self::SEARCH_TEMP_DB, $path . 'search.db');
 	}
-
-	function __destruct()
-	{
-		$this->searchDbHandle = null;
-	}
-
-
 }

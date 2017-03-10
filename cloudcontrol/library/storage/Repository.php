@@ -298,6 +298,10 @@ class Repository
         return $document;
     }
 
+	/**
+	 * Returns the count of all documents stored in the db
+	 * @return int
+	 */
 	public function getTotalDocumentCount()
 	{
 		$db = $this->getContentDbHandle();

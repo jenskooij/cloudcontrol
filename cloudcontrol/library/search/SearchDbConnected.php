@@ -10,6 +10,11 @@ namespace library\search;
 
 use library\storage\JsonStorage;
 
+/**
+ * Abstract Class SearchDbConnected
+ * Handles connection with the search index database
+ * @package library\search
+ */
 abstract class SearchDbConnected
 {
 	/**
