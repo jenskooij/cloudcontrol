@@ -10,31 +10,35 @@ namespace library\search\indexer;
 
 use library\search\DocumentTokenizer;
 use library\search\Indexer;
+use library\storage\JsonStorage;
 
 class TermCount
 {
 	protected $dbHandle;
 	protected $documents;
 	protected $filters;
+	protected $storage;
 
 	/**
 	 * TermCount constructor.
 	 *
 	 * @param resource $dbHandle
-	 * @param array    $documents
-	 * @param array    $filters
+	 * @param array $documents
+	 * @param array $filters
+	 * @param JsonStorage $jsonStorage
 	 */
-	public function __construct($dbHandle, $documents, $filters)
+	public function __construct($dbHandle, $documents, $filters, $jsonStorage)
 	{
 		$this->dbHandle = $dbHandle;
 		$this->documents = $documents;
 		$this->filters = $filters;
+		$this->storage = $jsonStorage;
 	}
 
 	public function execute()
 	{
 		foreach ($this->documents as $document) {
-			$tokenizer = new DocumentTokenizer($document);
+			$tokenizer = new DocumentTokenizer($document, $this->storage);
 			$tokens = $tokenizer->getTokens();
 			$documentTermCount = $this->applyFilters($tokens);
 			$this->storeDocumentTermCount($document, $documentTermCount);

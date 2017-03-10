@@ -79,7 +79,7 @@ class Indexer extends SearchDbConnected
 	 */
 	public function createDocumentTermCount($documents)
 	{
-		$termCount = new TermCount($this->getSearchDbHandle(), $documents, $this->filters);
+		$termCount = new TermCount($this->getSearchDbHandle(), $documents, $this->filters, $this->storage);
 		$termCount->execute();
 	}
 

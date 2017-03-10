@@ -9,6 +9,7 @@ namespace library\search;
 
 
 use library\storage\Document;
+use library\storage\JsonStorage;
 
 class DocumentTokenizer
 {
@@ -21,15 +22,18 @@ class DocumentTokenizer
 	 * @var array
 	 */
 	protected $tokenVector = array();
+	protected $storage;
 
 	/**
 	 * Tokenizer constructor.
 	 *
 	 * @param \library\storage\Document $document
+	 * @param JsonStorage $storage
 	 */
-	public function __construct(Document $document)
+	public function __construct(Document $document, JsonStorage $storage)
 	{
 		$this->document = $document;
+		$this->storage = $storage;
 		$this->tokenize();
 	}
 
@@ -56,18 +60,22 @@ class DocumentTokenizer
 	private function tokenizeFields()
 	{
 		$fields = $this->document->fields;
+		$documentDefinition = $this->storage->getDocumentTypeBySlug($this->document->documentTypeSlug);
 		foreach ($fields as $fieldName => $field) {
-			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field, $fieldName);
+			$fieldType = $this->getFieldType($fieldName, $documentDefinition);
+			$this->tokenizeField($field, $fieldName, $fieldType);
 		}
 	}
 
-	private function tokenizeField($field, $fieldName)
+	private function tokenizeField($field, $fieldName, $fieldType)
 	{
 		foreach ($field as $value) {
-			$filteredString = new CharacterFilter($value);
-			$tokenizer = new Tokenizer($filteredString);
-			$this->addTokenVectorToVector($tokenizer->getTokenVector(), $fieldName);
+			// Only index fields that contain text
+			if (in_array($fieldType, array('String', 'Text', 'Rich Text'))) {
+				$filteredString = new CharacterFilter($value);
+				$tokenizer = new Tokenizer($filteredString);
+				$this->addTokenVectorToVector($tokenizer->getTokenVector(), $fieldName);
+			}
 		}
 	}
 
@@ -82,9 +90,10 @@ class DocumentTokenizer
 	private function tokenizeBrick($brick, $brickSlug)
 	{
 		$fields  = $brick->fields;
+		$brickDefinition = $this->storage->getBrickBySlug($brick->type);
 		foreach ($fields as $fieldName => $field) {
-			// TODO determine fieldType and take action according. For example should handle documents, images or files differently.
-			$this->tokenizeField($field, $brickSlug . '__' . $fieldName);
+			$fieldType = $this->getFieldType($fieldName, $brickDefinition);
+			$this->tokenizeField($field, $brickSlug . '__' . $fieldName, $fieldType);
 		}
 	}
 
@@ -128,5 +137,23 @@ class DocumentTokenizer
 		foreach ($tokenVector as $token => $count) {
 			$this->addTokenToVector($token, $field, $count);
 		}
+	}
+
+	/**
+	 * Get the type for a field
+	 * @param $fieldName
+	 * @param $documentDefinition
+	 * @return mixed
+	 * @throws \Exception
+	 */
+	private function getFieldType($fieldName, $documentDefinition)
+	{
+		foreach ($documentDefinition->fields as $fieldTypeDefinition) {
+			if ($fieldTypeDefinition->slug === $fieldName) {
+				return $fieldTypeDefinition->type;
+			}
+		}
+
+		throw new \Exception('Unknown field type for field' . $fieldName . ' in document ' . $this->document->path);
 	}
 }
