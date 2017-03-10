@@ -30,6 +30,9 @@ class SearchRouting implements CmsRouting
 			$this->updateIndexRoute($cmsComponent);
 		} elseif ($relativeCmsUri === '/search/ajax-update-index') {
 			$this->ajaxUpdateIndexRoute($request, $cmsComponent);
+		} elseif ($relativeCmsUri === '/search/manual-update-index') {
+			$indexer = new Indexer($cmsComponent->storage);
+			$indexer->updateIndex();
 		}
 	}
 
