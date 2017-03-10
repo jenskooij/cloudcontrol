@@ -10,6 +10,7 @@ namespace library\components\cms;
 
 use library\components\CmsComponent;
 use library\search\Indexer;
+use library\search\Search;
 
 class SearchRouting implements CmsRouting
 {
@@ -38,7 +39,7 @@ class SearchRouting implements CmsRouting
 		$cmsComponent->subTemplate = 'cms/search';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
 		$documentCount = $cmsComponent->storage->getTotalDocumentCount();
-		$indexer = new Indexer($cmsComponent->storage);
+		$indexer = new Search($cmsComponent->storage);
 		$indexedDocuments = $indexer->getIndexedDocuments();
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
 	}

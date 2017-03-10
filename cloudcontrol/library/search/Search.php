@@ -56,6 +56,27 @@ class Search extends SearchDbConnected
 		return $flatResults;
 	}
 
+	public function getIndexedDocuments()
+	{
+		$db = $this->getSearchDbHandle();
+		$sql = '
+			SELECT count(DISTINCT documentPath) as indexedDocuments
+			  FROM term_frequency
+		';
+		if (!$stmt = $db->query($sql)) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		$result = $stmt->fetch(\PDO::FETCH_COLUMN);
+		if (false === $result) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		return $result;
+	}
+
 	private function queryTokens()
 	{
 		$tokens = $this->getTokens();

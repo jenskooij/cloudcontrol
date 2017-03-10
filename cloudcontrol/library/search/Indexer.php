@@ -25,6 +25,8 @@ class Indexer extends SearchDbConnected
 	protected $log;
 	protected $lastLog;
 
+	const SEARCH_TEMP_DB = 'search_tmp.db';
+
 	public function updateIndex()
 	{
 		$this->startLogging();
@@ -41,6 +43,8 @@ class Indexer extends SearchDbConnected
 		$this->createTermFieldLengthNorm();
 		$this->addLog('Start Inverse Document Frequency.');
 		$this->createInverseDocumentFrequency();
+		$this->addLog('Replacing old index.');
+		$this->replaceOldIndex();
 		$this->addLog('Indexing complete.');
 		return $this->log;
 	}
@@ -112,24 +116,19 @@ class Indexer extends SearchDbConnected
 		$this->lastLog = round(microtime(true) * 1000);
 	}
 
-	public function getIndexedDocuments()
+	protected function getSearchDbHandle()
 	{
-		$db = $this->getSearchDbHandle();
-		$sql = '
-			SELECT count(DISTINCT documentPath) as indexedDocuments
-			  FROM term_frequency
-		';
-		if (!$stmt = $db->query($sql)) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		if ($this->searchDbHandle === null) {
+			$path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->storageDir . DIRECTORY_SEPARATOR;
+			$this->searchDbHandle = new \PDO('sqlite:' . $path . self::SEARCH_TEMP_DB);
 		}
-		$result = $stmt->fetch(\PDO::FETCH_COLUMN);
-		if (false === $result) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
-		return $result;
+		return $this->searchDbHandle;
+	}
+
+	protected function replaceOldIndex()
+	{
+		$this->searchDbHandle = null;
+		$path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->storageDir . DIRECTORY_SEPARATOR;
+		rename($path . self::SEARCH_TEMP_DB, $path . 'search.db');
 	}
 }
