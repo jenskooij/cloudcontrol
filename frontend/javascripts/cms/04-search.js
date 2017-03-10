@@ -13,6 +13,9 @@
         startTime = + new Date();
         updateLog('Indexing start.');
         updateLog('Clearing index.');
+        window.onbeforeunload = function(e) {
+            return 'You have unsaved changes. Are you sure you want to leave this page?';
+        };
         resetIndex();
     }
 
@@ -35,7 +38,7 @@
 
     function abortIndexing (responseText, status) {
         updateLog('Error occured.');
-        searchIndexStatus.className = 'index-status error';
+        searchIndexStatus.className = 'search-index-status error';
         updateProgress(0);
         console.log(responseText);
     }
@@ -108,6 +111,7 @@
         searchIndexProgressBarProgress.style.width = percentage + '%';
         if (percentage === 100) {
             searchIndexProgressBar.className = 'progress-bar';
+            window.onbeforeunload=null;
         }
     }
 })();

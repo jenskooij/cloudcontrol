@@ -8,7 +8,7 @@
 		</ul>
 	</nav>
 	<div class="search-progress">
-		<h3 class="index-status" id="search_index_status">Initializing...</h3>
+		<h3 class="search-index-status" id="search_index_status">Initializing...</h3>
 		<div id="search_index_progress_bar" class="progress-bar active" data-progress="1">
 			<div class="progress"></div>
 		</div>

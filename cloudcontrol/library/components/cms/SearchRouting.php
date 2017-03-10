@@ -59,6 +59,7 @@ class SearchRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/search/update-index';
 		if (isset($request::$get['step'])) {
+			\set_time_limit(0); // Set max excecution time infinite
 			$indexer = new Indexer($cmsComponent->storage);
 			$step = $request::$get['step'];
 			if ($step == 'resetIndex') {
