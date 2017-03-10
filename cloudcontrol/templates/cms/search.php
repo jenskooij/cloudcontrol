@@ -3,7 +3,7 @@
 	<nav class="actions">
 		<ul>
 			<li>
-				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/search/update-index" title="Update Index">Update Index</a>
+				<a class="btn<? if (!$searchNeedsUpdate) : ?> reset<? endif ?>" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/search/update-index" title="Update Index">Update Index</a>
 			</li>
 		</ul>
 	</nav>
