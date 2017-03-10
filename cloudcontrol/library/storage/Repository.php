@@ -313,7 +313,7 @@ class Repository
 		if (!is_array($result )) {
 			return 0;
 		}
-		return current($result);
+		return intval(current($result));
 	}
 
 	/**
