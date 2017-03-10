@@ -13,7 +13,7 @@
     </div>
     <? else : ?>
         <div class="message valid">
-            <i class="fa fa-fheck"></i> Search index is in sync with documents.
+            <i class="fa fa-check"></i> Search index is in sync with documents.
         </div>
     <? endif ?>
 </section>
