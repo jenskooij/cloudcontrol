@@ -29,7 +29,7 @@ class Indexer extends SearchDbConnected
 	);
 	protected $storageDir;
 	/**
-	 * @var int
+	 * @var double
 	 */
 	protected $loggingStart;
 	/**
@@ -37,7 +37,7 @@ class Indexer extends SearchDbConnected
 	 */
 	protected $log;
 	/**
-	 * @var int
+	 * @var double
 	 */
 	protected $lastLog;
 

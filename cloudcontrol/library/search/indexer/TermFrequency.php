@@ -24,6 +24,9 @@ use library\search\Indexer;
  */
 class TermFrequency
 {
+	/**
+	 * @var \PDO
+	 */
 	protected $dbHandle;
 
 	/**

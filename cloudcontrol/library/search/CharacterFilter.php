@@ -30,7 +30,7 @@ class CharacterFilter
 	 * Returns the filtered string
 	 * @return string|void
 	 */
-	function __toString()
+	public function __toString()
 	{
 		return $this->filteredString;
 	}

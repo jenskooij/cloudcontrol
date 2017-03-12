@@ -14,6 +14,9 @@ use library\storage\JsonStorage;
 
 class TermCount
 {
+	/**
+	 * @var \PDO
+	 */
 	protected $dbHandle;
 	protected $documents;
 	protected $filters;
@@ -22,7 +25,7 @@ class TermCount
 	/**
 	 * TermCount constructor.
 	 *
-	 * @param resource $dbHandle
+	 * @param \PDO $dbHandle
 	 * @param array $documents
 	 * @param array $filters
 	 * @param JsonStorage $jsonStorage

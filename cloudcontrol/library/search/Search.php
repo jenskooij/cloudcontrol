@@ -58,7 +58,7 @@ class Search extends SearchDbConnected
 		$flatResults = $this->applyQueryCoordination($flatResults);
 		usort($flatResults, array($this, "scoreCompare"));
 
-		$flatResults = array_merge($this->getSearchSuggestions($tokenizer), $flatResults);
+		$flatResults = array_merge($this->getSearchSuggestions(), $flatResults);
 
 		return $flatResults;
 	}
@@ -275,7 +275,7 @@ class Search extends SearchDbConnected
 				throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 			}
 			$stmt->bindValue(':token', $token);
-			if ($stmt === false | !$stmt->execute()) {
+			if (($stmt === false) | (!$stmt->execute())) {
 				throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
 			}
 			$result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\search\results\SearchSuggestion');

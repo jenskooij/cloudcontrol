@@ -18,7 +18,7 @@ use library\storage\JsonStorage;
 abstract class SearchDbConnected
 {
 	/**
-	 * @var resource
+	 * @var \PDO
 	 */
 	protected $searchDbHandle;
 

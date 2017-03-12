@@ -97,6 +97,5 @@ class SearchRouting implements CmsRouting
 		header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
 		header('Content-type: application/json');
 		die(json_encode($obj));
-		exit;
 	}
 }
