@@ -66,28 +66,7 @@ class SearchRouting implements CmsRouting
 			\session_write_close(); // Close the session, so it doesnt create a lock on the sessionstorage, block other requests.
 			$indexer = new Indexer($cmsComponent->storage);
 			$step = $request::$get['step'];
-			if ($step == 'resetIndex') {
-				$indexer->resetIndex();
-				$this->showJson('done');
-			} elseif ($step == 'createDocumentTermCount') {
-				$documents = $cmsComponent->storage->getDocuments();
-				$indexer->createDocumentTermCount($documents);
-				$this->showJson('done');
-			} else if ($step == 'createDocumentTermFrequency') {
-				$indexer->createDocumentTermFrequency();
-				$this->showJson('done');
-			} else if ($step == 'createTermFieldLengthNorm') {
-				$indexer->createTermFieldLengthNorm();
-				$this->showJson('done');
-			} else if ($step == 'createInverseDocumentFrequency') {
-				$indexer->createInverseDocumentFrequency();
-				$this->showJson('done');
-			} else if ($step == 'replaceOldIndex') {
-				$indexer->replaceOldIndex();
-				$this->showJson('done');
-			} else {
-				$this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error');
-			}
+			$this->stepRouting($step, $cmsComponent, $indexer);
 		} else {
 			$this->showJson('No step defined.', 'HTTP/1.0 500 Internal Server Error');
 		}
@@ -97,5 +76,36 @@ class SearchRouting implements CmsRouting
 		header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
 		header('Content-type: application/json');
 		die(json_encode($obj));
+	}
+
+	/**
+	 * @param CmsComponent $cmsComponent
+	 * @param string $step
+	 * @param Indexer $indexer
+	 */
+	private function stepRouting($step, $cmsComponent, $indexer)
+	{
+		if ($step == 'resetIndex') {
+			$indexer->resetIndex();
+			$this->showJson('done');
+		} elseif ($step == 'createDocumentTermCount') {
+			$documents = $cmsComponent->storage->getDocuments();
+			$indexer->createDocumentTermCount($documents);
+			$this->showJson('done');
+		} else if ($step == 'createDocumentTermFrequency') {
+			$indexer->createDocumentTermFrequency();
+			$this->showJson('done');
+		} else if ($step == 'createTermFieldLengthNorm') {
+			$indexer->createTermFieldLengthNorm();
+			$this->showJson('done');
+		} else if ($step == 'createInverseDocumentFrequency') {
+			$indexer->createInverseDocumentFrequency();
+			$this->showJson('done');
+		} else if ($step == 'replaceOldIndex') {
+			$indexer->replaceOldIndex();
+			$this->showJson('done');
+		} else {
+			$this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error');
+		}
 	}
 }
