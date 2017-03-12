@@ -26,6 +26,7 @@
 				<option value="images"<?=isset($user) && in_array('images', $user->rights) ? ' selected="selected"' : '' ?>>Images</option>
 				<option value="files"<?=isset($user) && in_array('files', $user->rights) ? ' selected="selected"' : '' ?>>Files</option>
 				<option value="configuration"<?=isset($user) && in_array('configuration', $user->rights) ? ' selected="selected"' : '' ?>>Configuration</option>
+				<option value="search"<?=isset($user) && in_array('search', $user->rights) ? ' selected="selected"' : '' ?>>Search</option>
 			</select>
 		</div>
 		<div class="form-element">

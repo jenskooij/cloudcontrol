@@ -39,6 +39,14 @@
 				</a>
 			</li>
 			<? endif ?>
+			<? if (in_array('search', $userRights)) : ?>
+                <li class="tile grid-box-3">
+                    <a class="btn search" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/search">
+                        <i class="fa fa-search"></i>
+                        Search
+                    </a>
+                </li>
+			<? endif ?>
 			<? if (in_array('configuration', $userRights)) : ?>
 			<li class="tile grid-box-3">
 				<a class="btn configuration" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration">

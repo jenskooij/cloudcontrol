@@ -213,7 +213,7 @@ class Repository
     /**
      * @return \PDO
      */
-    protected function getContentDbHandle()
+    public function getContentDbHandle()
     {
         if ($this->contentDbHandle === null) {
             $this->contentDbHandle = new \PDO('sqlite:' . $this->storagePath . DIRECTORY_SEPARATOR . 'content.db');
@@ -298,7 +298,25 @@ class Repository
         return $document;
     }
 
-    /**
+	/**
+	 * Returns the count of all documents stored in the db
+	 * @return int
+	 */
+	public function getTotalDocumentCount()
+	{
+		$db = $this->getContentDbHandle();
+		$stmt = $db->query('
+			SELECT count(*)
+			  FROM documents
+		');
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
+		if (!is_array($result )) {
+			return 0;
+		}
+		return intval(current($result));
+	}
+
+	/**
      * Return the results of the query as array of Documents
      * @param $sql
      * @return array

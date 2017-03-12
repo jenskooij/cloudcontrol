@@ -53,7 +53,6 @@ namespace library\components
 		 * Hook for implementation in derived classes
 		 *
 		 * @param JsonStorage $storage
-		 * @return mixed|void
 		 */
 		public function run(JsonStorage $storage)
 		{

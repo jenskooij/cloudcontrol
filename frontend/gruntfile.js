@@ -53,7 +53,8 @@ module.exports = function (grunt) {
                     sassDir: 'sass',
                     cssDir: '../cloudcontrol/www/css',
                     environment: 'development',
-                    outputStyle: 'compressed'
+                    outputStyle: 'compressed',
+                    sourcemap: true
                 }
             }
         },

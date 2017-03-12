@@ -55,6 +55,15 @@
 				</li>
 				<? $nrOfMenuItems += 1 ?>
 				<? endif ?>
+				<? if (in_array('search', $userRights)) : ?>
+                    <li class="grid-box-1">
+                        <a class="btn search grid-inner<?=$mainNavClass == 'search' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/search">
+                            <i class="fa fa-search"></i>
+                            <span>Search</span>
+                        </a>
+                    </li>
+					<? $nrOfMenuItems += 1 ?>
+				<? endif ?>
 				<? if (in_array('configuration', $userRights)) : ?>
 				<li class="grid-box-1">
 					<a class="btn configuration grid-inner<?=$mainNavClass == 'configuration' ? ' active' : ''?>" href="<?=$request::$subfolders?><?=$cmsPrefix?>/configuration">

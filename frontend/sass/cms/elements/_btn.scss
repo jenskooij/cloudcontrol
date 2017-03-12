@@ -59,7 +59,17 @@
 			background-color:$btn-text-color;
 		}
 	}
-	
+
+	&.search {
+		background-color:$search-color;
+
+		&:hover,
+		&.active {
+			color:$search-color;
+			background-color:$btn-text-color;
+		}
+	}
+
 	&.configuration {
 		background-color:$configuration-color;
 		

@@ -17,7 +17,7 @@ using the framework. See also the installation instructions for the [frontend](f
 ## Using Cloud Control for your project
 Cloud Control was designed to accelerate your development track. After cloning this
 repo, it is advised to initialize git repositories in both the `/cloudcontrol` and
-`/frontend` repositories, so you can maintain your front- and backend separatly.
+`/frontend` folders, so you can maintain your front- and backend separately.
 This is especially useful when you're working in a project team with multiple
 developers.
 

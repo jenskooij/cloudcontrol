@@ -222,6 +222,11 @@ namespace library\storage
 			return $this->repository->getDocuments();
 		}
 
+		public function getTotalDocumentCount()
+		{
+			return $this->repository->getTotalDocumentCount();
+		}
+
 		/**
 		 * @param string $slug
 		 * @return mixed
@@ -674,6 +679,19 @@ namespace library\storage
 			$files =  $this->repository->files;
 			usort($files, array($this, 'compareFiles'));
 			return $files;
+		}
+
+		/**
+		 * @return mixed
+		 */
+		public function getStorageDir()
+		{
+			return $this->storageDir;
+		}
+
+		public function getContentDbHandle()
+		{
+			return $this->repository->getContentDbHandle();
 		}
 
 		private function compareFiles($a, $b)

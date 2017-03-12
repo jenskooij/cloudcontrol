@@ -23,7 +23,6 @@ namespace library\components
 
 		/**
 		 * @param JsonStorage $storage
-		 * @return mixed
 		 */
 		function run(JsonStorage $storage);
 
