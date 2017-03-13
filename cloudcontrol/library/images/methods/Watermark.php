@@ -68,7 +68,7 @@ namespace library\images\methods
 			$x = strtolower($this->_x);
 			
 			$imageWidth = imagesx($imageResource);
-			$watermarkWidth = imagesx($this->GetWatermark()->GetImageResource());
+			$watermarkWidth = imagesx($this->GetWatermark()->getImageResource());
 			
 			if ($x == 'left') {
 				$x = 0;
@@ -93,7 +93,7 @@ namespace library\images\methods
 			$y = strtolower($this->_y);
 			
 			$imageHeight = imagesy($imageResource);
-			$watermarkHeight = imagesy($this->GetWatermark()->GetImageResource());
+			$watermarkHeight = imagesy($this->GetWatermark()->getImageResource());
 			
 			if ($y == 'top') {
 				$y = 0;
@@ -156,8 +156,8 @@ namespace library\images\methods
 		public function Execute($imageResource)
 		{
 			$watermark = $this->GetWatermark();
-			$watermarkWidth  = imagesx($watermark->GetImageResource());
-			$watermarkHeight = imagesy($watermark->GetImageResource());
+			$watermarkWidth  = imagesx($watermark->getImageResource());
+			$watermarkHeight = imagesy($watermark->getImageResource());
 			
 			$x = $this->calculateX($imageResource);
 			$y = $this->calculateY($imageResource);
@@ -173,15 +173,15 @@ namespace library\images\methods
 			imagesavealpha($new, true);
 			
 			// Preserve transparency of the watermark
-			imagecolortransparent($watermark->GetImageResource(), imagecolorallocatealpha($watermark->GetImageResource(), 0, 0, 0, 127));
-			imagealphablending($watermark->GetImageResource(), false);
-			imagesavealpha($watermark->GetImageResource(), true);
+			imagecolortransparent($watermark->getImageResource(), imagecolorallocatealpha($watermark->getImageResource(), 0, 0, 0, 127));
+			imagealphablending($watermark->getImageResource(), false);
+			imagesavealpha($watermark->getImageResource(), true);
 			
 			imagealphablending($new, true);
-			imagealphablending($watermark->GetImageResource(), true);
+			imagealphablending($watermark->getImageResource(), true);
 			
 			imagecopy($new, $imageResource, 0, 0, 0, 0, $imageWidth, $imageHeight);
-			imagecopymerge($new, $watermark->GetImageResource(), $x, $y, 0, 0, $watermarkWidth, $watermarkHeight, $this->_transparency);
+			imagecopymerge($new, $watermark->getImageResource(), $x, $y, 0, 0, $watermarkWidth, $watermarkHeight, $this->_transparency);
 			
 			return $new;
 		}

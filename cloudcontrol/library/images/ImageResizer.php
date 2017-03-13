@@ -129,14 +129,14 @@ namespace library\images
 			$destination = $this->modifyName($imagePath, $modifier);
 			if (file_exists($imagePath)) {
 				$image = new Image();
-				$image->LoadImage($imagePath);
+				$image->loadImage($imagePath);
 				$resize = new $method();
 				$resize->SetWidth($width);
 				$resize->SetHeight($height);
-				$resizedImageResource = $resize->Execute($image->GetImageResource());
+				$resizedImageResource = $resize->Execute($image->getImageResource());
 				$resizedImage = new Image();
-				$resizedImage->LoadImage($resizedImageResource);
-				$resizedImage->SaveImage($destination, $resizedImage->GetImageMimeType($imagePath), 80);
+				$resizedImage->loadImage($resizedImageResource);
+				$resizedImage->saveImage($destination, $resizedImage->getImageMimeType($imagePath), 80);
 				return basename($destination);
 			} else {
 				throw new \Exception('Image doesnt exist: ' . $imagePath);
