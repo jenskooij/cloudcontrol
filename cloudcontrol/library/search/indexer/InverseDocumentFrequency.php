@@ -19,8 +19,8 @@ class InverseDocumentFrequency
 	/**
 	 * InverseDocumentFrequency constructor.
 	 *
-	 * @param resource $dbHandle
-	 * @param int      $documentCount
+	 * @param \PDO 	$dbHandle
+	 * @param int   $documentCount
 	 */
 	public function __construct($dbHandle, $documentCount)
 	{
