@@ -11,6 +11,9 @@ namespace library\storage
 	 */
 	class JsonStorage implements Storage
 	{
+		/**
+		 * @var String
+		 */
 		private $storageDir;
         /**
          * @var Repository
@@ -20,7 +23,7 @@ namespace library\storage
 		/**
 		 * JsonStorage constructor.
 		 *
-		 * @param $storageDir
+		 * @param string $storageDir
 		 */
 		public function __construct($storageDir)
 		{
@@ -682,7 +685,7 @@ namespace library\storage
 		}
 
 		/**
-		 * @return mixed
+		 * @return string
 		 */
 		public function getStorageDir()
 		{
