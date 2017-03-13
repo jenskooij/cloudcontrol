@@ -159,10 +159,10 @@ namespace library\cc
 		{
 			$libraryComponentName = '\\library\\components\\' . $class;
 			$userComponentName = '\\components\\' . $class;
-			
-			if (\autoLoad($libraryComponentName, false)) {
+
+			if (AutoloadUtil::autoLoad($libraryComponentName, false)) {
 				$component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-			} elseif (\autoLoad($userComponentName, false)) {
+			} elseif (AutoloadUtil::autoLoad($userComponentName, false)) {
 				$component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
 			} else {
 				throw new \Exception('Could not load component ' . $class);

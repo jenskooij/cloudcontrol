@@ -154,7 +154,7 @@ class Repository
      */
     protected function saveSubset($subset)
     {
-        $json = json_encode($this->$subset);
+        $json = json_encode($this->$subset, JSON_PRETTY_PRINT);
         $subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
         file_put_contents($subsetStoragePath, $json);
         $changes = $subset . 'Changes';
