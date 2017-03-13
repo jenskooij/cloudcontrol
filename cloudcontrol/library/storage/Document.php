@@ -101,9 +101,9 @@ class Document
     }
 
 	/**
-	 *
+	 * @return string
 	 */
-	function __toString()
+	public function __toString()
 	{
 		return 'Document:' . $this->title;
 	}
