@@ -8,6 +8,8 @@
 namespace library\storage\factories;
 
 
+use library\storage\Document;
+
 class DocumentFolderFactory
 {
 	/**
