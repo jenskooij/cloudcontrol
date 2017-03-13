@@ -9,6 +9,15 @@ namespace library\cc;
 
 class ErrorHandlingUtil
 {
+	public static $JSON_ERRORS = array(
+		JSON_ERROR_NONE => 'No errors',
+		JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
+		JSON_ERROR_STATE_MISMATCH => 'Underflow or the modes mismatch',
+		JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
+		JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
+		JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded',
+	);
+
 	/**
 	 * Displays the error in a human readable fashion for developers.
 	 *
@@ -40,29 +49,9 @@ class ErrorHandlingUtil
 	public static function handleJsonError($file, $line)
 	{
 		$jsonErrorNr = json_last_error();
-		$errstr = '';
-		switch ($jsonErrorNr) {
-			case JSON_ERROR_NONE:
-				$errstr .= ' - No errors' . PHP_EOL;
-				break;
-			case JSON_ERROR_DEPTH:
-				$errstr .= ' - Maximum stack depth exceeded' . PHP_EOL;
-				break;
-			case JSON_ERROR_STATE_MISMATCH:
-				$errstr .= ' - Underflow or the modes mismatch' . PHP_EOL;
-				break;
-			case JSON_ERROR_CTRL_CHAR:
-				$errstr .= ' - Unexpected control character found' . PHP_EOL;
-				break;
-			case JSON_ERROR_SYNTAX:
-				$errstr .= ' - Syntax error, malformed JSON' . PHP_EOL;
-				break;
-			case JSON_ERROR_UTF8:
-				$errstr .= ' - Malformed UTF-8 characters, possibly incorrectly encoded' . PHP_EOL;
-				break;
-			default:
-				$errstr = ' - Unknown error' . PHP_EOL;
-				break;
+		$errstr = 'Unknown error';
+		if (isset(self::$JSON_ERRORS[$jsonErrorNr])) {
+			$errstr = self::$JSON_ERRORS[$jsonErrorNr];
 		}
 		\errorHandler($jsonErrorNr, $errstr, $file, $line);
 	}
