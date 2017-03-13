@@ -91,36 +91,30 @@ function humanFileSize($size,$unit="") {
  */
 
 function iconByFileType($fileType) {
-	if (strpos($fileType, 'image') !== false) {
-		return 'file-image-o';
-	} elseif (strpos($fileType, 'pdf') !== false) {
-		return 'file-pdf-o';
-	} elseif (strpos($fileType, 'audio') !== false) {
-		return 'file-audio-o';
-	} elseif (strpos($fileType, 'text') !== false) {
-		return 'file-text-o';
-	} elseif (strpos($fileType, 'x-msdownload') !== false) {
-		return 'windows';
-	} elseif (in_array($fileType, array(
-		'application/vnd.ms-excel',
-		'application/msexcel',
-		'application/xls',
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-		'application/vnd.google-apps.spreadsheet',
-	))) {
-		return 'file-excel-o';
-	} elseif (in_array($fileType, array(
-		'application/msword',
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-	))) {
-		return 'file-word-o';
-	} elseif (in_array($fileType, array(
-		'application/x-rar-compressed',
-		'application/x-zip-compressed',
-		'application/zip',
-	))) {
-		return 'file-archive-o';
+	$fileTypeIcons = array(
+		'image' => 'file-image-o',
+		'pdf' => 'file-pdf-o',
+		'audio' => 'file-audio-o',
+		'x-msdownload' => 'windows',
+		'application/vnd.ms-excel' => 'file-excel-o',
+		'application/msexcel' => 'file-excel-o',
+		'application/xls' => 'file-excel-o',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'file-excel-o',
+		'application/vnd.google-apps.spreadsheet' => 'file-excel-o',
+		'application/msword' => 'file-word-o',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'file-word-o',
+		'application/x-rar-compressed' => 'file-archive-o',
+		'application/x-zip-compressed' => 'file-archive-o',
+		'application/zip' => 'file-archive-o',
+		'text' => 'file-text-o',
+	);
+
+	foreach ($fileTypeIcons as $needle => $icon) {
+		if (strpos($fileType, $needle) !== false) {
+			return $icon;
+		}
 	}
+
 	return 'file-o';
 }
 
