@@ -241,12 +241,15 @@ namespace library\storage
 			return $this->repository->getDocumentByPath($path);
 		}
 
+		/**
+		 * @param $postValues
+		 */
 		public function saveDocument($postValues)
 		{
             $oldPath = '/' . $postValues['path'];
 
             $container = $this->getDocumentContainerByPath($oldPath);
-            $documentObject = $this->createDocumentFromPostValues($postValues);
+            $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
             if ($container->path === '/') {
                 $newPath = $container->path . $documentObject->slug;
             } else {
@@ -258,7 +261,7 @@ namespace library\storage
 
 		public function addDocument($postValues)
 		{
-			$documentObject = $this->createDocumentFromPostValues($postValues);
+			$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
             if ($postValues['path'] === '/') {
                 $documentObject->path = $postValues['path'] . $documentObject->slug;
             } else {
@@ -272,79 +275,6 @@ namespace library\storage
 		{
             $path = '/' . $slug;
 			$this->repository->deleteDocumentByPath($path);
-		}
-
-		private function createDocumentFromPostValues($postValues)
-		{
-			$postValues = utf8Convert($postValues);
-			$documentType = $this->getDocumentTypeBySlug($postValues['documentType']);
-
-			$staticBricks = $documentType->bricks;
-
-			$documentObj = new Document();
-			$documentObj->title = $postValues['title'];
-			$documentObj->slug = slugify($postValues['title']);
-			$documentObj->type = 'document';
-			$documentObj->documentType = $documentType->title;
-			$documentObj->documentTypeSlug = $documentType->slug;
-			$documentObj->state = isset($postValues['state']) ? 'published' : 'unpublished';
-			$documentObj->lastModificationDate = time();
-			$documentObj->creationDate = isset($postValues['creationDate']) ? intval($postValues['creationDate']) : time();
-			$documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
-
-			$documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
-
-			$documentObj->bricks = array();
-			if (isset($postValues['bricks'])) {
-				foreach ($postValues['bricks'] as $brickSlug => $brick) {
-					// Check if its multiple
-					$multiple = false;
-					$staticBrick = null;
-					foreach ($staticBricks as $staticBrick) {
-						if ($staticBrick->slug === $brickSlug) {
-							$multiple = $staticBrick->multiple;
-							break;
-						}
-					}
-
-					if ($multiple) {
-						$brickArray = array();
-						foreach ($brick as $brickInstance) {
-							$brickObj = new \stdClass();
-							$brickObj->fields = new \stdClass();
-							$brickObj->type = $staticBrick->brickSlug;
-
-							foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
-								$brickObj->fields->$fieldName = $fieldValues;
-							}
-
-							$brickArray[] = $brickObj;
-						}
-
-                        $bricks = $documentObj->bricks;
-						$bricks[$brickSlug] = $brickArray;
-                        $documentObj->bricks = $bricks;
-					} else {
-                        $bricks = $documentObj->bricks;
-						$bricks[$brickSlug] = $brick;
-                        $documentObj->bricks = $bricks;
-					}
-				}
-			}
-			$documentObj->dynamicBricks = array();
-			if (isset($postValues['dynamicBricks'])) {
-				foreach ($postValues['dynamicBricks'] as $brickTypeSlug => $brick) {
-					foreach ($brick as $brickContent) {
-						$brickObj = new \stdClass();
-						$brickObj->type = $brickTypeSlug;
-						$brickObj->fields = $brickContent;
-                        $dynamicBricks = $documentObj->dynamicBricks;
-						$dynamicBricks[] = $brickObj;
-                        $documentObj->dynamicBricks = $dynamicBricks;
-					}
-				}
-			}
-			return $documentObj;
 		}
 
 		/**
@@ -1305,5 +1235,6 @@ namespace library\storage
 			$this->repository->applicationComponents = $applicationComponents;
 			$this->save();
 		}
+
 	}
 }
