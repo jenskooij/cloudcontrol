@@ -1,11 +1,16 @@
 <?php
-namespace library\storage
-{
+namespace library\storage {
 
-    use library\crypt\Crypt;
-    use library\images\ImageResizer;
+	use library\images\ImageResizer;
+	use library\storage\factories\ApplicationComponentFactory;
+	use library\storage\factories\BrickFactory;
+	use library\storage\factories\DocumentFolderFactory;
+	use library\storage\factories\DocumentTypeFactory;
+	use library\storage\factories\ImageSetFactory;
+	use library\storage\factories\SitemapItemFactory;
+	use library\storage\factories\UserFactory;
 
-    /**
+	/**
 	 * Class JsonStorage
 	 * @package library\storage
 	 */
@@ -15,9 +20,9 @@ namespace library\storage
 		 * @var String
 		 */
 		private $storageDir;
-        /**
-         * @var Repository
-         */
+		/**
+		 * @var Repository
+		 */
 		private $repository;
 
 		/**
@@ -56,7 +61,6 @@ namespace library\storage
 		}
 
 
-
 		/**
 		 * Get user by username
 		 *
@@ -67,7 +71,7 @@ namespace library\storage
 		public function getUserByUsername($username)
 		{
 			$return = array();
-			
+
 			$users = $this->repository->users;
 			foreach ($users as $user) {
 				if ($user->username == $username) {
@@ -75,16 +79,17 @@ namespace library\storage
 					break;
 				}
 			}
-			
+
 			return $return;
 		}
 
-        /**
-         * Get user by slug
-         *
-         * @param $slug
-         * @return array
-         */
+		/**
+		 * Get user by slug
+		 *
+		 * @param $slug
+		 *
+		 * @return array
+		 */
 		public function getUserBySlug($slug)
 		{
 			$return = array();
@@ -100,26 +105,27 @@ namespace library\storage
 			return $return;
 		}
 
-        /**
-         * Get all users
-         *
-         * @return mixed
-         */
+		/**
+		 * Get all users
+		 *
+		 * @return mixed
+		 */
 		public function getUsers()
 		{
 			return $this->repository->users;
 		}
 
-        /**
-         * Save user
-         *
-         * @param $slug
-         * @param $postValues
-         * @throws \Exception
-         */
+		/**
+		 * Save user
+		 *
+		 * @param $slug
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function saveUser($slug, $postValues)
 		{
-			$userObj = $this->createUserFromPostValues($postValues);
+			$userObj = UserFactory::createUserFromPostValues($postValues);
 			if ($userObj->slug != $slug) {
 				// If the username changed, check for duplicates
 				$doesItExist = $this->getUserBySlug($userObj->slug);
@@ -137,31 +143,34 @@ namespace library\storage
 			$this->save();
 		}
 
-        /**
-         * Add user
-         *
-         * @param $postValues
-         * @throws \Exception
-         */
+		/**
+		 * Add user
+		 *
+		 * @param $postValues
+		 *
+		 * @throws \Exception
+		 */
 		public function addUser($postValues)
 		{
-			$userObj = $this->createUserFromPostValues($postValues);
+			$userObj = UserFactory::createUserFromPostValues($postValues);
 
 			$doesItExist = $this->getUserBySlug($userObj->slug);
 			if (!empty($doesItExist)) {
 				throw new \Exception('Trying to add username that already exists.');
 			}
-            $users = $this->repository->users;
-            $users[] = $userObj;
-            $this->repository->users = $users;
+			$users = $this->repository->users;
+			$users[] = $userObj;
+			$this->repository->users = $users;
 			$this->save();
 		}
 
-        /**
-         * Delete user by slug
-         * @param $slug
-         * @throws \Exception
-         */
+		/**
+		 * Delete user by slug
+		 *
+		 * @param $slug
+		 *
+		 * @throws \Exception
+		 */
 		public function deleteUserBySlug($slug)
 		{
 			$userToDelete = $this->getUserBySlug($slug);
@@ -176,38 +185,6 @@ namespace library\storage
 				}
 			}
 			$this->save();
-		}
-
-        /**
-         * Create user from POST values
-         * @param $postValues
-         * @return \stdClass
-         * @throws \Exception
-         */
-		private function createUserFromPostValues($postValues)
-		{
-			if (isset($postValues['username'])) {
-				$user = new \stdClass();
-				$user->username = $postValues['username'];
-				$user->slug = slugify($postValues['username']);
-				$user->rights = array();
-				if (isset($postValues['rights'])) {
-					$user->rights = $postValues['rights'];
-				}
-
-				if (isset($postValues['password']) && empty($postValues['password']) === false) {
-					$crypt = new Crypt();
-					$user->password = $crypt->encrypt($postValues['password'], 16);
-					$user->salt = $crypt->getLastSalt();
-				} else {
-					$user->password = $postValues['passHash'];
-					$user->salt = $postValues['salt'];
-				}
-
-				return $user;
-			} else {
-				throw new \Exception('Trying to create user with invalid data.');
-			}
 		}
 
 		/*
@@ -232,12 +209,14 @@ namespace library\storage
 
 		/**
 		 * @param string $slug
+		 *
 		 * @return mixed
 		 * @throws \Exception
 		 */
 		public function getDocumentBySlug($slug)
 		{
-            $path = '/' . $slug;
+			$path = '/' . $slug;
+
 			return $this->repository->getDocumentByPath($path);
 		}
 
@@ -246,34 +225,34 @@ namespace library\storage
 		 */
 		public function saveDocument($postValues)
 		{
-            $oldPath = '/' . $postValues['path'];
+			$oldPath = '/' . $postValues['path'];
 
-            $container = $this->getDocumentContainerByPath($oldPath);
-            $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
-            if ($container->path === '/') {
-                $newPath = $container->path . $documentObject->slug;
-            } else {
-                $newPath = $container->path . '/' . $documentObject->slug;
-            }
-            $documentObject->path = $newPath;
-            $this->repository->saveDocument($documentObject);
-        }
+			$container = $this->getDocumentContainerByPath($oldPath);
+			$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
+			if ($container->path === '/') {
+				$newPath = $container->path . $documentObject->slug;
+			} else {
+				$newPath = $container->path . '/' . $documentObject->slug;
+			}
+			$documentObject->path = $newPath;
+			$this->repository->saveDocument($documentObject);
+		}
 
 		public function addDocument($postValues)
 		{
 			$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
-            if ($postValues['path'] === '/') {
-                $documentObject->path = $postValues['path'] . $documentObject->slug;
-            } else {
-                $documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
-            }
+			if ($postValues['path'] === '/') {
+				$documentObject->path = $postValues['path'] . $documentObject->slug;
+			} else {
+				$documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
+			}
 
-            $this->repository->saveDocument($documentObject);
+			$this->repository->saveDocument($documentObject);
 		}
 
 		public function deleteDocumentBySlug($slug)
 		{
-            $path = '/' . $slug;
+			$path = '/' . $slug;
 			$this->repository->deleteDocumentByPath($path);
 		}
 
@@ -286,13 +265,13 @@ namespace library\storage
 		 */
 		public function addDocumentFolder($postValues)
 		{
-            $documentFolderObject = $this->createDocumentFolderFromPostValues($postValues);
-            if ($postValues['path'] === '/') {
-                $documentFolderObject->path = $postValues['path'] . $documentFolderObject->slug;
-            } else {
-                $documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
-            }
-            $this->repository->saveDocument($documentFolderObject);
+			$documentFolderObject = DocumentFolderFactory::createDocumentFolderFromPostValues($postValues);
+			if ($postValues['path'] === '/') {
+				$documentFolderObject->path = $postValues['path'] . $documentFolderObject->slug;
+			} else {
+				$documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
+			}
+			$this->repository->saveDocument($documentFolderObject);
 		}
 
 		/**
@@ -304,7 +283,7 @@ namespace library\storage
 		 */
 		public function deleteDocumentFolderBySlug($slug)
 		{
-            $path = '/' . $slug;
+			$path = '/' . $slug;
 			$this->repository->deleteDocumentByPath($path);
 		}
 
@@ -318,7 +297,8 @@ namespace library\storage
 		 */
 		public function getDocumentFolderBySlug($slug)
 		{
-            $path = '/' . $slug;
+			$path = '/' . $slug;
+
 			return $this->repository->getDocumentByPath($path);
 		}
 
@@ -331,7 +311,7 @@ namespace library\storage
 		 */
 		public function saveDocumentFolder($postValues)
 		{
-            $this->addDocumentFolder($postValues);
+			$this->addDocumentFolder($postValues);
 		}
 
 		/**
@@ -344,30 +324,7 @@ namespace library\storage
 		 */
 		private function getDocumentContainerByPath($path)
 		{
-            return $this->repository->getDocumentContainerByPath($path);
-		}
-
-		/**
-		 * Create folder from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @return \stdClass
-		 * @throws \Exception
-		 */
-		private function createDocumentFolderFromPostValues($postValues)
-		{
-			if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
-				$documentFolderObject = new Document();
-				$documentFolderObject->title = $postValues['title'];
-				$documentFolderObject->slug = slugify($postValues['title']);
-				$documentFolderObject->type = 'folder';
-				$documentFolderObject->content = json_decode($postValues['content']);
-
-				return $documentFolderObject;
-			} else {
-				throw new \Exception('Trying to create document folder with invalid data.');
-			}
+			return $this->repository->getDocumentContainerByPath($path);
 		}
 
 		/*
@@ -390,9 +347,9 @@ namespace library\storage
 		 *
 		 * @throws \Exception
 		 */
-		public function addSitemapItem($postValues) 
+		public function addSitemapItem($postValues)
 		{
-			$sitemapObject = $this->createSitemapItemFromPostValues($postValues);
+			$sitemapObject = SitemapItemFactory::createSitemapItemFromPostValues($postValues);
 			$sitemap = $this->repository->sitemap;
 			$sitemap[] = $sitemapObject;
 			$this->repository->sitemap = $sitemap;
@@ -409,8 +366,8 @@ namespace library\storage
 		 */
 		public function saveSitemapItem($slug, $postValues)
 		{
-			$sitemapObject = $this->createSitemapItemFromPostValues($postValues);
-			
+			$sitemapObject = SitemapItemFactory::createSitemapItemFromPostValues($postValues);
+
 			$sitemap = $this->repository->sitemap;
 			foreach ($sitemap as $key => $sitemapItem) {
 				if ($sitemapItem->slug == $slug) {
@@ -439,36 +396,6 @@ namespace library\storage
 			$sitemap = array_values($sitemap);
 			$this->repository->sitemap = $sitemap;
 			$this->save();
-		}
-
-		/**
-		 * Create a sitemap item from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @return \stdClass
-		 * @throws \Exception
-		 */
-		private function createSitemapItemFromPostValues($postValues)
-		{
-			if (isset($postValues['title'], $postValues['url'], $postValues['component'], $postValues['template'])) {
-				$sitemapObject = new \stdClass();
-				$sitemapObject->title = $postValues['title'];
-				$sitemapObject->slug = slugify($postValues['title']);
-				$sitemapObject->url = $postValues['url'];
-				$sitemapObject->component = $postValues['component'];
-				$sitemapObject->template = $postValues['template'];
-				$sitemapObject->regex = isset($postValues['regex']);
-				$sitemapObject->parameters = new \stdClass();
-				if (isset($postValues['parameterNames'], $postValues['parameterValues'])) {
-					foreach ($postValues['parameterNames'] as $key => $value) {
-						$sitemapObject->parameters->$value = $postValues['parameterValues'][$key];
-					}
-				}
-				return $sitemapObject;
-			} else {
-				throw new \Exception('Trying to create sitemap item with invalid data.');
-			}
 		}
 
 		/**
@@ -509,6 +436,7 @@ namespace library\storage
 					return $sitemapItem;
 				}
 			}
+
 			return null;
 		}
 
@@ -548,9 +476,9 @@ namespace library\storage
 				$imageObject->size = $postValues['size'];
 				$imageObject->set = $fileNames;
 
-                $images = $this->repository->images;
+				$images = $this->repository->images;
 				$images[] = $imageObject;
-                $this->repository->images = $images;
+				$this->repository->images = $images;
 
 				$this->save();
 			} else {
@@ -584,8 +512,9 @@ namespace library\storage
 
 		/**
 		 * @param $filename
+		 *
 		 * @return null
-         */
+		 */
 		public function getImageByName($filename)
 		{
 			$images = $this->getImages();
@@ -594,6 +523,7 @@ namespace library\storage
 					return $image;
 				}
 			}
+
 			return null;
 		}
 
@@ -609,8 +539,9 @@ namespace library\storage
 		 */
 		public function getFiles()
 		{
-			$files =  $this->repository->files;
+			$files = $this->repository->files;
 			usort($files, array($this, 'compareFiles'));
+
 			return $files;
 		}
 
@@ -649,9 +580,9 @@ namespace library\storage
 				$file->type = $postValues['type'];
 				$file->size = $postValues['size'];
 
-                $files = $this->repository->files;
+				$files = $this->repository->files;
 				$files[] = $file;
-                $this->repository->files = $files;
+				$this->repository->files = $files;
 				$this->save();
 			} else {
 				throw new \Exception('Error moving uploaded file');
@@ -682,15 +613,18 @@ namespace library\storage
 				} else {
 					$filename .= '-copy';
 				}
-				return $this->validateFilename($filename,$path);
+
+				return $this->validateFilename($filename, $path);
 			}
+
 			return $filename;
 		}
 
 		/**
 		 * @param $filename
+		 *
 		 * @return null
-         */
+		 */
 		public function getFileByName($filename)
 		{
 			$files = $this->getFiles();
@@ -699,13 +633,15 @@ namespace library\storage
 					return $file;
 				}
 			}
+
 			return null;
 		}
 
 		/**
 		 * @param $filename
+		 *
 		 * @throws \Exception
-         */
+		 */
 		public function deleteFileByName($filename)
 		{
 			$destinationPath = realpath(__DIR__ . '/../../www/files/');
@@ -748,59 +684,13 @@ namespace library\storage
 		 */
 		public function addDocumentType($postValues)
 		{
-			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
+			$documentTypeObject = DocumentTypeFactory::createDocumentTypeFromPostValues($postValues);
 
-            $documentTypes = $this->repository->documentTypes;
-            $documentTypes[] = $documentTypeObject;
-            $this->repository->documentTypes = $documentTypes;
+			$documentTypes = $this->repository->documentTypes;
+			$documentTypes[] = $documentTypeObject;
+			$this->repository->documentTypes = $documentTypes;
 
 			$this->save();
-		}
-
-		/**
-		 * Create a document type from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @return \stdClass
-		 * @throws \Exception
-		 */
-		public function createDocumentTypeFromPostValues($postValues)
-		{
-			if (isset($postValues['title'])) {
-				$documentTypeObject = new \stdClass();
-				$documentTypeObject->title = $postValues['title'];
-				$documentTypeObject->slug = slugify($postValues['title']);
-				$documentTypeObject->fields = array();
-				$documentTypeObject->bricks = array();
-				$documentTypeObject->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks'] : array();
-				if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
-					foreach ($postValues['fieldTitles'] as $key => $value) {
-						$fieldObject = new \stdClass();
-						$fieldObject->title = $value;
-						$fieldObject->slug = slugify($value);
-						$fieldObject->type = $postValues['fieldTypes'][$key];
-						$fieldObject->required = ($postValues['fieldRequired'][$key] === 'true');
-						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
-						
-						$documentTypeObject->fields[] = $fieldObject;
-					}
-				}
-				if (isset($postValues['brickTitles'], $postValues['brickBricks'])) {
-					foreach ($postValues['brickTitles'] as $key => $value) {
-						$brickObject = new \stdClass();
-						$brickObject->title = $value;
-						$brickObject->slug = slugify($value);
-						$brickObject->brickSlug = $postValues['brickBricks'][$key];
-						$brickObject->multiple = ($postValues['brickMultiples'][$key] === 'true');
-
-						$documentTypeObject->bricks[] = $brickObject;
-					}
-				}
-				return $documentTypeObject;
-			} else {
-				throw new \Exception('Trying to create document type with invalid data.');
-			}
 		}
 
 		/**
@@ -846,9 +736,11 @@ namespace library\storage
 							$documentType->dynamicBricks[$key] = $brickStructure;
 						}
 					}
+
 					return $documentType;
 				}
 			}
+
 			return null;
 		}
 
@@ -862,8 +754,8 @@ namespace library\storage
 		 */
 		public function saveDocumentType($slug, $postValues)
 		{
-			$documentTypeObject = $this->createDocumentTypeFromPostValues($postValues);
-			
+			$documentTypeObject = DocumentTypeFactory::createDocumentTypeFromPostValues($postValues);
+
 			$documentTypes = $this->repository->documentTypes;
 			foreach ($documentTypes as $key => $documentType) {
 				if ($documentType->slug == $slug) {
@@ -873,7 +765,7 @@ namespace library\storage
 			$this->repository->documentTypes = $documentTypes;
 			$this->save();
 		}
-		
+
 		/*
 		 *
 		 * Bricks
@@ -896,46 +788,13 @@ namespace library\storage
 		 */
 		public function addBrick($postValues)
 		{
-			$brickObject = $this->createBrickFromPostValues($postValues);
+			$brickObject = BrickFactory::createBrickFromPostValues($postValues);
 
-            $bricks = $this->repository->bricks;
-            $bricks[] = $brickObject;
-            $this->repository->bricks = $bricks;
+			$bricks = $this->repository->bricks;
+			$bricks[] = $brickObject;
+			$this->repository->bricks = $bricks;
 
 			$this->save();
-		}
-
-		/**
-		 * Create a brick from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @return \stdClass
-		 * @throws \Exception
-		 */
-		public function createBrickFromPostValues($postValues)
-		{
-			if (isset($postValues['title'])) {
-				$brickObject = new \stdClass();
-				$brickObject->title = $postValues['title'];
-				$brickObject->slug = slugify($postValues['title']);
-				$brickObject->fields = array();
-				if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
-					foreach ($postValues['fieldTitles'] as $key => $value) {
-						$fieldObject = new \stdClass();
-						$fieldObject->title = $value;
-						$fieldObject->slug = slugify($value);
-						$fieldObject->type = $postValues['fieldTypes'][$key];
-						$fieldObject->required = ($postValues['fieldRequired'][$key] === 'true');
-						$fieldObject->multiple = ($postValues['fieldMultiple'][$key] === 'true');
-						
-						$brickObject->fields[] = $fieldObject;
-					}
-				}
-				return $brickObject;
-			} else {
-				throw new \Exception('Trying to create document type with invalid data.');
-			}
 		}
 
 		/**
@@ -953,6 +812,7 @@ namespace library\storage
 					return $brick;
 				}
 			}
+
 			return null;
 		}
 
@@ -966,8 +826,8 @@ namespace library\storage
 		 */
 		public function saveBrick($slug, $postValues)
 		{
-			$brickObject = $this->createBrickFromPostValues($postValues);
-			
+			$brickObject = BrickFactory::createBrickFromPostValues($postValues);
+
 			$bricks = $this->repository->bricks;
 			foreach ($bricks as $key => $brick) {
 				if ($brick->slug == $slug) {
@@ -993,12 +853,12 @@ namespace library\storage
 					unset($bricks[$key]);
 				}
 			}
-			
+
 			$bricks = array_values($bricks);
 			$this->repository->bricks = $bricks;
 			$this->save();
 		}
-		
+
 		/*
 		 * 
 		 * Misc
@@ -1009,7 +869,8 @@ namespace library\storage
 		 *
 		 * @throws \Exception
 		 */
-		private function save() {
+		private function save()
+		{
 			$this->repository->save();
 		}
 
@@ -1044,6 +905,7 @@ namespace library\storage
 					return $set;
 				}
 			}
+
 			return null;
 		}
 
@@ -1057,7 +919,7 @@ namespace library\storage
 		 */
 		public function saveImageSet($slug, $postValues)
 		{
-			$imageSetObject = $this->createImageSetFromPostValues($postValues);
+			$imageSetObject = ImageSetFactory::createImageSetFromPostValues($postValues);
 
 			$imageSet = $this->repository->imageSet;
 			foreach ($imageSet as $key => $set) {
@@ -1070,31 +932,6 @@ namespace library\storage
 		}
 
 		/**
-		 * Ceate image set from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @return \stdClass
-		 * @throws \Exception
-		 */
-		private function createImageSetFromPostValues($postValues)
-		{
-			if (isset($postValues['title'], $postValues['width'], $postValues['height'], $postValues['method'])) {
-				$imageSetObject = new \stdClass();
-
-				$imageSetObject->title = $postValues['title'];
-				$imageSetObject->slug = slugify($postValues['title']);
-				$imageSetObject->width = $postValues['width'];
-				$imageSetObject->height = $postValues['height'];
-				$imageSetObject->method = $postValues['method'];
-
-				return $imageSetObject;
-			} else {
-				throw new \Exception('Trying to create image set with invalid data.');
-			}
-		}
-
-		/**
 		 * Add image set
 		 *
 		 * @param $postValues
@@ -1103,11 +940,11 @@ namespace library\storage
 		 */
 		public function addImageSet($postValues)
 		{
-			$imageSetObject = $this->createImageSetFromPostValues($postValues);
+			$imageSetObject = ImageSetFactory::createImageSetFromPostValues($postValues);
 
-            $imageSet = $this->repository->imageSet;
-            $imageSet[] = $imageSetObject;
-            $this->repository->imageSet = $imageSet;
+			$imageSet = $this->repository->imageSet;
+			$imageSet[] = $imageSetObject;
+			$this->repository->imageSet = $imageSet;
 
 			$this->save();
 		}
@@ -1171,31 +1008,12 @@ namespace library\storage
 
 		public function addApplicationComponent($postValues)
 		{
-			$applicationComponent = $this->createApplicationComponentFromPostValues($postValues);
+			$applicationComponent = ApplicationComponentFactory::createApplicationComponentFromPostValues($postValues);
 			$applicationComponents = $this->repository->applicationComponents;
 			$applicationComponents[] = $applicationComponent;
 			$this->repository->applicationComponents = $applicationComponents;
 
 			$this->save();
-		}
-
-		private function createApplicationComponentFromPostValues($postValues)
-		{
-			if (isset($postValues['title'], $postValues['component'])) {
-				$applicationComponent = new \stdClass();
-				$applicationComponent->title = $postValues['title'];
-				$applicationComponent->slug = slugify($postValues['title']);
-				$applicationComponent->component = $postValues['component'];
-				$applicationComponent->parameters = new \stdClass();
-				if (isset($postValues['parameterNames'], $postValues['parameterValues'])) {
-					foreach ($postValues['parameterNames'] as $key => $value) {
-						$applicationComponent->parameters->$value = $postValues['parameterValues'][$key];
-					}
-				}
-				return $applicationComponent;
-			} else {
-				throw new \Exception('Trying to create application component with invalid data.');
-			}
 		}
 
 		public function getApplicationComponentBySlug($slug)
@@ -1206,12 +1024,13 @@ namespace library\storage
 					return $applicationComponent;
 				}
 			}
+
 			return null;
 		}
 
 		public function saveApplicationComponent($slug, $postValues)
 		{
-			$newApplicationComponent = $this->createApplicationComponentFromPostValues($postValues);
+			$newApplicationComponent = ApplicationComponentFactory::createApplicationComponentFromPostValues($postValues);
 
 			$applicationComponents = $this->getApplicationComponents();
 			foreach ($applicationComponents as $key => $applicationComponent) {
