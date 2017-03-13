@@ -33,7 +33,6 @@ class AutoloadUtil
 		} else {
 			return self::handleUnloadableClass($class, $throwException, $rootPath, $file);
 		}
-		return false;
 	}
 
 	private static function handleUnloadableClass($class, $throwException, $rootPath, $file)
