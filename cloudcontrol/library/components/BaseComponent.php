@@ -94,7 +94,7 @@ namespace library\components
 		 */
 		public function renderTemplate($template='', $obClean = true, $application=null)
 		{
-			$templatePath = __DIR__ . '/../../templates/' . $template . '.php';
+			$templatePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.php';
 			if (realpath($templatePath) !== false) {
 				if ($obClean) {
 					ob_clean();

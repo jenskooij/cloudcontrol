@@ -1,9 +1,9 @@
 <?php
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'AutoloadUtil.php');
 spl_autoload_extensions('.php');
 spl_autoload_register("autoloader");
 
 $rootPath = str_replace('\\', '/', realpath(str_replace('\\', '/', dirname(__FILE__)) . '/../../') . '/');
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'AutoloadUtil.php');
 
 /**
  * The function to be registered as the default autoload function
