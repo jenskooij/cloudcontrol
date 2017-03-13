@@ -10,6 +10,12 @@ namespace library\storage;
 
 class DocumentFactory
 {
+	/**
+	 * @param array $postValues
+	 * @param JsonStorage $jsonStorage
+	 *
+	 * @return \library\storage\Document
+	 */
 	public static function createDocumentFromPostValues($postValues, $jsonStorage)
 	{
 		$postValues = utf8Convert($postValues);
@@ -29,8 +35,8 @@ class DocumentFactory
 	}
 
 	/**
-	 * @param $postValues
-	 * @param $documentType
+	 * @param array $postValues
+	 * @param \stdClass $documentType
 	 *
 	 * @return Document
 	 */
@@ -50,6 +56,13 @@ class DocumentFactory
 		return $documentObj;
 	}
 
+	/**
+	 * @param array $postValues
+	 * @param Document $documentObj
+	 * @param array $staticBricks
+	 *
+	 * @return Document
+	 */
 	private static function createBrickArrayForDocument($postValues, $documentObj, $staticBricks)
 	{
 		if (isset($postValues['bricks'])) {
@@ -91,6 +104,12 @@ class DocumentFactory
 		return $documentObj;
 	}
 
+	/**
+	 * @param array $postValues
+	 * @param Document $documentObj
+	 *
+	 * @return Document
+	 */
 	private static function createDynamicBrickArrayForDocument($postValues, $documentObj)
 	{
 		$documentObj->dynamicBricks = array();
