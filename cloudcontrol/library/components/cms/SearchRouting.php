@@ -24,15 +24,14 @@ class SearchRouting implements CmsRouting
 	 */
 	public function __construct($request, $relativeCmsUri, $cmsComponent)
 	{
-		if ($relativeCmsUri === '/search') {
-			$this->overviewRoute($cmsComponent);
-		} elseif ($relativeCmsUri === '/search/update-index') {
-			$this->updateIndexRoute($cmsComponent);
-		} elseif ($relativeCmsUri === '/search/ajax-update-index') {
-			$this->ajaxUpdateIndexRoute($request, $cmsComponent);
-		} elseif ($relativeCmsUri === '/search/manual-update-index') {
-			$indexer = new Indexer($cmsComponent->storage);
-			$indexer->updateIndex();
+		switch ($relativeCmsUri) {
+			case '/search': $this->overviewRoute($cmsComponent); break;
+			case '/search/update-index' : $this->updateIndexRoute($cmsComponent); break;
+			case '/search/ajax-update-index': $this->ajaxUpdateIndexRoute($request, $cmsComponent); break;
+			case '/search/manual-update-index' :
+				$indexer = new Indexer($cmsComponent->storage);
+				$indexer->updateIndex();
+				break;
 		}
 	}
 
