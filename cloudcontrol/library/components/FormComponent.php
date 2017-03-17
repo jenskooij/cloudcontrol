@@ -119,7 +119,7 @@ class FormComponent Extends BaseComponent
 		$this->parameters[self::PARAMETER_CMS_PREFIX] = '';
 
 		$this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $this->storage->getDocumentTypeBySlug($this->documentType, true);
-		$this->parameters[self::PARAMETER_DOCUMENT_TYPES] = $this->storage->getDocumentTypes();
+		$this->parameters[self::PARAMETER_DOCUMENT_TYPES] = $this->storage->getDocumentTypes()->getDocumentTypes();
 		$this->parameters[self::PARAMETER_HIDE_TITLE_AND_STATE] = true;
 		$this->parameters[self::PARAMETER_FORM_ID] = $this->formId;
 	}

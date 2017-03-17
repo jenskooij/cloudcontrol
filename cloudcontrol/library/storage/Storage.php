@@ -7,6 +7,7 @@ namespace library\storage {
 	use library\storage\factories\DocumentTypeFactory;
 	use library\storage\factories\ImageSetFactory;
 	use library\storage\factories\UserFactory;
+	use library\storage\storage\DocumentTypesStorage;
 	use library\storage\storage\FilesStorage;
 	use library\storage\storage\ImageSetStorage;
 	use library\storage\storage\ImagesStorage;
@@ -39,6 +40,10 @@ namespace library\storage {
 		 * @var UsersStorage
 		 */
 		protected $users;
+		/**
+		 * @var DocumentTypesStorage
+		 */
+		protected $documentTypes;
 		/**
 		 * @var String
 		 */
@@ -284,108 +289,15 @@ namespace library\storage {
 			return $this->repository->getContentDbHandle();
 		}
 
-		/*
-		 * 
-		 * Configuration
-		 *
-		 */
 		/**
-		 * @return array
+		 * @return DocumentTypesStorage
 		 */
 		public function getDocumentTypes()
 		{
-			return $this->repository->documentTypes;
-		}
-
-		/**
-		 * Add a document type from post values
-		 *
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function addDocumentType($postValues)
-		{
-			$documentTypeObject = DocumentTypeFactory::createDocumentTypeFromPostValues($postValues);
-
-			$documentTypes = $this->repository->documentTypes;
-			$documentTypes[] = $documentTypeObject;
-			$this->repository->documentTypes = $documentTypes;
-
-			$this->save();
-		}
-
-		/**
-		 * Delete document type
-		 *
-		 * @param $slug
-		 *
-		 * @throws \Exception
-		 */
-		public function deleteDocumentTypeBySlug($slug)
-		{
-			$documentTypes = $this->repository->documentTypes;
-			foreach ($documentTypes as $key => $documentTypeObject) {
-				if ($documentTypeObject->slug == $slug) {
-					unset($documentTypes[$key]);
-				}
+			if (!$this->documentTypes instanceof DocumentTypesStorage) {
+				$this->documentTypes = new DocumentTypesStorage($this->repository);
 			}
-			$documentTypes = array_values($documentTypes);
-			$this->repository->documentTypes = $documentTypes;
-			$this->save();
-		}
-
-		/**
-		 * Get document type by its slug
-		 *
-		 * @param      $slug
-		 * @param bool $getBricks
-		 *
-		 * @return mixed
-		 */
-		public function getDocumentTypeBySlug($slug, $getBricks = false)
-		{
-			$documentTypes = $this->repository->documentTypes;
-			foreach ($documentTypes as $documentType) {
-				if ($documentType->slug == $slug) {
-					if ($getBricks === true) {
-						foreach ($documentType->bricks as $key => $brick) {
-							$brickStructure = $this->getBrickBySlug($brick->brickSlug);
-							$documentType->bricks[$key]->structure = $brickStructure;
-						}
-						foreach ($documentType->dynamicBricks as $key => $brickSlug) {
-							$brickStructure = $this->getBrickBySlug($brickSlug);
-							$documentType->dynamicBricks[$key] = $brickStructure;
-						}
-					}
-
-					return $documentType;
-				}
-			}
-
-			return null;
-		}
-
-		/**
-		 * Save changes to a document type
-		 *
-		 * @param $slug
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function saveDocumentType($slug, $postValues)
-		{
-			$documentTypeObject = DocumentTypeFactory::createDocumentTypeFromPostValues($postValues);
-
-			$documentTypes = $this->repository->documentTypes;
-			foreach ($documentTypes as $key => $documentType) {
-				if ($documentType->slug == $slug) {
-					$documentTypes[$key] = $documentTypeObject;
-				}
-			}
-			$this->repository->documentTypes = $documentTypes;
-			$this->save();
+			return $this->documentTypes;
 		}
 
 		/*

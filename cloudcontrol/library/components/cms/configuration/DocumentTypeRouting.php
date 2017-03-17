@@ -36,18 +36,18 @@ class DocumentTypeRouting implements CmsRouting
 	}
 
 	/**
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function overviewRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/document-types';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPES, $cmsComponent->storage->getDocumentTypes());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPES, $cmsComponent->storage->getDocumentTypes()->getDocumentTypes());
 	}
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function newRoute($request, $cmsComponent)
 	{
@@ -55,7 +55,7 @@ class DocumentTypeRouting implements CmsRouting
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
 		$bricks = $cmsComponent->storage->getBricks();
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->addDocumentType($request::$post);
+			$cmsComponent->storage->getDocumentTypes()->addDocumentType($request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/document-types');
 			exit;
 		}
@@ -64,16 +64,16 @@ class DocumentTypeRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function editRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/document-types-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$documentType = $cmsComponent->storage->getDocumentTypeBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG], false);
+		$documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG], false);
 		$bricks = $cmsComponent->storage->getBricks();
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->saveDocumentType($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
+			$cmsComponent->storage->getDocumentTypes()->saveDocumentType($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/document-types');
 			exit;
 		}
@@ -83,11 +83,11 @@ class DocumentTypeRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteDocumentTypeBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$cmsComponent->storage->getDocumentTypes()->deleteDocumentTypeBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/document-types');
 		exit;
 	}

@@ -6,6 +6,8 @@
 namespace library\storage\storage;
 
 
+use library\storage\Repository;
+
 abstract class AbstractStorage
 {
 	/**
