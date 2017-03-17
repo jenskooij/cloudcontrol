@@ -35,14 +35,14 @@ class ImagesRouting implements CmsRouting
     }
 
 	/**
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function overviewRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/images';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGES, $cmsComponent->storage->getImages()->getImages());
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
 	}
 
 	/**
