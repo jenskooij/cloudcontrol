@@ -8,7 +8,7 @@ namespace library\storage\storage;
 
 use library\storage\factories\ImageSetFactory;
 
-class ImageSetStorage extends Storage
+class ImageSetStorage extends AbstractStorage
 {
 
 	/**

@@ -6,7 +6,7 @@
 namespace library\storage\storage;
 
 
-class FilesStorage extends Storage
+class FilesStorage extends AbstractStorage
 {
 	/**
 	 * @return array

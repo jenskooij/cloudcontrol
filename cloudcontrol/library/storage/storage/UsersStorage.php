@@ -8,7 +8,7 @@ namespace library\storage\storage;
 
 use library\storage\factories\UserFactory;
 
-class UsersStorage extends Storage
+class UsersStorage extends AbstractStorage
 {
 	/**
 	 * Get all users

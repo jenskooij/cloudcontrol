@@ -6,7 +6,7 @@
 namespace library\storage\storage;
 
 
-abstract class Storage
+abstract class AbstractStorage
 {
 	/**
 	 * @var Repository

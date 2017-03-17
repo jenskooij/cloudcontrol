@@ -10,7 +10,7 @@ namespace library\storage\storage;
 
 use library\storage\factories\SitemapItemFactory;
 
-class SitemapStorage extends Storage
+class SitemapStorage extends AbstractStorage
 {
 	/**
 	 * @return array

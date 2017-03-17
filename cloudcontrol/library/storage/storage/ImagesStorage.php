@@ -9,7 +9,7 @@ namespace library\storage\storage;
 use library\images\ImageResizer;
 use library\storage\factories\ImageFactory;
 
-class ImagesStorage extends Storage
+class ImagesStorage extends AbstractStorage
 {
 	/**
 	 * @var ImageSetStorage
