@@ -240,7 +240,7 @@ namespace library\cc
 
 		public function getApplicationComponents()
 		{
-			$this->applicationComponents = $this->storage->getApplicationComponents();
+			$this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
 		}
 
 	}

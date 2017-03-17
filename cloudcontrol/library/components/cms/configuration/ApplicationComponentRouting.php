@@ -36,25 +36,25 @@ class ApplicationComponentRouting implements CmsRouting
 	}
 
 	/**
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function overviewRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/application-components';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_APPLICATION_COMPONENTS, $cmsComponent->storage->getApplicationComponents());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_APPLICATION_COMPONENTS, $cmsComponent->storage->getApplicationComponents()->getApplicationComponents());
 	}
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function newRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/application-components-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->addApplicationComponent($request::$post);
+			$cmsComponent->storage->getApplicationComponents()->addApplicationComponent($request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/application-components');
 			exit;
 		}
@@ -62,15 +62,15 @@ class ApplicationComponentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function editRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/application-components-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$applicationComponent = $cmsComponent->storage->getApplicationComponentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$applicationComponent = $cmsComponent->storage->getApplicationComponents()->getApplicationComponentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->saveApplicationComponent($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
+			$cmsComponent->storage->getApplicationComponents()->saveApplicationComponent($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/application-components');
 			exit;
 		}
@@ -80,11 +80,11 @@ class ApplicationComponentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteApplicationComponentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$cmsComponent->storage->getApplicationComponents()->deleteApplicationComponentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/application-components');
 		exit;
 	}

@@ -3,6 +3,7 @@ namespace library\storage {
 
 	use library\storage\factories\ApplicationComponentFactory;
 	use library\storage\factories\DocumentFolderFactory;
+	use library\storage\storage\ApplicationComponentsStorage;
 	use library\storage\storage\BricksStorage;
 	use library\storage\storage\DocumentTypesStorage;
 	use library\storage\storage\FilesStorage;
@@ -45,6 +46,10 @@ namespace library\storage {
 		 * @var BricksStorage
 		 */
 		protected $bricks;
+		/**
+		 * @var ApplicationComponentsStorage
+		 */
+		protected $applicationComponents;
 		/**
 		 * @var String
 		 */
@@ -347,61 +352,14 @@ namespace library\storage {
 		}
 
 		/**
-		 * @return array
+		 * @return ApplicationComponentsStorage
 		 */
 		public function getApplicationComponents()
 		{
-			return $this->repository->applicationComponents;
-		}
-
-		public function addApplicationComponent($postValues)
-		{
-			$applicationComponent = ApplicationComponentFactory::createApplicationComponentFromPostValues($postValues);
-			$applicationComponents = $this->repository->applicationComponents;
-			$applicationComponents[] = $applicationComponent;
-			$this->repository->applicationComponents = $applicationComponents;
-
-			$this->save();
-		}
-
-		public function getApplicationComponentBySlug($slug)
-		{
-			$applicationComponents = $this->getApplicationComponents();
-			foreach ($applicationComponents as $applicationComponent) {
-				if ($applicationComponent->slug == $slug) {
-					return $applicationComponent;
-				}
+			if (!$this->applicationComponents instanceof ApplicationComponentsStorage) {
+				$this->applicationComponents = new ApplicationComponentsStorage($this->repository);
 			}
-
-			return null;
+			return $this->applicationComponents;
 		}
-
-		public function saveApplicationComponent($slug, $postValues)
-		{
-			$newApplicationComponent = ApplicationComponentFactory::createApplicationComponentFromPostValues($postValues);
-
-			$applicationComponents = $this->getApplicationComponents();
-			foreach ($applicationComponents as $key => $applicationComponent) {
-				if ($applicationComponent->slug == $slug) {
-					$applicationComponents[$key] = $newApplicationComponent;
-				}
-			}
-			$this->repository->applicationComponents = $applicationComponents;
-			$this->save();
-		}
-
-		public function deleteApplicationComponentBySlug($slug)
-		{
-			$applicationComponents = $this->getApplicationComponents();
-			foreach ($applicationComponents as $key => $applicationComponent) {
-				if ($applicationComponent->slug == $slug) {
-					unset($applicationComponents[$key]);
-				}
-			}
-			$applicationComponents = array_values($applicationComponents);
-			$this->repository->applicationComponents = $applicationComponents;
-			$this->save();
-		}
-
 	}
 }
