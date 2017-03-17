@@ -67,7 +67,7 @@ class DocumentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 *
 	 * @throws \Exception
 	 */
@@ -83,7 +83,7 @@ class DocumentRouting implements CmsRouting
 				exit;
 			}
 			$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypeBySlug($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], true));
-			$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks());
+			$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
 		} else {
 			$documentTypes = $cmsComponent->storage->getDocumentTypes();
 			if (count($documentTypes) < 1) {
@@ -110,18 +110,18 @@ class DocumentRouting implements CmsRouting
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
 		$request::$get[CmsComponent::GET_PARAMETER_PATH] = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypeBySlug($cmsComponent->getParameter(CmsComponent::PARAMETER_DOCUMENT)->documentTypeSlug, true));
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
 	}
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function getBrickRoute($request, $cmsComponent)
 	{
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
 		$cmsComponent->subTemplate = 'cms/documents/brick';
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICK, $cmsComponent->storage->getBrickBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICK, $cmsComponent->storage->getBricks()->getBrickBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_STATIC, $request::$get[CmsComponent::PARAMETER_STATIC] === 'true');
 		if (isset($request::$get[CmsComponent::PARAMETER_MY_BRICK_SLUG])) {
 			$cmsComponent->setParameter(CmsComponent::PARAMETER_MY_BRICK_SLUG, $request::$get[CmsComponent::PARAMETER_MY_BRICK_SLUG]);
@@ -136,7 +136,7 @@ class DocumentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteDocumentRoute($request, $cmsComponent)
 	{
@@ -162,7 +162,7 @@ class DocumentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function editFolderRoute($request, $cmsComponent)
 	{
@@ -188,7 +188,7 @@ class DocumentRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteFolderRoute($request, $cmsComponent)
 	{

@@ -2,11 +2,8 @@
 namespace library\storage {
 
 	use library\storage\factories\ApplicationComponentFactory;
-	use library\storage\factories\BrickFactory;
 	use library\storage\factories\DocumentFolderFactory;
-	use library\storage\factories\DocumentTypeFactory;
-	use library\storage\factories\ImageSetFactory;
-	use library\storage\factories\UserFactory;
+	use library\storage\storage\BricksStorage;
 	use library\storage\storage\DocumentTypesStorage;
 	use library\storage\storage\FilesStorage;
 	use library\storage\storage\ImageSetStorage;
@@ -44,6 +41,10 @@ namespace library\storage {
 		 * @var DocumentTypesStorage
 		 */
 		protected $documentTypes;
+		/**
+		 * @var BricksStorage
+		 */
+		protected $bricks;
 		/**
 		 * @var String
 		 */
@@ -231,7 +232,7 @@ namespace library\storage {
 		 *
 		 * @param $path
 		 *
-		 * @return array
+		 * @return bool|\library\storage\Document
 		 * @throws \Exception
 		 */
 		private function getDocumentContainerByPath($path)
@@ -306,98 +307,16 @@ namespace library\storage {
 		 *
 		 */
 		/**
-		 * @return array
+		 * @return BricksStorage
 		 */
 		public function getBricks()
 		{
-			return $this->repository->bricks;
-		}
-
-		/**
-		 * Add a brick
-		 *
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function addBrick($postValues)
-		{
-			$brickObject = BrickFactory::createBrickFromPostValues($postValues);
-
-			$bricks = $this->repository->bricks;
-			$bricks[] = $brickObject;
-			$this->repository->bricks = $bricks;
-
-			$this->save();
-		}
-
-		/**
-		 * Get a brick by its slug
-		 *
-		 * @param $slug
-		 *
-		 * @return \stdClass
-		 */
-		public function getBrickBySlug($slug)
-		{
-			$bricks = $this->repository->bricks;
-			foreach ($bricks as $brick) {
-				if ($brick->slug == $slug) {
-					return $brick;
-				}
+			if (!$this->bricks instanceof BricksStorage) {
+				$this->bricks = new BricksStorage($this->repository);
 			}
-
-			return null;
+			return $this->bricks;
 		}
 
-		/**
-		 * Save changes to a brick
-		 *
-		 * @param $slug
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function saveBrick($slug, $postValues)
-		{
-			$brickObject = BrickFactory::createBrickFromPostValues($postValues);
-
-			$bricks = $this->repository->bricks;
-			foreach ($bricks as $key => $brick) {
-				if ($brick->slug == $slug) {
-					$bricks[$key] = $brickObject;
-				}
-			}
-			$this->repository->bricks = $bricks;
-			$this->save();
-		}
-
-		/**
-		 * Delete a brick by its slug
-		 *
-		 * @param $slug
-		 *
-		 * @throws \Exception
-		 */
-		public function deleteBrickBySlug($slug)
-		{
-			$bricks = $this->repository->bricks;
-			foreach ($bricks as $key => $brickObject) {
-				if ($brickObject->slug == $slug) {
-					unset($bricks[$key]);
-				}
-			}
-
-			$bricks = array_values($bricks);
-			$this->repository->bricks = $bricks;
-			$this->save();
-		}
-
-		/*
-		 * 
-		 * Misc
-		 *
-		 */
 		/**
 		 * Save changes made to the repository
 		 *

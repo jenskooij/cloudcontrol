@@ -90,7 +90,7 @@ class DocumentTokenizer
 	private function tokenizeBrick($brick, $brickSlug)
 	{
 		$fields  = $brick->fields;
-		$brickDefinition = $this->storage->getBrickBySlug($brick->type);
+		$brickDefinition = $this->storage->getBricks()->getBrickBySlug($brick->type);
 		foreach ($fields as $fieldName => $field) {
 			$fieldType = $this->getFieldType($fieldName, $brickDefinition);
 			$this->tokenizeField($field, $brickSlug . '__' . $fieldName, $fieldType);
