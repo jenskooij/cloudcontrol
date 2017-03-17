@@ -18,7 +18,7 @@
 		</div>
 		<label>Size</label>
 		<div class="value">
-			<?=isset($image)? humanFileSize($image->size) : '' ?>
+			<?=isset($image)? \library\cc\StringUtil::humanFileSize($image->size) : '' ?>
 		</div>
 		<label>Set</label>
 		<? if (isset($image)) : ?>

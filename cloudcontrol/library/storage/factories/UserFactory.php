@@ -8,6 +8,7 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
 use library\crypt\Crypt;
 
 class UserFactory
@@ -25,7 +26,7 @@ class UserFactory
 		if (isset($postValues['username'])) {
 			$user = new \stdClass();
 			$user->username = $postValues['username'];
-			$user->slug = slugify($postValues['username']);
+			$user->slug = StringUtil::slugify($postValues['username']);
 			$user->rights = array();
 			if (isset($postValues['rights'])) {
 				$user->rights = $postValues['rights'];

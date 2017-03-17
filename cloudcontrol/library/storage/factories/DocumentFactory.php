@@ -8,6 +8,7 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
 use library\storage\Document;
 use library\storage\storage\DocumentTypesStorage;
 
@@ -47,7 +48,7 @@ class DocumentFactory
 	{
 		$documentObj = new Document();
 		$documentObj->title = $postValues['title'];
-		$documentObj->slug = slugify($postValues['title']);
+		$documentObj->slug = StringUtil::slugify($postValues['title']);
 		$documentObj->type = 'document';
 		$documentObj->documentType = $documentType->title;
 		$documentObj->documentTypeSlug = $documentType->slug;

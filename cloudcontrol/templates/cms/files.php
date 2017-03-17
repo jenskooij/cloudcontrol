@@ -14,7 +14,7 @@
 				<div class="grid-box-10">
 					<h3>
 						<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/files/get?file=<?=$file->file?>" title="Edit">
-							<i class="fa fa-<?=iconByFileType($file->type)?>"></i> <?=$file->file?>
+							<i class="fa fa-<?=\library\cc\StringUtil::iconByFileType($file->type)?>"></i> <?=$file->file?>
 						</a>
 						<small class="small fileType">
 							<span class="label">Type:</span>
@@ -22,7 +22,7 @@
 						</small>
 						<small class="small fileSize">
 							<span class="label">Size:</span>
-							<?=humanFileSize($file->size)?>
+							<?=\library\cc\StringUtil::humanFileSize($file->size)?>
 						</small>
 					</h3>
 				</div>

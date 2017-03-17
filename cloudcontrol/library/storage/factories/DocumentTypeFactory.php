@@ -8,6 +8,8 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
+
 class DocumentTypeFactory extends AbstractBricksFactory
 {
 	public static function createDocumentTypeFromPostValues($postValues)
@@ -46,7 +48,7 @@ class DocumentTypeFactory extends AbstractBricksFactory
 	{
 		$brickObject = new \stdClass();
 		$brickObject->title = $title;
-		$brickObject->slug = slugify($title);
+		$brickObject->slug = StringUtil::slugify($title);
 		$brickObject->brickSlug = $postValues['brickBricks'][$slug];
 		$brickObject->multiple = ($postValues['brickMultiples'][$slug] === 'true');
 
@@ -57,7 +59,7 @@ class DocumentTypeFactory extends AbstractBricksFactory
 	{
 		$documentTypeObject = new \stdClass();
 		$documentTypeObject->title = $postValues['title'];
-		$documentTypeObject->slug = slugify($postValues['title']);
+		$documentTypeObject->slug = StringUtil::slugify($postValues['title']);
 		$documentTypeObject->fields = array();
 		$documentTypeObject->bricks = array();
 		$documentTypeObject->dynamicBricks = isset($postValues['dynamicBricks']) ? $postValues['dynamicBricks'] : array();

@@ -8,6 +8,8 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
+
 class BrickFactory extends AbstractBricksFactory
 {
 	/**
@@ -23,7 +25,7 @@ class BrickFactory extends AbstractBricksFactory
 		if (isset($postValues['title'])) {
 			$brickObject = new \stdClass();
 			$brickObject->title = $postValues['title'];
-			$brickObject->slug = slugify($postValues['title']);
+			$brickObject->slug = StringUtil::slugify($postValues['title']);
 			$brickObject->fields = array();
 			if (isset($postValues['fieldTitles'], $postValues['fieldTypes'], $postValues['fieldRequired'], $postValues['fieldMultiple'])) {
 				foreach ($postValues['fieldTitles'] as $key => $value) {

@@ -8,6 +8,8 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
+
 abstract class AbstractBricksFactory
 {
 	/**
@@ -21,7 +23,7 @@ abstract class AbstractBricksFactory
 	{
 		$fieldObject = new \stdClass();
 		$fieldObject->title = $title;
-		$fieldObject->slug = slugify($title);
+		$fieldObject->slug = StringUtil::slugify($title);
 		$fieldObject->type = $postValues['fieldTypes'][$fieldType];
 		$fieldObject->required = ($postValues['fieldRequired'][$fieldType] === 'true');
 		$fieldObject->multiple = ($postValues['fieldMultiple'][$fieldType] === 'true');

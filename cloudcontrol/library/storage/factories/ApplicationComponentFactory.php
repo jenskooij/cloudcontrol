@@ -8,6 +8,8 @@
 namespace library\storage\factories;
 
 
+use library\cc\StringUtil;
+
 class ApplicationComponentFactory
 {
 	/**
@@ -21,7 +23,7 @@ class ApplicationComponentFactory
 		if (isset($postValues['title'], $postValues['component'])) {
 			$applicationComponent = new \stdClass();
 			$applicationComponent->title = $postValues['title'];
-			$applicationComponent->slug = slugify($postValues['title']);
+			$applicationComponent->slug = StringUtil::slugify($postValues['title']);
 			$applicationComponent->component = $postValues['component'];
 			$applicationComponent->parameters = new \stdClass();
 			if (isset($postValues['parameterNames'], $postValues['parameterValues'])) {

@@ -6,6 +6,7 @@
 namespace library\storage\storage;
 
 
+use library\cc\StringUtil;
 use library\storage\Repository;
 
 abstract class AbstractStorage
@@ -36,10 +37,10 @@ abstract class AbstractStorage
 			$extension = end($fileParts);
 			array_pop($fileParts);
 			$fileNameWithoutExtension = implode('-', $fileParts);
-			$fileNameWithoutExtension = slugify($fileNameWithoutExtension);
+			$fileNameWithoutExtension = StringUtil::slugify($fileNameWithoutExtension);
 			$filename = $fileNameWithoutExtension . '.' . $extension;
 		} else {
-			$filename = slugify($filename);
+			$filename = StringUtil::slugify($filename);
 		}
 
 		if (file_exists($path . '/' . $filename)) {

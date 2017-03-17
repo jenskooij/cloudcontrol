@@ -27,7 +27,7 @@
 							</small>
 							<small class="small fileSize">
 								<span class="label">Size:</span>
-								<?=humanFileSize($image->size)?>
+								<?=\library\cc\StringUtil::humanFileSize($image->size)?>
 							</small>
 						</div>
 					</li>
