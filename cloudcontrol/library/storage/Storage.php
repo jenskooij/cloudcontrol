@@ -7,8 +7,8 @@ namespace library\storage {
 	use library\storage\factories\DocumentFolderFactory;
 	use library\storage\factories\DocumentTypeFactory;
 	use library\storage\factories\ImageSetFactory;
-	use library\storage\factories\SitemapItemFactory;
 	use library\storage\factories\UserFactory;
+	use library\storage\storage\ImagesStorage;
 	use library\storage\storage\SitemapStorage;
 
 	/**
@@ -21,6 +21,10 @@ namespace library\storage {
 		 * @var SitemapStorage
 		 */
 		protected $sitemap;
+		/**
+		 * @var ImagesStorage
+		 */
+		protected $images;
 		/**
 		 * @var String
 		 */
@@ -351,83 +355,14 @@ namespace library\storage {
 		/**
 		 * Get all images
 		 *
-		 * @return array
+		 * @return ImagesStorage
 		 */
 		public function getImages()
 		{
-			return $this->repository->images;
-		}
-
-		public function addImage($postValues)
-		{
-			$destinationPath = realpath(__DIR__ . '/../../www/images/');
-
-			$filename = $this->validateFilename($postValues['name'], $destinationPath);
-			$destination = $destinationPath . '/' . $filename;
-
-			if ($postValues['error'] != '0') {
-				throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+			if (!$this->images instanceof ImagesStorage) {
+				$this->images = new ImagesStorage($this->repository);
 			}
-
-			if (move_uploaded_file($postValues['tmp_name'], $destination)) {
-				$imageResizer = new ImageResizer($this->getImageSet());
-				$fileNames = $imageResizer->applyImageSetToImage($destination);
-				$fileNames['original'] = $filename;
-				$imageObject = new \stdClass();
-				$imageObject->file = $filename;
-				$imageObject->type = $postValues['type'];
-				$imageObject->size = $postValues['size'];
-				$imageObject->set = $fileNames;
-
-				$images = $this->repository->images;
-				$images[] = $imageObject;
-				$this->repository->images = $images;
-
-				$this->save();
-			} else {
-				throw new \Exception('Error moving uploaded file');
-			}
-		}
-
-		public function deleteImageByName($filename)
-		{
-			$destinationPath = realpath(__DIR__ . '/../../www/images/');
-
-			$images = $this->getImages();
-
-			foreach ($images as $key => $image) {
-				if ($image->file == $filename) {
-					foreach ($image->set as $imageSetFilename) {
-						$destination = $destinationPath . '/' . $imageSetFilename;
-						if (file_exists($destination)) {
-							unlink($destination);
-						} else {
-							dump($destination);
-						}
-					}
-					unset($images[$key]);
-				}
-			}
-
-			$this->repository->images = $images;
-			$this->save();
-		}
-
-		/**
-		 * @param $filename
-		 *
-		 * @return null
-		 */
-		public function getImageByName($filename)
-		{
-			$images = $this->getImages();
-			foreach ($images as $image) {
-				if ($image->file == $filename) {
-					return $image;
-				}
-			}
-
-			return null;
+			return $this->images;
 		}
 
 		/*
@@ -490,37 +425,6 @@ namespace library\storage {
 			} else {
 				throw new \Exception('Error moving uploaded file');
 			}
-		}
-
-		private function validateFilename($filename, $path)
-		{
-			$fileParts = explode('.', $filename);
-			if (count($fileParts) > 1) {
-				$extension = end($fileParts);
-				array_pop($fileParts);
-				$fileNameWithoutExtension = implode('-', $fileParts);
-				$fileNameWithoutExtension = slugify($fileNameWithoutExtension);
-				$filename = $fileNameWithoutExtension . '.' . $extension;
-			} else {
-				$filename = slugify($filename);
-			}
-
-			if (file_exists($path . '/' . $filename)) {
-				$fileParts = explode('.', $filename);
-				if (count($fileParts) > 1) {
-					$extension = end($fileParts);
-					array_pop($fileParts);
-					$fileNameWithoutExtension = implode('-', $fileParts);
-					$fileNameWithoutExtension .= '-copy';
-					$filename = $fileNameWithoutExtension . '.' . $extension;
-				} else {
-					$filename .= '-copy';
-				}
-
-				return $this->validateFilename($filename, $path);
-			}
-
-			return $filename;
 		}
 
 		/**

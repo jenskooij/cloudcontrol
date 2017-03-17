@@ -9,20 +9,9 @@ namespace library\storage\storage;
 
 
 use library\storage\factories\SitemapItemFactory;
-use library\storage\Repository;
 
-class SitemapStorage
+class SitemapStorage extends Storage
 {
-	/**
-	 * @var Repository
-	 */
-	protected $repository;
-
-	public function __construct($repository)
-	{
-		$this->repository = $repository;
-	}
-
 	/**
 	 * @return array
 	 */
@@ -129,15 +118,5 @@ class SitemapStorage
 		}
 
 		return null;
-	}
-
-	/**
-	 * Save changes made to the repository
-	 *
-	 * @throws \Exception
-	 */
-	private function save()
-	{
-		$this->repository->save();
 	}
 }

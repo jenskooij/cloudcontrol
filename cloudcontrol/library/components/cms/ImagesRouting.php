@@ -41,7 +41,7 @@ class ImagesRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/images';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGES, $cmsComponent->storage->getImages());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGES, $cmsComponent->storage->getImages()->getImages());
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
 	}
 
@@ -56,14 +56,14 @@ class ImagesRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function newRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/images/form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
 		if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-			$cmsComponent->storage->addImage($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+			$cmsComponent->storage->getImages()->addImage($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/images');
 			exit;
 		}
@@ -71,23 +71,23 @@ class ImagesRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
+		$cmsComponent->storage->getImages()->deleteImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/images');
 		exit;
 	}
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function showRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/images/show';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGE, $cmsComponent->storage->getImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]));
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGE, $cmsComponent->storage->getImages()->getImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]));
 	}
 }
