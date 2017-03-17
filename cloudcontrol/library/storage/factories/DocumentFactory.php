@@ -9,7 +9,6 @@ namespace library\storage\factories;
 
 
 use library\storage\Document;
-use library\storage\Storage;
 use library\storage\storage\DocumentTypesStorage;
 
 class DocumentFactory
