@@ -40,12 +40,7 @@ class TermCount
 
 	public function execute()
 	{
-		foreach ($this->documents as $document) {
-			$tokenizer = new DocumentTokenizer($document, $this->storage);
-			$tokens = $tokenizer->getTokens();
-			$documentTermCount = $this->applyFilters($tokens);
-			$this->storeDocumentTermCount($document, $documentTermCount);
-		}
+		$this->iterateDocumentsAndCreateTermCount($this->documents);
 	}
 
 	protected function applyFilters($tokens)
@@ -102,6 +97,31 @@ class TermCount
 			$errorInfo = $db->errorInfo();
 			$errorMsg = $errorInfo[2];
 			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+	}
+
+	/**
+	 * @param $document
+	 */
+	private function createTermCountForDocument($document)
+	{
+		$tokenizer = new DocumentTokenizer($document, $this->storage);
+		$tokens = $tokenizer->getTokens();
+		$documentTermCount = $this->applyFilters($tokens);
+		$this->storeDocumentTermCount($document, $documentTermCount);
+	}
+
+	/**
+	 * @param $documents
+	 */
+	private function iterateDocumentsAndCreateTermCount($documents)
+	{
+		foreach ($documents as $document) {
+			if ($document->type === 'folder') {
+				$this->iterateDocumentsAndCreateTermCount($document->content);
+			} else {
+				$this->createTermCountForDocument($document);
+			}
 		}
 	}
 }

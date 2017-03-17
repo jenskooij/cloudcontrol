@@ -274,6 +274,9 @@ class Repository
         if ($containerPath === '/') {
             return $this->getRootFolder();
         }
+        if (substr($containerPath, -1) === '/'){
+			$containerPath = substr($containerPath, 0, -1);
+		}
         $containerFolder = $this->getDocumentByPath($containerPath);
         return $containerFolder;
     }
@@ -306,6 +309,7 @@ class Repository
 		$stmt = $db->query('
 			SELECT count(*)
 			  FROM documents
+			 WHERE `type` != "folder"
 		');
 		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 		if (!is_array($result )) {

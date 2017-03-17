@@ -20,7 +20,7 @@ namespace library\components {
 		/**
 		 * @param Storage $storage
 		 *
-*@return mixed|void
+		 * @return mixed|void
 		 * @throws \Exception
 		 */
 		public function run(Storage $storage)

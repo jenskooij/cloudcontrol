@@ -14,7 +14,7 @@ namespace library\storage;
  * @property array bricks
  * @property array dynamicBricks
  * @property array content
- * @property-write resource dbHandle
+ * @property-write \PDO dbHandle
  */
 class Document
 {
@@ -37,6 +37,7 @@ class Document
     protected $dbHandle;
 
     protected $jsonEncodedFields = array('fields', 'bricks', 'dynamicBricks');
+    protected $orderableFields = array('title', 'slug', 'type', 'documentType', 'documentTypeSlug', 'state', 'lastModificationDate', 'creationDate', 'lastModifiedBy');
 
     public function __get($name) {
         if (in_array($name, $this->jsonEncodedFields)) {
@@ -50,9 +51,8 @@ class Document
                 throw new \Exception('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
             } else {
                 if ($this->content === null) {
-                    $this->getContent();
+                    return $this->getContent();
                 }
-                return $this->content;
             }
         } elseif ($name === 'dbHandle') {
             throw new \Exception('Trying to get protected property repository.');
@@ -71,10 +71,14 @@ class Document
         $this->$name = $value;
     }
 
-    /**
-     * @throws \Exception
-     */
-    protected function getContent()
+	/**
+	 * @param string $orderBy
+	 * @param string $order
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+    public function getContent($orderBy = 'title', $order = 'ASC')
     {
         $folderPathWithWildcard = $this->path . '%';
         $sql = '    SELECT *
@@ -83,13 +87,16 @@ class Document
                        AND substr(`path`, ' . (strlen($this->path) + 2) . ') NOT LIKE "%/%"
                        AND substr(`path`, ' . (strlen($this->path) + 1) . ', 1) = "/"
                        AND path != ' . $this->dbHandle->quote($this->path) . '
+                  ORDER BY ' . (in_array($orderBy, $this->orderableFields) ? $orderBy : 'title') . ' ' . ($order === 'ASC' ? 'ASC' : 'DESC') . '
                     ';
-        $stmt = $this->dbHandle->query($sql);
-        if ($stmt === false) {
-            $errorInfo = $this->dbHandle->errorInfo();
-            $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-        }
+        $stmt = $this->dbHandle->prepare($sql);
+		if ($stmt === false) {
+			$errorInfo = $this->dbHandle->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+        $stmt->bindColumn(':orderBy', $orderBy, \PDO::PARAM_STMT);
+		$stmt->execute();
         $contents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
         foreach ($contents as $key => $document) {
             if ($document->type === 'folder') {
@@ -98,6 +105,7 @@ class Document
             }
         }
         $this->content = $contents;
+        return $this->content;
     }
 
 	/**
