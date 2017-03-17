@@ -1,7 +1,6 @@
 <?php
 namespace library\storage {
 
-	use library\storage\factories\ApplicationComponentFactory;
 	use library\storage\factories\DocumentFolderFactory;
 	use library\storage\storage\ApplicationComponentsStorage;
 	use library\storage\storage\BricksStorage;
@@ -290,6 +289,9 @@ namespace library\storage {
 			return $this->storageDir;
 		}
 
+		/**
+		 * @return \PDO
+		 */
 		public function getContentDbHandle()
 		{
 			return $this->repository->getContentDbHandle();
@@ -306,11 +308,6 @@ namespace library\storage {
 			return $this->documentTypes;
 		}
 
-		/*
-		 *
-		 * Bricks
-		 *
-		 */
 		/**
 		 * @return BricksStorage
 		 */
@@ -321,22 +318,6 @@ namespace library\storage {
 			}
 			return $this->bricks;
 		}
-
-		/**
-		 * Save changes made to the repository
-		 *
-		 * @throws \Exception
-		 */
-		private function save()
-		{
-			$this->repository->save();
-		}
-
-		/*
-		 *
-		 * Image Set
-		 *
-		 */
 
 		/**
 		 * Get the image set
