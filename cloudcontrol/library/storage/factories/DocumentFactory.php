@@ -71,37 +71,13 @@ class DocumentFactory
 	{
 		if (isset($postValues['bricks'])) {
 			foreach ($postValues['bricks'] as $brickSlug => $brick) {
-				// Check if its multiple
-				$multiple = false;
-				$staticBrick = null;
-				foreach ($staticBricks as $staticBrick) {
-					if ($staticBrick->slug === $brickSlug) {
-						$multiple = $staticBrick->multiple;
-						break;
-					}
-				}
+				// Find the current bricktype and check if its multiple
+				list($staticBrick, $multiple) = self::getStaticBrickAndSetMultiple($staticBricks, $brickSlug);
 
 				if ($multiple) {
-					$brickArray = array();
-					foreach ($brick as $brickInstance) {
-						$brickObj = new \stdClass();
-						$brickObj->fields = new \stdClass();
-						$brickObj->type = $staticBrick->brickSlug;
-
-						foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
-							$brickObj->fields->$fieldName = $fieldValues;
-						}
-
-						$brickArray[] = $brickObj;
-					}
-
-					$bricks = $documentObj->bricks;
-					$bricks[$brickSlug] = $brickArray;
-					$documentObj->bricks = $bricks;
+					$documentObj = self::addMultipleBricks($documentObj, $brick, $staticBrick, $brickSlug);
 				} else {
-					$bricks = $documentObj->bricks;
-					$bricks[$brickSlug] = $brick;
-					$documentObj->bricks = $bricks;
+					$documentObj = self::addSingleBrick($documentObj, $brick, $brickSlug);
 				}
 			}
 		}
@@ -129,6 +105,83 @@ class DocumentFactory
 				}
 			}
 		}
+		return $documentObj;
+	}
+
+	/**
+	 * @param $staticBricks
+	 * @param $brickSlug
+	 *
+	 * @return array
+	 */
+	private static function getStaticBrickAndSetMultiple($staticBricks, $brickSlug)
+	{
+		$staticBrick = null;
+		$multiple = false;
+		foreach ($staticBricks as $staticBrick) {
+			if ($staticBrick->slug === $brickSlug) {
+				$multiple = $staticBrick->multiple;
+				break;
+			}
+		}
+
+		return array($staticBrick, $multiple);
+	}
+
+	/**
+	 * @param $staticBrick
+	 * @param $brickInstance
+	 *
+	 * @return \stdClass
+	 */
+	private static function createBrick($staticBrick, $brickInstance)
+	{
+		$brickObj = new \stdClass();
+		$brickObj->fields = new \stdClass();
+		$brickObj->type = $staticBrick->brickSlug;
+
+		foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
+			$brickObj->fields->$fieldName = $fieldValues;
+		}
+
+		return $brickObj;
+	}
+
+	/**
+	 * @param $documentObj
+	 * @param $brick
+	 * @param $staticBrick
+	 * @param $brickSlug
+	 *
+	 * @return mixed
+	 */
+	private static function addMultipleBricks($documentObj, $brick, $staticBrick, $brickSlug)
+	{
+		$brickArray = array();
+		foreach ($brick as $brickInstance) {
+			$brickObj = self::createBrick($staticBrick, $brickInstance);
+			$brickArray[] = $brickObj;
+		}
+
+		$bricks = $documentObj->bricks;
+		$bricks[$brickSlug] = $brickArray;
+		$documentObj->bricks = $bricks;
+
+		return $documentObj;
+	}
+
+	/**
+	 * @param $documentObj
+	 * @param $brick
+	 * @param $brickSlug
+	 *
+	 * @return mixed
+	 */
+	private static function addSingleBrick($documentObj, $brick, $brickSlug)
+	{
+		$bricks = $documentObj->bricks;
+		$bricks[$brickSlug] = $brick;
+		$documentObj->bricks = $bricks;
 		return $documentObj;
 	}
 }
