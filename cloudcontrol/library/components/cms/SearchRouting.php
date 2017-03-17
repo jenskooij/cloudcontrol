@@ -85,27 +85,18 @@ class SearchRouting implements CmsRouting
 	 */
 	private function stepRouting($step, $cmsComponent, $indexer)
 	{
-		if ($step == 'resetIndex') {
-			$indexer->resetIndex();
-			$this->showJson('done');
-		} elseif ($step == 'createDocumentTermCount') {
-			$documents = $cmsComponent->storage->getDocuments()->getDocuments();
-			$indexer->createDocumentTermCount($documents);
-			$this->showJson('done');
-		} else if ($step == 'createDocumentTermFrequency') {
-			$indexer->createDocumentTermFrequency();
-			$this->showJson('done');
-		} else if ($step == 'createTermFieldLengthNorm') {
-			$indexer->createTermFieldLengthNorm();
-			$this->showJson('done');
-		} else if ($step == 'createInverseDocumentFrequency') {
-			$indexer->createInverseDocumentFrequency();
-			$this->showJson('done');
-		} else if ($step == 'replaceOldIndex') {
-			$indexer->replaceOldIndex();
-			$this->showJson('done');
-		} else {
-			$this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error');
+		switch($step) {
+			case 'resetIndex': $indexer->resetIndex(); break;
+			case 'createDocumentTermCount':
+				$documents = $cmsComponent->storage->getDocuments()->getDocuments();
+				$indexer->createDocumentTermCount($documents);
+				break;
+			case 'createDocumentTermFrequency': $indexer->createDocumentTermFrequency(); break;
+			case 'createTermFieldLengthNorm': $indexer->createTermFieldLengthNorm(); break;
+			case 'createInverseDocumentFrequency': $indexer->createInverseDocumentFrequency(); break;
+			case 'replaceOldIndex': $indexer->replaceOldIndex(); break;
+			default : $this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error'); break;
 		}
+		$this->showJson('done');
 	}
 }
