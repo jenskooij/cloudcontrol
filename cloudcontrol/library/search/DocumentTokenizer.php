@@ -60,7 +60,7 @@ class DocumentTokenizer
 	private function tokenizeFields()
 	{
 		$fields = $this->document->fields;
-		$documentDefinition = $this->storage->getDocumentTypeBySlug($this->document->documentTypeSlug);
+		$documentDefinition = $this->storage->getDocumentTypes()->getDocumentTypeBySlug($this->document->documentTypeSlug);
 		foreach ($fields as $fieldName => $field) {
 			$fieldType = $this->getFieldType($fieldName, $documentDefinition);
 			$this->tokenizeField($field, $fieldName, $fieldType);

@@ -75,17 +75,17 @@ class DocumentRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/documents/document-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
 		if (isset($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE])) {
 			if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsComponent::GET_PARAMETER_PATH])) {
 				$cmsComponent->storage->getDocuments()->addDocument($request::$post);
 				header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 				exit;
 			}
-			$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypeBySlug($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], true));
+			$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], true));
 			$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
 		} else {
-			$documentTypes = $cmsComponent->storage->getDocumentTypes();
+			$documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
 			if (count($documentTypes) < 1) {
 				throw new \Exception('No Document Types defined yet. <a href="' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/document-types/new">Please do so first.</a>');
 			}
@@ -119,7 +119,7 @@ class DocumentRouting implements CmsRouting
 	 */
 	private function getBrickRoute($request, $cmsComponent)
 	{
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
 		$cmsComponent->subTemplate = 'cms/documents/brick';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICK, $cmsComponent->storage->getBricks()->getBrickBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_STATIC, $request::$get[CmsComponent::PARAMETER_STATIC] === 'true');
