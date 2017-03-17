@@ -138,14 +138,9 @@ class Repository
      */
     public function save()
     {
-        $this->sitemapChanges ? $this->saveSubset('sitemap') : null;
-        $this->applicationComponentsChanges ? $this->saveSubset('applicationComponents') : null;
-        $this->documentTypesChanges ? $this->saveSubset('documentTypes') : null;
-        $this->bricksChanges ? $this->saveSubset('bricks') : null;
-        $this->imageSetChanges ? $this->saveSubset('imageSet') : null;
-        $this->imagesChanges ? $this->saveSubset('images') : null;
-        $this->filesChanges ? $this->saveSubset('files') : null;
-        $this->usersChanges ? $this->saveSubset('users') : null;
+        array_map(function ($value) {
+        	$this->saveSubset($value);
+		}, $this->fileBasedSubsets);
     }
 
     /**
@@ -154,11 +149,14 @@ class Repository
      */
     protected function saveSubset($subset)
     {
-        $json = json_encode($this->$subset, JSON_PRETTY_PRINT);
-        $subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
-        file_put_contents($subsetStoragePath, $json);
-        $changes = $subset . 'Changes';
-        $this->$changes = false;
+		$changes = $subset . 'Changes';
+		if ($this->$changes === true) {
+			$json = json_encode($this->$subset, JSON_PRETTY_PRINT);
+			$subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
+			file_put_contents($subsetStoragePath, $json);
+
+			$this->$changes = false;
+		}
     }
 
     /**
