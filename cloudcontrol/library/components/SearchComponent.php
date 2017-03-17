@@ -11,7 +11,7 @@ use library\cc\Request;
 use library\search\CharacterFilter;
 use library\search\Search;
 use library\search\Tokenizer;
-use library\storage\JsonStorage;
+use library\storage\Storage;
 
 class SearchComponent extends BaseComponent
 {
@@ -19,9 +19,9 @@ class SearchComponent extends BaseComponent
 	protected $searchResultsParameterName = 'searchResults';
 
 	/**
-	 * @param \library\storage\JsonStorage $storage
+	 * @param \library\storage\Storage $storage
 	 */
-	public function run(JsonStorage $storage)
+	public function run(Storage $storage)
 	{
 		parent::run($storage);
 

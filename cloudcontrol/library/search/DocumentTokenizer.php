@@ -9,7 +9,7 @@ namespace library\search;
 
 
 use library\storage\Document;
-use library\storage\JsonStorage;
+use library\storage\Storage;
 
 class DocumentTokenizer
 {
@@ -28,9 +28,9 @@ class DocumentTokenizer
 	 * Tokenizer constructor.
 	 *
 	 * @param \library\storage\Document $document
-	 * @param JsonStorage $storage
+	 * @param Storage                   $storage
 	 */
-	public function __construct(Document $document, JsonStorage $storage)
+	public function __construct(Document $document, Storage $storage)
 	{
 		$this->document = $document;
 		$this->storage = $storage;

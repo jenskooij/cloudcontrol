@@ -11,8 +11,8 @@ namespace library\storage;
 class DocumentFactory
 {
 	/**
-	 * @param array $postValues
-	 * @param JsonStorage $jsonStorage
+	 * @param array   $postValues
+	 * @param Storage $jsonStorage
 	 *
 	 * @return \library\storage\Document
 	 */

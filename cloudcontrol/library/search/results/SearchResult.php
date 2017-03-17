@@ -9,7 +9,7 @@ namespace library\search\results;
 
 
 use library\storage\Document;
-use library\storage\JsonStorage;
+use library\storage\Storage;
 use library\storage\Repository;
 
 class SearchResult
@@ -29,7 +29,7 @@ class SearchResult
 
 	protected $document;
 	/**
-	 * @var JsonStorage
+	 * @var Storage
 	 */
 	protected $storage;
 

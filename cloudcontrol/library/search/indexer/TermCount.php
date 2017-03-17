@@ -10,7 +10,7 @@ namespace library\search\indexer;
 
 use library\search\DocumentTokenizer;
 use library\search\Indexer;
-use library\storage\JsonStorage;
+use library\storage\Storage;
 
 class TermCount
 {
@@ -25,10 +25,10 @@ class TermCount
 	/**
 	 * TermCount constructor.
 	 *
-	 * @param \PDO $dbHandle
-	 * @param array $documents
-	 * @param array $filters
-	 * @param JsonStorage $jsonStorage
+	 * @param \PDO    $dbHandle
+	 * @param array   $documents
+	 * @param array   $filters
+	 * @param Storage $jsonStorage
 	 */
 	public function __construct($dbHandle, $documents, $filters, $jsonStorage)
 	{

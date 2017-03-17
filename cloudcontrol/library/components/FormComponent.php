@@ -3,7 +3,7 @@ namespace library\components;
 
 
 use library\cc\Application;
-use library\storage\JsonStorage;
+use library\storage\Storage;
 use library\storage\Storage;
 
 class FormComponent Extends BaseComponent
@@ -65,12 +65,12 @@ class FormComponent Extends BaseComponent
 	private $userSessionBackup = null;
 
 	/**
-	 * @param JsonStorage $storage
+	 * @param Storage $storage
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function run(JsonStorage $storage)
+	public function run(Storage $storage)
 	{
 		parent::run($storage);
 		$this->checkParameters();
@@ -112,7 +112,7 @@ class FormComponent Extends BaseComponent
 	/**
 	 * Sets variables needed for rendering the form template
 	 *
-	 * @param JsonStorage $storage
+	 * @param Storage $storage
 	 */
 	private function initialize($storage)
 	{
@@ -129,7 +129,7 @@ class FormComponent Extends BaseComponent
 	 * If the form has been submitted, save the document
 	 * Calls $this->postSubmit() afterwards
 	 *
-	 * @param JsonStorage $storage
+	 * @param Storage $storage
 	 */
 	private function checkSubmit($storage)
 	{

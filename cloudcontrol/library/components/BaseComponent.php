@@ -4,7 +4,7 @@ namespace library\components
 
 	use library\cc\Application;
 	use library\cc\Request;
-	use library\storage\JsonStorage;
+	use library\storage\Storage;
 
 	class BaseComponent implements Component
 	{
@@ -17,7 +17,7 @@ namespace library\components
 		 */
 		protected $request;
 		/**
-		 * @var JsonStorage
+		 * @var Storage
 		 */
 		protected $storage;
 		/**
@@ -52,9 +52,9 @@ namespace library\components
 		/**
 		 * Hook for implementation in derived classes
 		 *
-		 * @param JsonStorage $storage
+		 * @param Storage $storage
 		 */
-		public function run(JsonStorage $storage)
+		public function run(Storage $storage)
 		{
 			$this->storage = $storage;
 		}

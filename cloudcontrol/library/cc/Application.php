@@ -3,7 +3,7 @@ namespace library\cc
 {
 
 	use library\components\Component;
-	use library\storage\JsonStorage;
+	use library\storage\Storage;
 
 	/**
 	 * Class Application
@@ -78,9 +78,7 @@ namespace library\cc
 		 */
 		private function storage()
 		{
-			if ($this->getStorageType() == 'json') {
-				$this->storage = new JsonStorage($this->getStorageDir());
-			}
+			$this->storage = new Storage($this->getStorageDir());
 		}
 
 		/**
@@ -91,7 +89,7 @@ namespace library\cc
 		 */
 		private function sitemapMatching($request)
 		{
-			$sitemap = $this->storage->getSitemap();
+			$sitemap = $this->storage->getSitemap()->getSitemap();
 			$relativeUri = '/' . $request::$relativeUri;
 
 			foreach ($sitemap as $sitemapItem) {
@@ -225,14 +223,6 @@ namespace library\cc
 		{
 			header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
 			header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
-		}
-
-		/**
-		 * @return string
-		 */
-		public function getStorageType()
-		{
-			return $this->config->storageType;
 		}
 
 		/**

@@ -8,7 +8,7 @@
 namespace library\search;
 
 
-use library\storage\JsonStorage;
+use library\storage\Storage;
 
 /**
  * Abstract Class SearchDbConnected
@@ -23,7 +23,7 @@ abstract class SearchDbConnected
 	protected $searchDbHandle;
 
 	/**
-	 * @var \library\storage\JsonStorage
+	 * @var \library\storage\Storage
 	 */
 	protected $storage;
 	/**
@@ -34,9 +34,9 @@ abstract class SearchDbConnected
 	/**
 	 * Indexer constructor.
 	 *
-	 * @param \library\storage\JsonStorage $storage
+	 * @param \library\storage\Storage $storage
 	 */
-	public function __construct(JsonStorage $storage)
+	public function __construct(Storage $storage)
 	{
 		$this->storageDir = $storage->getStorageDir();
 		$this->storage = $storage;

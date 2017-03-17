@@ -8,12 +8,12 @@ namespace library\components {
 	use library\components\cms\SearchRouting;
 	use library\components\cms\SitemapRouting;
 	use library\crypt\Crypt;
-	use library\storage\JsonStorage;
+	use library\storage\Storage;
 
 	class CmsComponent extends BaseComponent
 	{
 		/**
-		 * @var \library\storage\JsonStorage
+		 * @var \library\storage\Storage
 		 */
 		public $storage;
 
@@ -75,11 +75,11 @@ namespace library\components {
 
 
 		/**
-		 * @param JsonStorage $storage
+		 * @param Storage $storage
 		 *
 		 * @return void
 		 */
-		public function run(JsonStorage $storage)
+		public function run(Storage $storage)
 		{
 			$this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::MAIN_NAV_CLASS;
 			$this->storage = $storage;

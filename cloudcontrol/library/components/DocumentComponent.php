@@ -1,7 +1,7 @@
 <?php
 namespace library\components {
 
-	use library\storage\JsonStorage;
+	use library\storage\Storage;
 
 	/**
 	 * Class DocumentComponent
@@ -18,11 +18,12 @@ namespace library\components {
 		protected $documentParameterName = 'document';
 
 		/**
-		 * @param JsonStorage $storage
-		 * @return mixed|void
+		 * @param Storage $storage
+		 *
+*@return mixed|void
 		 * @throws \Exception
 		 */
-		public function run(JsonStorage $storage)
+		public function run(Storage $storage)
 		{
 			parent::run($storage);
 
