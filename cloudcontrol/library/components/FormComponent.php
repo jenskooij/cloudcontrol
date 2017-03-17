@@ -4,7 +4,6 @@ namespace library\components;
 
 use library\cc\Application;
 use library\storage\Storage;
-use library\storage\Storage;
 
 class FormComponent Extends BaseComponent
 {
