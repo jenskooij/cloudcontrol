@@ -46,7 +46,7 @@ class ImagesRouting implements CmsRouting
 	}
 
 	/**
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function jsonRoute($cmsComponent)
 	{
