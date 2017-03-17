@@ -7,6 +7,7 @@ namespace library\storage {
 	use library\storage\factories\DocumentTypeFactory;
 	use library\storage\factories\ImageSetFactory;
 	use library\storage\factories\UserFactory;
+	use library\storage\storage\FilesStorage;
 	use library\storage\storage\ImageSetStorage;
 	use library\storage\storage\ImagesStorage;
 	use library\storage\storage\SitemapStorage;
@@ -29,6 +30,10 @@ namespace library\storage {
 		 * @var ImageSetStorage
 		 */
 		protected $imageSet;
+		/**
+		 * @var FilesStorage
+		 */
+		protected $files;
 		/**
 		 * @var String
 		 */
@@ -377,14 +382,14 @@ namespace library\storage {
 		/**
 		 * Get all files
 		 *
-		 * @return array
+		 * @return FilesStorage
 		 */
 		public function getFiles()
 		{
-			$files = $this->repository->files;
-			usort($files, array($this, 'compareFiles'));
-
-			return $files;
+			if (!$this->files instanceof FilesStorage) {
+				$this->files = new FilesStorage($this->repository);
+			}
+			return $this->files;
 		}
 
 		/**
@@ -398,79 +403,6 @@ namespace library\storage {
 		public function getContentDbHandle()
 		{
 			return $this->repository->getContentDbHandle();
-		}
-
-		private function compareFiles($a, $b)
-		{
-			return strcmp($a->file, $b->file);
-		}
-
-		public function addFile($postValues)
-		{
-			$destinationPath = realpath(__DIR__ . '/../../www/files/');
-
-			$filename = $this->validateFilename($postValues['name'], $destinationPath);
-			$destination = $destinationPath . '/' . $filename;
-
-			if ($postValues['error'] != '0') {
-				throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
-			}
-
-			if (move_uploaded_file($postValues['tmp_name'], $destination)) {
-				$file = new \stdClass();
-				$file->file = $filename;
-				$file->type = $postValues['type'];
-				$file->size = $postValues['size'];
-
-				$files = $this->repository->files;
-				$files[] = $file;
-				$this->repository->files = $files;
-				$this->save();
-			} else {
-				throw new \Exception('Error moving uploaded file');
-			}
-		}
-
-		/**
-		 * @param $filename
-		 *
-		 * @return null
-		 */
-		public function getFileByName($filename)
-		{
-			$files = $this->getFiles();
-			foreach ($files as $file) {
-				if ($filename == $file->file) {
-					return $file;
-				}
-			}
-
-			return null;
-		}
-
-		/**
-		 * @param $filename
-		 *
-		 * @throws \Exception
-		 */
-		public function deleteFileByName($filename)
-		{
-			$destinationPath = realpath(__DIR__ . '/../../www/files/');
-			$destination = $destinationPath . '/' . $filename;
-
-			if (file_exists($destination)) {
-				$files = $this->getFiles();
-				foreach ($files as $key => $file) {
-					if ($file->file == $filename) {
-						unlink($destination);
-						unset($files[$key]);
-					}
-				}
-
-				$files = array_values($files);
-				$this->repository->files = $files;
-				$this->save();
-			}
 		}
 
 		/*

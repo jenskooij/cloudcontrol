@@ -212,7 +212,7 @@ namespace library\components {
 				die(json_encode($this->storage->getImages()->getImages()));
 			} elseif ($relativeCmsUri == '/files.json') {
 				header(self::CONTENT_TYPE_APPLICATION_JSON);
-				die(json_encode($this->storage->getFiles()));
+				die(json_encode($this->storage->getFiles()->getFiles()));
 			} elseif ($relativeCmsUri == '/documents.json') {
 				header(self::CONTENT_TYPE_APPLICATION_JSON);
 				die(json_encode($this->storage->getDocuments()));

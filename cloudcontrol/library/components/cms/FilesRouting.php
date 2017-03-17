@@ -34,11 +34,11 @@ class FilesRouting implements CmsRouting
 
 	/**
 	 * @param $slug
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function downloadRoute($slug, $cmsComponent)
 	{
-		$file = $cmsComponent->storage->getFileByName($slug);
+		$file = $cmsComponent->storage->getFiles()->getFileByName($slug);
 		$path = realpath(__DIR__ . '/../../../www/files/');
 		$quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
 		$size = filesize($path . '/' . $file->file);
@@ -58,25 +58,25 @@ class FilesRouting implements CmsRouting
 	}
 
 	/**
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function overviewRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/files';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_FILES, $cmsComponent->storage->getFiles());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_FILES, $cmsComponent->storage->getFiles()->getFiles());
 	}
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function newRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/files/form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
 		if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-			$cmsComponent->storage->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+			$cmsComponent->storage->getFiles()->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
 			exit;
 		}
@@ -84,11 +84,11 @@ class FilesRouting implements CmsRouting
 
 	/**
 	 * @param $request
-	 * @param $cmsComponent
+	 * @param CmsComponent $cmsComponent
 	 */
 	private function deleteRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteFileByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
+		$cmsComponent->storage->getFiles()->deleteFileByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
 		exit;
 	}
