@@ -42,7 +42,7 @@ class ImageSetRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/image-set';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGE_SET, $cmsComponent->storage->getImageSet());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGE_SET, $cmsComponent->storage->getImageSet()->getImageSet());
 	}
 
 	/**
@@ -53,9 +53,9 @@ class ImageSetRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/configuration/image-set-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
-		$imageSet = $cmsComponent->storage->getImageSetBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$imageSet = $cmsComponent->storage->getImageSet()->getImageSetBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->saveImageSet($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
+			$cmsComponent->storage->getImageSet()->saveImageSet($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/image-set');
 			exit;
 		}
@@ -71,7 +71,7 @@ class ImageSetRouting implements CmsRouting
 		$cmsComponent->subTemplate = 'cms/configuration/image-set-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-			$cmsComponent->storage->getImages()->addImageSet($request::$post);
+			$cmsComponent->storage->getImageSet()->addImageSet($request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/image-set');
 			exit;
 		}
@@ -83,7 +83,7 @@ class ImageSetRouting implements CmsRouting
 	 */
 	private function deleteRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteImageSetBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$cmsComponent->storage->getImageSet()->deleteImageSetBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/image-set');
 		exit;
 	}

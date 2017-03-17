@@ -1,13 +1,13 @@
 <?php
 namespace library\storage {
 
-	use library\images\ImageResizer;
 	use library\storage\factories\ApplicationComponentFactory;
 	use library\storage\factories\BrickFactory;
 	use library\storage\factories\DocumentFolderFactory;
 	use library\storage\factories\DocumentTypeFactory;
 	use library\storage\factories\ImageSetFactory;
 	use library\storage\factories\UserFactory;
+	use library\storage\storage\ImageSetStorage;
 	use library\storage\storage\ImagesStorage;
 	use library\storage\storage\SitemapStorage;
 
@@ -25,6 +25,10 @@ namespace library\storage {
 		 * @var ImagesStorage
 		 */
 		protected $images;
+		/**
+		 * @var ImageSetStorage
+		 */
+		protected $imageSet;
 		/**
 		 * @var String
 		 */
@@ -690,119 +694,14 @@ namespace library\storage {
 		/**
 		 * Get the image set
 		 *
-		 * @return array
+		 * @return ImageSetStorage
 		 */
 		public function getImageSet()
 		{
-			return $this->repository->imageSet;
-		}
-
-		/**
-		 * Get Image by slug
-		 *
-		 * @param $slug
-		 *
-		 * @return \stdClass
-		 */
-		public function getImageSetBySlug($slug)
-		{
-			$imageSet = $this->getImageSet();
-			foreach ($imageSet as $set) {
-				if ($set->slug == $slug) {
-					return $set;
-				}
+			if (!$this->imageSet instanceof ImageSetStorage) {
+				$this->imageSet = new ImageSetStorage($this->repository);
 			}
-
-			return null;
-		}
-
-		/**
-		 * Save Image Set by it's slug
-		 *
-		 * @param $slug
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function saveImageSet($slug, $postValues)
-		{
-			$imageSetObject = ImageSetFactory::createImageSetFromPostValues($postValues);
-
-			$imageSet = $this->repository->imageSet;
-			foreach ($imageSet as $key => $set) {
-				if ($set->slug == $slug) {
-					$imageSet[$key] = $imageSetObject;
-				}
-			}
-			$this->repository->imageSet = $imageSet;
-			$this->save();
-		}
-
-		/**
-		 * Add image set
-		 *
-		 * @param $postValues
-		 *
-		 * @throws \Exception
-		 */
-		public function addImageSet($postValues)
-		{
-			$imageSetObject = ImageSetFactory::createImageSetFromPostValues($postValues);
-
-			$imageSet = $this->repository->imageSet;
-			$imageSet[] = $imageSetObject;
-			$this->repository->imageSet = $imageSet;
-
-			$this->save();
-		}
-
-		/**
-		 * Delete Image Set by its slug
-		 *
-		 * @param $slug
-		 *
-		 * @throws \Exception
-		 */
-		public function deleteImageSetBySlug($slug)
-		{
-			$imageSet = $this->getImageSet();
-
-			foreach ($imageSet as $key => $set) {
-				if ($set->slug == $slug) {
-					unset($imageSet[$key]);
-				}
-			}
-			$imageSet = array_values($imageSet);
-			$this->repository->imageSet = $imageSet;
-			$this->save();
-		}
-
-		/**
-		 * Get the image set with the smallest size
-		 *
-		 * @return \stdClass
-		 */
-		public function getSmallestImageSet()
-		{
-			$imageSet = $this->getImageSet();
-
-			$returnSize = PHP_INT_MAX;
-			$returnSet = null;
-
-			foreach ($imageSet as $set) {
-				$size = $set->width * $set->height;
-				if ($size < $returnSize) {
-					$returnSize = $size;
-					$returnSet = $set;
-				}
-			}
-
-			if ($returnSet === null) {
-				$returnSet = new \stdClass();
-				$returnSet->slug = 'original';
-			}
-
-			return $returnSet;
+			return $this->imageSet;
 		}
 
 		/**
