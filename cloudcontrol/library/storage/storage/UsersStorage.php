@@ -113,4 +113,26 @@ class UsersStorage extends AbstractStorage
 		}
 		$this->save();
 	}
+
+	/**
+	 * Get user by username
+	 *
+	 * @param $username
+	 *
+	 * @return array
+	 */
+	public function getUserByUsername($username)
+	{
+		$return = array();
+
+		$users = $this->repository->users;
+		foreach ($users as $user) {
+			if ($user->username == $username) {
+				$return = $user;
+				break;
+			}
+		}
+
+		return $return;
+	}
 }

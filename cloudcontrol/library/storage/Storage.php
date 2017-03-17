@@ -83,29 +83,6 @@ namespace library\storage {
 
 		}
 
-
-		/**
-		 * Get user by username
-		 *
-		 * @param $username
-		 *
-		 * @return array
-		 */
-		public function getUserByUsername($username)
-		{
-			$return = array();
-
-			$users = $this->repository->users;
-			foreach ($users as $user) {
-				if ($user->username == $username) {
-					$return = $user;
-					break;
-				}
-			}
-
-			return $return;
-		}
-
 		/**
 		 * @return \library\storage\storage\UsersStorage
 		 */
@@ -268,11 +245,6 @@ namespace library\storage {
 			return $this->sitemap;
 		}
 
-		/*
-		 *
-		 * Images
-		 *
-		 */
 		/**
 		 * Get all images
 		 *
@@ -286,11 +258,6 @@ namespace library\storage {
 			return $this->images;
 		}
 
-		/*
-		 *
-		 * Files
-		 *
-		 */
 		/**
 		 * Get all files
 		 *

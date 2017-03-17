@@ -347,7 +347,7 @@ namespace library\components {
 		 */
 		protected function checkLoginAttempt($request)
 		{
-			$user = $this->storage->getUserByUsername($request::$post[self::POST_PARAMETER_USERNAME]);
+			$user = $this->storage->getUsers()->getUserByUsername($request::$post[self::POST_PARAMETER_USERNAME]);
 			$crypt = new Crypt();
 			if (empty($user)) {
 				$this->invalidCredentials($crypt, $request);
