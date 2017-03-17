@@ -54,7 +54,7 @@ namespace library\components {
 		private function runLikeApplicationComponent()
 		{
 			if (isset($this->parameters['document'])) {
-				$this->parameters[$this->documentParameterName] = $this->storage->getDocumentBySlug($this->parameters['document']);
+				$this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
 				unset($this->parameters['document']);
 			} else {
 				throw new \Exception('When used as application component, you need to specify a document.');
@@ -107,7 +107,7 @@ namespace library\components {
 					$relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
 				}
 
-				$document = $this->storage->getDocumentBySlug($relativeDocumentUri);
+				$document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri);
 
 				if ($document->type == 'folder') {
 					throw new \Exception('The found document is a folder.');
@@ -125,7 +125,7 @@ namespace library\components {
 		 */
 		private function runByDocumentParameter()
 		{
-			$this->parameters[$this->documentParameterName] = $this->storage->getDocumentBySlug($this->parameters['document']);
+			$this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
 		}
 	}
 }

@@ -11,6 +11,11 @@ use library\storage\factories\DocumentTypeFactory;
 class DocumentTypesStorage extends AbstractStorage
 {
 	/**
+	 * @var BricksStorage
+	 */
+	protected $bricks;
+
+	/**
 	 * @return array
 	 */
 	public function getDocumentTypes()
@@ -71,11 +76,11 @@ class DocumentTypesStorage extends AbstractStorage
 			if ($documentType->slug == $slug) {
 				if ($getBricks === true) {
 					foreach ($documentType->bricks as $key => $brick) {
-						$brickStructure = $this->getBrickBySlug($brick->brickSlug);
+						$brickStructure = $this->getBricks()->getBrickBySlug($brick->brickSlug);
 						$documentType->bricks[$key]->structure = $brickStructure;
 					}
 					foreach ($documentType->dynamicBricks as $key => $brickSlug) {
-						$brickStructure = $this->getBrickBySlug($brickSlug);
+						$brickStructure = $this->getBricks()->getBrickBySlug($brickSlug);
 						$documentType->dynamicBricks[$key] = $brickStructure;
 					}
 				}
@@ -107,5 +112,13 @@ class DocumentTypesStorage extends AbstractStorage
 		}
 		$this->repository->documentTypes = $documentTypes;
 		$this->save();
+	}
+
+	private function getBricks()
+	{
+		if (!$this->bricks instanceof BricksStorage) {
+			$this->bricks = new BricksStorage($this->repository);
+		}
+		return $this->bricks;
 	}
 }

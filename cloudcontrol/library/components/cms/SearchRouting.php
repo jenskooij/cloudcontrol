@@ -43,7 +43,7 @@ class SearchRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/search';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
-		$documentCount = $cmsComponent->storage->getTotalDocumentCount();
+		$documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
 		$indexer = new Search($cmsComponent->storage);
 		$indexedDocuments = $indexer->getIndexedDocuments();
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
@@ -89,7 +89,7 @@ class SearchRouting implements CmsRouting
 			$indexer->resetIndex();
 			$this->showJson('done');
 		} elseif ($step == 'createDocumentTermCount') {
-			$documents = $cmsComponent->storage->getDocuments();
+			$documents = $cmsComponent->storage->getDocuments()->getDocuments();
 			$indexer->createDocumentTermCount($documents);
 			$this->showJson('done');
 		} else if ($step == 'createDocumentTermFrequency') {

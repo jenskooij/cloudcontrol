@@ -4,6 +4,7 @@ namespace library\storage {
 	use library\storage\factories\DocumentFolderFactory;
 	use library\storage\storage\ApplicationComponentsStorage;
 	use library\storage\storage\BricksStorage;
+	use library\storage\storage\DocumentStorage;
 	use library\storage\storage\DocumentTypesStorage;
 	use library\storage\storage\FilesStorage;
 	use library\storage\storage\ImageSetStorage;
@@ -49,6 +50,10 @@ namespace library\storage {
 		 * @var ApplicationComponentsStorage
 		 */
 		protected $applicationComponents;
+		/**
+		 * @var DocumentStorage
+		 */
+		protected $documents;
 		/**
 		 * @var String
 		 */
@@ -104,73 +109,17 @@ namespace library\storage {
 			return $this->users;
 		}
 
-		/*
-		 *
-		 * Documents
-		 *
-		 */
 		/**
 		 * Get documents
 		 *
-		 * @return array
+		 * @return DocumentStorage
 		 */
 		public function getDocuments()
 		{
-			return $this->repository->getDocuments();
-		}
-
-		public function getTotalDocumentCount()
-		{
-			return $this->repository->getTotalDocumentCount();
-		}
-
-		/**
-		 * @param string $slug
-		 *
-		 * @return mixed
-		 * @throws \Exception
-		 */
-		public function getDocumentBySlug($slug)
-		{
-			$path = '/' . $slug;
-
-			return $this->repository->getDocumentByPath($path);
-		}
-
-		/**
-		 * @param $postValues
-		 */
-		public function saveDocument($postValues)
-		{
-			$oldPath = '/' . $postValues['path'];
-
-			$container = $this->getDocumentContainerByPath($oldPath);
-			$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
-			if ($container->path === '/') {
-				$newPath = $container->path . $documentObject->slug;
-			} else {
-				$newPath = $container->path . '/' . $documentObject->slug;
+			if (!$this->documents instanceof DocumentStorage) {
+				$this->documents = new DocumentStorage($this->repository);
 			}
-			$documentObject->path = $newPath;
-			$this->repository->saveDocument($documentObject);
-		}
-
-		public function addDocument($postValues)
-		{
-			$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, $this);
-			if ($postValues['path'] === '/') {
-				$documentObject->path = $postValues['path'] . $documentObject->slug;
-			} else {
-				$documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
-			}
-
-			$this->repository->saveDocument($documentObject);
-		}
-
-		public function deleteDocumentBySlug($slug)
-		{
-			$path = '/' . $slug;
-			$this->repository->deleteDocumentByPath($path);
+			return $this->documents;
 		}
 
 		/**
@@ -229,19 +178,6 @@ namespace library\storage {
 		public function saveDocumentFolder($postValues)
 		{
 			$this->addDocumentFolder($postValues);
-		}
-
-		/**
-		 * Convert path to indeces
-		 *
-		 * @param $path
-		 *
-		 * @return bool|\library\storage\Document
-		 * @throws \Exception
-		 */
-		private function getDocumentContainerByPath($path)
-		{
-			return $this->repository->getDocumentContainerByPath($path);
 		}
 
 		/**

@@ -57,7 +57,7 @@ class Indexer extends SearchDbConnected
 		$this->addLog('Clearing index.');
 		$this->resetIndex();
 		$this->addLog('Retrieving documents to be indexed.');
-		$documents = $this->storage->getDocuments();
+		$documents = $this->storage->getDocuments()->getDocuments();
 		$this->addLog('Start Document Term Count for ' . count($documents) . ' documents');
 		$this->createDocumentTermCount($documents);
 		$this->addLog('Start Document Term Frequency.');
@@ -128,7 +128,7 @@ class Indexer extends SearchDbConnected
 	 */
 	private function getTotalDocumentCount()
 	{
-		return $this->storage->getTotalDocumentCount();
+		return $this->storage->getDocuments()->getTotalDocumentCount();
 	}
 
 	/**

@@ -41,7 +41,7 @@ class SearchResult
 		if ($this->document instanceof Document) {
 			return $this->document;
 		} else {
-			$this->document = $this->storage->getDocumentBySlug(substr($this->documentPath, 1));
+			$this->document = $this->storage->getDocuments()->getDocumentBySlug(substr($this->documentPath, 1));
 			$this->document->dbHandle = $this->storage->getContentDbHandle();
 			return $this->document;
 		}

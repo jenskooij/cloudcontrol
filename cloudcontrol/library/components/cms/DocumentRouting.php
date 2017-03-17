@@ -22,7 +22,7 @@ class DocumentRouting implements CmsRouting
     {
         if ($relativeCmsUri == '/documents') {
             $cmsComponent->subTemplate = 'cms/documents';
-            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments());
+            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocuments());
             $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
@@ -78,7 +78,7 @@ class DocumentRouting implements CmsRouting
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
 		if (isset($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE])) {
 			if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsComponent::GET_PARAMETER_PATH])) {
-				$cmsComponent->storage->addDocument($request::$post);
+				$cmsComponent->storage->getDocuments()->addDocument($request::$post);
 				header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 				exit;
 			}
@@ -101,15 +101,15 @@ class DocumentRouting implements CmsRouting
 	{
 		$cmsComponent->subTemplate = 'cms/documents/document-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getSmallestImageSet()->slug);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
 		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$cmsComponent->storage->saveDocument($request::$post);
+			$cmsComponent->storage->getDocuments()->saveDocument($request::$post);
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 			exit;
 		}
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
 		$request::$get[CmsComponent::GET_PARAMETER_PATH] = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypeBySlug($cmsComponent->getParameter(CmsComponent::PARAMETER_DOCUMENT)->documentTypeSlug, true));
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($cmsComponent->getParameter(CmsComponent::PARAMETER_DOCUMENT)->documentTypeSlug, true));
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
 	}
 
@@ -140,7 +140,7 @@ class DocumentRouting implements CmsRouting
 	 */
 	private function deleteDocumentRoute($request, $cmsComponent)
 	{
-		$cmsComponent->storage->deleteDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		$cmsComponent->storage->getDocuments()->deleteDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 		exit;
 	}

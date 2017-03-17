@@ -5,21 +5,25 @@
  * Time: 16:24
  */
 
-namespace library\storage;
+namespace library\storage\factories;
 
+
+use library\storage\Document;
+use library\storage\Storage;
+use library\storage\storage\DocumentTypesStorage;
 
 class DocumentFactory
 {
 	/**
-	 * @param array   $postValues
-	 * @param Storage $jsonStorage
+	 * @param array                $postValues
+	 * @param DocumentTypesStorage $documentTypesStorage
 	 *
 	 * @return \library\storage\Document
 	 */
-	public static function createDocumentFromPostValues($postValues, $jsonStorage)
+	public static function createDocumentFromPostValues($postValues, DocumentTypesStorage $documentTypesStorage)
 	{
 		$postValues = utf8Convert($postValues);
-		$documentType = $jsonStorage->getDocumentTypeBySlug($postValues['documentType']);
+		$documentType = $documentTypesStorage->getDocumentTypeBySlug($postValues['documentType']);
 
 		$staticBricks = $documentType->bricks;
 

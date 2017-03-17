@@ -135,7 +135,7 @@ class FormComponent Extends BaseComponent
 		if ($this->isFormSubmitted($this->request) && $this->isSubmitAllowed()) {
 			$postValues = $this->getPostValues($this->request);
 			$this->setUserSessionBackup();
-			$storage->addDocument($postValues);
+			$storage->getDocuments()->addDocument($postValues);
 			$this->restoreUserSessionBackup();
 			$this->setSubmitToSession();
 			$this->postSubmit($postValues, $storage);
