@@ -179,7 +179,7 @@ function addRte (e) {
     textarea.setAttribute('name', targetName);
     textarea.setAttribute('style', 'display:none;');
     wrapperDiv.appendChild(textarea);
-    li.innerHTML = "<a class=\"btn error js-deletemultiple\"><i class=\"fa fa-times\"></i></a><a class=\"btn move ui-sortable-handle\"><i class=\"fa fa-arrows-v\"></i></a>";
+    li.innerHTML = "<a class=\"btn error js-deletemultiple\"><i class=\"fa fa-trash\"></i></a><a class=\"btn move ui-sortable-handle\"><i class=\"fa fa-arrows-v\"></i></a>";
     li.appendChild(wrapperDiv);
     targetDropzone.appendChild(li);
 

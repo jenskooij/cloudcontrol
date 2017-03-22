@@ -1,5 +1,5 @@
 <div class="handles">
-	<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
+	<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 	<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 </div>
 <?if ($static == true) {
@@ -26,7 +26,7 @@
 				<? if ($field->multiple == true && $field->type == 'Rich Text') : ?>
 					<ul class="sortable">
 						<li>
-							<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
+							<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 							<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 							<div class="form-element">
 				<? endif ?>
@@ -37,7 +37,7 @@
 						</div>
 						<div class="grid-box-2">
 							<div class="grid-inner">
-								<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
+								<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 								<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 							</div>
 						</div>
@@ -57,7 +57,7 @@
 							</div>
 							<div class="grid-box-2">
 								<div class="grid-inner">
-									<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
+									<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 									<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 								</div>
 							</div>
@@ -76,7 +76,7 @@
 						<? foreach ($iterable as $value) : ?>
 
 						<li>
-							<a class="btn error js-deletemultiple"><i class="fa fa-times"></i></a>
+							<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 							<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 							<div class="form-element">
 							<? include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>

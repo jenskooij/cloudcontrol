@@ -36,7 +36,7 @@
 							<option<?=$field->multiple ? '' : ' selected="selected"' ?> value="false">Not Multiple</option>
 							<option<?=$field->multiple ? ' selected="selected"' : '' ?> value="true">Multiple</option>
 						</select>
-						<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
+						<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
 						<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 					</li>
 				<? endforeach ?>
@@ -61,7 +61,7 @@
 						<option<?=$myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?=$brick->slug?>"><?=$brick->title?></option>
 						<? endforeach ?>
 					</select>
-					<a class="btn error"><i class="fa fa-times"></i></a>
+					<a class="btn error"><i class="fa fa-trash"></i></a>
 					<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 				</li>
 				<? endforeach ?>
@@ -102,7 +102,7 @@
 		<option value="false">Not Multiple</option>
 		<option value="true">Multiple</option>
 	</select>
-	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
+	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
 	<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 </li>
 <li class="form-element bricks" id="bricksPlaceholder" style="display:none;">
@@ -116,7 +116,7 @@
 		<option value="false">Not Multiple</option>
 		<option value="true">Multiple</option>
 	</select>
-	<a class="btn error"><i class="fa fa-times"></i></a>
+	<a class="btn error"><i class="fa fa-trash"></i></a>
 	<a class="btn move"><i class="fa fa-arrows-v"></i></a>
 </li>
 <script id="jqueryScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

@@ -36,7 +36,7 @@
 					<li class="form-element parameters">
 						<input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name" value="<?=$key?>" />
 						<input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value" value="<?=$value?>" />
-						<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
+						<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
 					</li>
 				<? endforeach ?>
 			<? endif ?>
@@ -51,7 +51,7 @@
 <li class="form-element parameters" id="parameterPlaceholder" style="display:none;">
 	<input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name" />
 	<input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value" />
-	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-times"></i></a>
+	<a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
 </li>
 <script>
 window.onload = function () {

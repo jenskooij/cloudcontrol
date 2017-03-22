@@ -90,6 +90,24 @@
 		}
 	}
 
+	&.publish {
+		color:lighten($validate-color, 20%);
+
+		&:hover,
+		&.active {
+			background-color:$btn-text-color;
+		}
+	}
+
+	&.unpublish {
+		color:lighten($error-color, 20%);
+
+		&:hover,
+		&.active {
+			background-color:$btn-text-color;
+		}
+	}
+
 	&.move {
 		cursor:move;
 		background-color:$btn-move-color;

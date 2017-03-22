@@ -20,7 +20,7 @@
 					</div>
 					<div class="documentActions grid-box-4">
 						<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/users/edit?slug=<?=$user->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-						<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/users/delete?slug=<?=$user->slug?>" title="Delete"><i class="fa fa-times"></i></a>
+						<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/configuration/users/delete?slug=<?=$user->slug?>" title="Delete"><i class="fa fa-trash"></i></a>
 					</div>
 				</li>
 			<? endforeach ?>
