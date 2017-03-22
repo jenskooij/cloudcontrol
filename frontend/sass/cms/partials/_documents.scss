@@ -111,16 +111,16 @@
         background-color:$input-bg-color;
       }
 
+      .state {
+        color:lighten($error-color, 20%);
+
+        &.published {
+          color:$validate-color;
+        }
+      }
+
       .small {
         font-size:0.7em;
-
-        &.state {
-          color:lighten($error-color, 20%);
-
-          &.state.published {
-            color:$validate-color;
-          }
-        }
 
         &.unpublished-changes {
           background-color:$files-color;
