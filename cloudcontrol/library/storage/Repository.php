@@ -424,6 +424,21 @@ class Repository
 		$stmt->execute();
 	}
 
+	public function unpublishDocumentByPath($path)
+	{
+		$db = $this->getContentDbHandle();
+		$sql = 'DELETE FROM documents_published
+					  WHERE `path` = :path';
+		$stmt = $db->prepare($sql);
+		if ($stmt === false) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		$stmt->bindValue(':path', $path);
+		$stmt->execute();
+	}
+
 	/**
      * Return the results of the query as array of Documents
      * @param $sql

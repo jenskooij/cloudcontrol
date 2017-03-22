@@ -161,6 +161,12 @@ namespace library\storage {
 			$this->repository->publishDocumentByPath($path);
 		}
 
+		public function unpublishDocumentBySlug($slug)
+		{
+			$path = '/' . $slug;
+			$this->repository->unpublishDocumentByPath($path);
+		}
+
 		/**
 		 * Retrieve a folder by its compound slug
 		 *
@@ -294,5 +300,7 @@ namespace library\storage {
 		{
 			return $this->repository;
 		}
+
+
 	}
 }
