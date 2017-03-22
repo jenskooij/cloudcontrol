@@ -319,7 +319,7 @@ class Repository
      */
     public function getDocumentContainerByPath($path)
     {
-        $document = $this->getDocumentByPath($path);
+        $document = $this->getDocumentByPath($path, 'unpublished');
         if ($document === false) {
             return false;
         }
@@ -331,7 +331,7 @@ class Repository
         if (substr($containerPath, -1) === '/'){
 			$containerPath = substr($containerPath, 0, -1);
 		}
-        $containerFolder = $this->getDocumentByPath($containerPath);
+        $containerFolder = $this->getDocumentByPath($containerPath, 'unpublished');
         return $containerFolder;
     }
 
