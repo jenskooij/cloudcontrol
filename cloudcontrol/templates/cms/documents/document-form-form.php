@@ -11,13 +11,10 @@
                 <? if (isset($document)) : ?>
                 <input type="hidden" name="creationDate" value="<?=$document->creationDate?>" />
                 <? endif ?>
+                <input type="hidden" name="state" value="<?=isset($document) ? $document->state : 'unpublished' ?>" />
                 <div class="title">
                     <label for="title">Title</label>
                     <input required="required" value="<?=isset($document) ? $document->title : '' ?>" type="text" id="title" name="title" placeholder="Title" />
-                </div>
-                <div class="state">
-                    <label for="state">Published</label>
-                    <input<?=isset($document) && $document->state == 'published' ? ' checked="checked"' : '' ?> type="checkbox" id="state" name="state" placeholder="State" />
                 </div>
 			<? endif ?>
 			<?$fieldPrefix='fields';?>
