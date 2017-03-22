@@ -87,7 +87,7 @@ class SearchRouting implements CmsRouting
 		switch($step) {
 			case 'resetIndex': $indexer->resetIndex(); break;
 			case 'createDocumentTermCount':
-				$documents = $cmsComponent->storage->getDocuments()->getDocuments();
+				$documents = $cmsComponent->storage->getDocuments()->getPublishedDocumentsNoFolders();
 				$indexer->createDocumentTermCount($documents);
 				break;
 			case 'createDocumentTermFrequency': $indexer->createDocumentTermFrequency(); break;

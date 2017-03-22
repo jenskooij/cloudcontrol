@@ -22,7 +22,7 @@ class DocumentRouting implements CmsRouting
     {
         if ($relativeCmsUri == '/documents') {
             $cmsComponent->subTemplate = 'cms/documents';
-            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocuments());
+            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocumentsWithState());
             $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
@@ -39,7 +39,7 @@ class DocumentRouting implements CmsRouting
     private function documentRouting($request, $relativeCmsUri, $cmsComponent)
     {
         if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[CmsComponent::GET_PARAMETER_PATH])) {
-			$this->documentOverviewRoute($request, $cmsComponent);
+			$this->documentNewRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
 			$this->editDocumentRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
@@ -71,7 +71,7 @@ class DocumentRouting implements CmsRouting
 	 *
 	 * @throws \Exception
 	 */
-	private function documentOverviewRoute($request, $cmsComponent)
+	private function documentNewRoute($request, $cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/documents/document-form';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
@@ -107,7 +107,7 @@ class DocumentRouting implements CmsRouting
 			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 			exit;
 		}
-		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG], 'unpublished'));
 		$request::$get[CmsComponent::GET_PARAMETER_PATH] = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($cmsComponent->getParameter(CmsComponent::PARAMETER_DOCUMENT)->documentTypeSlug, true));
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());

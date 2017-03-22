@@ -18,7 +18,7 @@ class DocumentFolderFactory
 	 *
 	 * @param $postValues
 	 *
-	 * @return \stdClass
+	 * @return Document
 	 * @throws \Exception
 	 */
 	public static function createDocumentFolderFromPostValues($postValues)

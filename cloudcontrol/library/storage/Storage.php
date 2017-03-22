@@ -137,7 +137,8 @@ namespace library\storage {
 			} else {
 				$documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
 			}
-			$this->repository->saveDocument($documentFolderObject);
+			$this->repository->saveDocument($documentFolderObject, 'published');
+			$this->repository->saveDocument($documentFolderObject, 'unpublished');
 		}
 
 		/**
@@ -277,6 +278,14 @@ namespace library\storage {
 				$this->applicationComponents = new ApplicationComponentsStorage($this->repository);
 			}
 			return $this->applicationComponents;
+		}
+
+		/**
+		 * @return \library\storage\Repository
+		 */
+		public function getRepository()
+		{
+			return $this->repository;
 		}
 	}
 }

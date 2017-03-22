@@ -6,6 +6,7 @@
  */
 
 namespace library\storage;
+use library\storage\storage\DocumentStorage;
 
 /**
  * Class Repository
@@ -219,39 +220,92 @@ class Repository
         return $this->contentDbHandle;
     }
 
-    /**
-     * Get all documents
-     * @return array
-     */
-    public function getDocuments()
+	/**
+	 * Get all documents
+	 *
+	 * @param string $state
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+    public function getDocuments($state = 'published')
     {
-        return $this->getDocumentsByPath('/');
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
+        return $this->getDocumentsByPath('/', $state);
     }
 
-    /**
-     * Get all documents and folders in a certain path
-     * @param $folderPath
-     * @return array
-     * @throws \Exception
-     */
-    public function getDocumentsByPath($folderPath)
+	public function getDocumentsWithState($folderPath = '/')
+	{
+		$db = $this->getContentDbHandle();
+		$folderPathWithWildcard = $folderPath . '%';
+
+		$ifRootIndex = 1;
+		if ($folderPath == '/') {
+			$ifRootIndex = 0;
+		}
+
+		$sql = '
+            SELECT documents_unpublished.*,
+            	   IFNULL(documents_published.state,"unpublished") as state,
+            	   IFNULL(documents_published.publicationDate,NULL) as publicationDate,
+            	   (documents_published.lastModificationDate != documents_unpublished.lastModificationDate) as unpublishedChanges 
+              FROM documents_unpublished
+		 LEFT JOIN documents_published
+         		ON documents_published.path = documents_unpublished.path
+             WHERE documents_unpublished.`path` LIKE ' . $db->quote($folderPathWithWildcard) . '
+               AND substr(documents_unpublished.`path`, ' . (strlen($folderPath) + $ifRootIndex + 1) . ') NOT LIKE "%/%"
+               AND length(documents_unpublished.`path`) > ' . (strlen($folderPath) + $ifRootIndex) . '
+               AND documents_unpublished.path != ' . $db->quote($folderPath) . '
+          ORDER BY documents_unpublished.`type` DESC, documents_unpublished.`path` ASC
+        ';
+		$stmt = $this->getDbStatement($sql);
+
+
+
+		$documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
+		foreach ($documents as $key => $document) {
+			if ($document->type === 'folder') {
+				$document->dbHandle = $db;
+				$document->documentStorage = new DocumentStorage($this);
+				$documents[$key] = $document;
+			}
+		}
+		//dump($documents);
+		return $documents;
+	}
+
+	/**
+	 * Get all documents and folders in a certain path
+	 *
+	 * @param        $folderPath
+	 * @param string $state
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+    public function getDocumentsByPath($folderPath, $state = 'published')
     {
+    	if (!in_array($state, Document::$DOCUMENT_STATES)) {
+    		throw new \Exception('Unsupported document state: ' . $state);
+		}
         $db = $this->getContentDbHandle();
         $folderPathWithWildcard = $folderPath . '%';
 
-        $stmt = $this->getDbStatement('
-            SELECT *
-              FROM documents
+        $sql = 'SELECT *
+              FROM documents_' . $state . '
              WHERE `path` LIKE ' . $db->quote($folderPathWithWildcard) . '
                AND substr(`path`, ' . (strlen($folderPath) + 1) . ') NOT LIKE "%/%"
                AND path != ' . $db->quote($folderPath) . '
-          ORDER BY `type` DESC, `path` ASC
-        ');
+          ORDER BY `type` DESC, `path` ASC';
+        $stmt = $this->getDbStatement($sql);
 
         $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
         foreach ($documents as $key => $document) {
             if ($document->type === 'folder') {
                 $document->dbHandle = $db;
+                $document->documentStorage = new DocumentStorage($this);
                 $documents[$key] = $document;
             }
         }
@@ -281,34 +335,48 @@ class Repository
         return $containerFolder;
     }
 
-    /**
-     * @param $path
-     * @return bool|Document
-     */
-    public function getDocumentByPath($path)
+	/**
+	 * @param        $path
+	 * @param string $state
+	 *
+	 * @return bool|\library\storage\Document
+	 * @throws \Exception
+	 */
+    public function getDocumentByPath($path, $state = 'published')
     {
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
         $db = $this->getContentDbHandle();
         $document = $this->fetchDocument('
             SELECT *
-              FROM documents
+              FROM documents_' .  $state . '
              WHERE path = ' . $db->quote($path) . '
         ');
         if ($document instanceof Document && $document->type === 'folder') {
             $document->dbHandle = $db;
+            $document->documentStorage = new DocumentStorage($this);
         }
         return $document;
     }
 
 	/**
 	 * Returns the count of all documents stored in the db
+	 *
+	 * @param string $state
+	 *
 	 * @return int
+	 * @throws \Exception
 	 */
-	public function getTotalDocumentCount()
+	public function getTotalDocumentCount($state = 'published')
 	{
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
 		$db = $this->getContentDbHandle();
 		$stmt = $db->query('
 			SELECT count(*)
-			  FROM documents
+			  FROM documents_' . $state . '
 			 WHERE `type` != "folder"
 		');
 		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -316,6 +384,24 @@ class Repository
 			return 0;
 		}
 		return intval(current($result));
+	}
+
+	public function getPublishedDocumentsNoFolders()
+	{
+		$db = $this->getContentDbHandle();
+		$sql = '
+			SELECT *
+			  FROM documents_published
+			 WHERE `type` != "folder"
+		';
+		$stmt = $db->query($sql);
+		$result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
+		if ($stmt === false || !$stmt->execute()) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		return $result;
 	}
 
 	/**
@@ -372,18 +458,24 @@ class Repository
         return $rootFolder;
     }
 
-    /**
-     * Save the document to the database
-     * @param Document $documentObject
-     * @return bool
-     * @throws \Exception
-     * @internal param $path
-     */
-    public function saveDocument($documentObject)
+	/**
+	 * Save the document to the database
+	 *
+	 * @param Document $documentObject
+	 * @param string   $state
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 * @internal param $path
+	 */
+    public function saveDocument($documentObject, $state = 'published')
     {
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
         $db = $this->getContentDbHandle();
         $stmt = $this->getDbStatement('
-            INSERT OR REPLACE INTO documents (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
+            INSERT OR REPLACE INTO documents_' . $state . ' (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
             VALUES(
               ' . $db->quote($documentObject->path) . ',
               ' . $db->quote($documentObject->title) . ',
@@ -410,21 +502,24 @@ class Repository
      * @param $path
      * @throws \Exception
      */
-    public function deleteDocumentByPath($path)
+    public function deleteDocumentByPath($path, $state = 'published')
     {
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
         $db = $this->getContentDbHandle();
         $documentToDelete = $this->getDocumentByPath($path);
         if ($documentToDelete instanceof Document) {
             if ($documentToDelete->type == 'document') {
                 $stmt = $this->getDbStatement('
-                    DELETE FROM documents
+                    DELETE FROM documents_' . $state . '
                           WHERE path = ' . $db->quote($path) . '
                 ');
                 $stmt->execute();
             } elseif ($documentToDelete->type == 'folder') {
                 $folderPathWithWildcard = $path . '%';
                 $stmt = $this->getDbStatement('
-                    DELETE FROM documents
+                    DELETE FROM documents_' . $state . '
                           WHERE (path LIKE ' . $db->quote($folderPathWithWildcard) . '
                             AND substr(`path`, ' . (strlen($path) + 1) . ', 1) = "/")
                             OR path = ' . $db->quote($path) . '

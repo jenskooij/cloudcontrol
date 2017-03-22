@@ -41,6 +41,7 @@
 			<i class="fa fa-file-text-o"></i> <?=$document->title?>
 		</a>
 		<small class="small state <?=strtolower($document->state)?>"><?=ucfirst($document->state)?></small>
+        <? if ($document->unpublishedChanges) : ?><small class="small unpublished-changes">Unpublished Changes</small><? endif ?>
 		<small class="small documentType"><?=$document->documentType?></small>
 		<small class="small lastModified" title="<?=date('r', $document->lastModificationDate)?>">
 			<span class="label">Modified:</span>

@@ -6,6 +6,7 @@
  */
 
 namespace library\storage;
+use library\storage\storage\DocumentStorage;
 
 /**
  * Class Document
@@ -15,6 +16,7 @@ namespace library\storage;
  * @property array dynamicBricks
  * @property array content
  * @property-write \PDO dbHandle
+ * @property-write DocumentStorage documentStorage
  */
 class Document
 {
@@ -38,6 +40,8 @@ class Document
 
     protected $jsonEncodedFields = array('fields', 'bricks', 'dynamicBricks');
     protected $orderableFields = array('title', 'slug', 'type', 'documentType', 'documentTypeSlug', 'state', 'lastModificationDate', 'creationDate', 'lastModifiedBy');
+
+    public static $DOCUMENT_STATES = array('published', 'unpublished');
 
     public function __get($name) {
         if (in_array($name, $this->jsonEncodedFields)) {
@@ -80,9 +84,12 @@ class Document
 	 */
     public function getContent($orderBy = 'title', $order = 'ASC')
     {
+    	$docs = $this->documentStorage->getDocumentsWithState($this->path);
+    	return $docs;
+    	//dump($this->path, $docs);
         $folderPathWithWildcard = $this->path . '%';
         $sql = '    SELECT *
-                      FROM documents
+                      FROM documents_published
                      WHERE `path` LIKE ' . $this->dbHandle->quote($folderPathWithWildcard) . '
                        AND substr(`path`, ' . (strlen($this->path) + 2) . ') NOT LIKE "%/%"
                        AND substr(`path`, ' . (strlen($this->path) + 1) . ', 1) = "/"

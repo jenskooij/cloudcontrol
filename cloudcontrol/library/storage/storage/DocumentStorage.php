@@ -5,6 +5,7 @@
 
 namespace library\storage\storage;
 
+use library\storage\Document;
 use library\storage\factories\DocumentFactory;
 
 class DocumentStorage extends AbstractStorage
@@ -12,11 +13,22 @@ class DocumentStorage extends AbstractStorage
 	/**
 	 * Get documents
 	 *
+	 * @param string $state
+	 *
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getDocuments()
+	public function getDocuments($state = 'published')
 	{
-		return $this->repository->getDocuments();
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
+		return $this->repository->getDocuments($state);
+	}
+
+	public function getDocumentsWithState($folderPath = '/')
+	{
+		return $this->repository->getDocumentsWithState($folderPath);
 	}
 
 	/**
@@ -30,21 +42,32 @@ class DocumentStorage extends AbstractStorage
 	/**
 	 * @param string $slug
 	 *
+	 * @param string $state
+	 *
 	 * @return mixed
 	 * @throws \Exception
 	 */
-	public function getDocumentBySlug($slug)
+	public function getDocumentBySlug($slug, $state = 'published')
 	{
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
 		$path = '/' . $slug;
 
-		return $this->repository->getDocumentByPath($path);
+		return $this->repository->getDocumentByPath($path, $state);
 	}
 
 	/**
 	 * @param $postValues
+	 * @param $state
+	 *
+	 * @throws \Exception
 	 */
-	public function saveDocument($postValues)
+	public function saveDocument($postValues, $state = 'unpublished')
 	{
+		if (!in_array($state, Document::$DOCUMENT_STATES)) {
+			throw new \Exception('Unsupported document state: ' . $state);
+		}
 		$oldPath = '/' . $postValues['path'];
 
 		$container = $this->getDocumentContainerByPath($oldPath);
@@ -55,13 +78,14 @@ class DocumentStorage extends AbstractStorage
 			$newPath = $container->path . '/' . $documentObject->slug;
 		}
 		$documentObject->path = $newPath;
-		$this->repository->saveDocument($documentObject);
+		$this->repository->saveDocument($documentObject, $state);
 	}
 
 	/**
-	 * @param $postValues
+	 * @param        $postValues
+	 * @param string $state
 	 */
-	public function addDocument($postValues)
+	public function addDocument($postValues, $state = 'unpublished')
 	{
 		$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
 		if ($postValues['path'] === '/') {
@@ -70,7 +94,7 @@ class DocumentStorage extends AbstractStorage
 			$documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
 		}
 
-		$this->repository->saveDocument($documentObject);
+		$this->repository->saveDocument($documentObject, $state);
 	}
 
 	/**
@@ -94,4 +118,10 @@ class DocumentStorage extends AbstractStorage
 	{
 		return $this->repository->getDocumentContainerByPath($path);
 	}
+
+	public function getPublishedDocumentsNoFolders()
+	{
+		return $this->repository->getPublishedDocumentsNoFolders();
+	}
+
 }

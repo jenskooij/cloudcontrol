@@ -121,6 +121,13 @@
             color:$validate-color;
           }
         }
+
+        &.unpublished-changes {
+          background-color:$files-color;
+          border-radius:5px;
+          font-size:0.5em;
+          padding:0.1em 0.5em;
+        }
       }
 
       .label {
