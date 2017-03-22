@@ -151,7 +151,8 @@ namespace library\storage {
 		public function deleteDocumentFolderBySlug($slug)
 		{
 			$path = '/' . $slug;
-			$this->repository->deleteDocumentByPath($path);
+			$this->repository->deleteDocumentByPath($path, 'published');
+			$this->repository->deleteDocumentByPath($path, 'unpublished');
 		}
 
 		/**

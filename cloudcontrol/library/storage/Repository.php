@@ -496,30 +496,30 @@ class Repository
         return $result;
     }
 
-    /**
-     * Delete the document from the database
-     * If it's a folder, also delete it's contents
-     * @param $path
-     * @throws \Exception
-     */
-    public function deleteDocumentByPath($path, $state = 'published')
+	/**
+	 * Delete the document from the database
+	 * If it's a folder, also delete it's contents
+	 *
+	 * @param        $path
+	 *
+	 * @internal param string $state
+	 *
+	 */
+    public function deleteDocumentByPath($path)
     {
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
         $db = $this->getContentDbHandle();
-        $documentToDelete = $this->getDocumentByPath($path);
+        $documentToDelete = $this->getDocumentByPath($path, 'unpublished');
         if ($documentToDelete instanceof Document) {
             if ($documentToDelete->type == 'document') {
                 $stmt = $this->getDbStatement('
-                    DELETE FROM documents_' . $state . '
+                    DELETE FROM documents_unpublished
                           WHERE path = ' . $db->quote($path) . '
                 ');
                 $stmt->execute();
             } elseif ($documentToDelete->type == 'folder') {
                 $folderPathWithWildcard = $path . '%';
                 $stmt = $this->getDbStatement('
-                    DELETE FROM documents_' . $state . '
+                    DELETE FROM documents_unpublished
                           WHERE (path LIKE ' . $db->quote($folderPathWithWildcard) . '
                             AND substr(`path`, ' . (strlen($path) + 1) . ', 1) = "/")
                             OR path = ' . $db->quote($path) . '
