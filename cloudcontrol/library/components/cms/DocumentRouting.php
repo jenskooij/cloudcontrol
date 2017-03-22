@@ -46,7 +46,9 @@ class DocumentRouting implements CmsRouting
 			$this->getBrickRoute($request, $cmsComponent);
         } else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
 			$this->deleteDocumentRoute($request, $cmsComponent);
-        }
+        } else if ($relativeCmsUri == '/documents/publish-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
+			$this->publishDocumentRoute($request, $cmsComponent);
+		}
     }
 
     /**
@@ -193,6 +195,17 @@ class DocumentRouting implements CmsRouting
 	private function deleteFolderRoute($request, $cmsComponent)
 	{
 		$cmsComponent->storage->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+		exit;
+	}
+
+	/**
+	 * @param $request
+	 * @param CmsComponent $cmsComponent
+	 */
+	private function publishDocumentRoute($request, $cmsComponent)
+	{
+		$cmsComponent->storage->publishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
 		exit;
 	}

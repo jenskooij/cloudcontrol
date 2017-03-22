@@ -404,6 +404,26 @@ class Repository
 		return $result;
 	}
 
+	public function publishDocumentByPath($path)
+	{
+		$db = $this->getContentDbHandle();
+		$sql = '
+			INSERT OR REPLACE INTO documents_published 
+				  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
+		    SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" as state,`lastModificationDate`,`creationDate`,' . time() . ' as publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
+		      FROM documents_unpublished
+		     WHERE `path` = :path
+		';
+		$stmt = $db->prepare($sql);
+		if ($stmt === false) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		$stmt->bindValue(':path', $path);
+		$stmt->execute();
+	}
+
 	/**
      * Return the results of the query as array of Documents
      * @param $sql

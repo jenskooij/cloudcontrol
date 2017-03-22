@@ -155,6 +155,12 @@ namespace library\storage {
 			$this->repository->deleteDocumentByPath($path, 'unpublished');
 		}
 
+		public function publishDocumentBySlug($slug)
+		{
+			$path = '/' . $slug;
+			$this->repository->publishDocumentByPath($path);
+		}
+
 		/**
 		 * Retrieve a folder by its compound slug
 		 *
