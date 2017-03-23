@@ -82,8 +82,10 @@ class DocumentTokenizer
 	private function tokenizeBricks()
 	{
 		$bricks = $this->document->bricks;
-		foreach ($bricks as $brickSlug => $brick) {
-			$this->tokenizeBrick($brick, $brickSlug);
+		foreach ($bricks as $brickSlug => $bricks) {
+			foreach ($bricks as $brick) {
+				$this->tokenizeBrick($brick, $brickSlug);
+			}
 		}
 	}
 

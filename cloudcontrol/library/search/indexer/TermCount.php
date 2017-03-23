@@ -91,7 +91,6 @@ class TermCount
 	protected function executeStoreDocumentTermCount($values, $sql, $db)
 	{
 		$sql .= '(' . implode('),' . PHP_EOL . '(', $values) . ');';
-
 		$stmt = $db->prepare($sql);
 		if ($stmt === false || !$stmt->execute()) {
 			$errorInfo = $db->errorInfo();
