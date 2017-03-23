@@ -10,21 +10,21 @@
     }
 
     function updateSearchIndex() {
-        startTime = + new Date();
+        startTime = +new Date();
         updateLog('Indexing start.');
         updateLog('Clearing index.');
-        window.onbeforeunload = function(e) {
+        window.onbeforeunload = function (e) {
             return 'You have unsaved changes. Are you sure you want to leave this page?';
         };
         resetIndex();
     }
 
     function updateLog(message) {
-        var currentTime = + new Date(),
+        var currentTime = +new Date(),
             currentDate = new Date(),
             logMessage = addZero(currentDate.getHours()) + ':' + addZero(currentDate.getMinutes()) + ':' + addZero(currentDate.getSeconds()) + ' - ' + message,
             li = document.createElement('li');
-            li.innerHTML = logMessage;
+        li.innerHTML = logMessage;
         searchIndexStatus.innerText = message;
         searchIndexLog.appendChild(li);
     }
@@ -36,7 +36,7 @@
         return i;
     }
 
-    function abortIndexing (responseText, status) {
+    function abortIndexing(responseText, status) {
         updateLog('Error occured.');
         searchIndexStatus.className = 'search-index-status error';
         updateProgress(0);
@@ -59,7 +59,15 @@
 
     function resetIndex() {
         httpGetAsync(cmsSubfolders + '/search/ajax-update-index?step=resetIndex', function (result) {
-            updateProgress(10);
+            updateProgress(5);
+            cleanPublishedDeletedDocuments();
+        }, abortIndexing);
+    }
+
+    function cleanPublishedDeletedDocuments() {
+        updateLog('Cleaning Published Deleted Documents.');
+        httpGetAsync(cmsSubfolders + '/search/ajax-update-index?step=cleanPublishedDeletedDocuments', function (result) {
+            updateProgress(5);
             createDocumentTermCount();
         }, abortIndexing);
     }
@@ -98,7 +106,7 @@
 
     function replaceOldIndex() {
         updateLog('Replacing old index');
-        setTimeout(function (){
+        setTimeout(function () {
             httpGetAsync(cmsSubfolders + '/search/ajax-update-index?step=replaceOldIndex', function (result) {
                 updateProgress(100);
                 updateLog('Done indexing');
@@ -111,7 +119,7 @@
         searchIndexProgressBarProgress.style.width = percentage + '%';
         if (percentage === 100) {
             searchIndexProgressBar.className = 'progress-bar';
-            window.onbeforeunload=null;
+            window.onbeforeunload = null;
         }
     }
 })();

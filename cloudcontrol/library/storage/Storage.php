@@ -153,6 +153,7 @@ namespace library\storage {
 			$path = '/' . $slug;
 			$this->repository->deleteDocumentByPath($path, 'published');
 			$this->repository->deleteDocumentByPath($path, 'unpublished');
+			$this->repository->cleanPublishedDeletedDocuments();
 		}
 
 		public function publishDocumentBySlug($slug)

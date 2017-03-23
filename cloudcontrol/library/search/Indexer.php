@@ -56,6 +56,8 @@ class Indexer extends SearchDbConnected
 		$this->addLog('Indexing start.');
 		$this->addLog('Clearing index.');
 		$this->resetIndex();
+		$this->addLog('Cleaning Published Deleted Documents');
+		$this->storage->getDocuments()->cleanPublishedDeletedDocuments();
 		$this->addLog('Retrieving documents to be indexed.');
 		$documents = $this->storage->getDocuments()->getPublishedDocumentsNoFolders();
 		$this->addLog('Start Document Term Count for ' . count($documents) . ' documents');

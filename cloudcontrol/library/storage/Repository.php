@@ -439,6 +439,26 @@ class Repository
 		$stmt->execute();
 	}
 
+	public function cleanPublishedDeletedDocuments()
+	{
+		$db = $this->getContentDbHandle();
+		$sql = '   DELETE FROM documents_published
+						 WHERE documents_published.path IN (
+						SELECT documents_published.path
+						  FROM documents_published
+					 LEFT JOIN documents_unpublished
+							ON documents_unpublished.path = documents_published.path
+						 WHERE documents_unpublished.path IS NULL
+		)';
+		$stmt = $db->query($sql);
+		if ($stmt === false) {
+			$errorInfo = $db->errorInfo();
+			$errorMsg = $errorInfo[2];
+			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+		}
+		$stmt->execute();
+	}
+
 	/**
      * Return the results of the query as array of Documents
      * @param $sql

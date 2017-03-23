@@ -124,4 +124,9 @@ class DocumentStorage extends AbstractStorage
 		return $this->repository->getPublishedDocumentsNoFolders();
 	}
 
+	public function cleanPublishedDeletedDocuments()
+	{
+		$this->repository->cleanPublishedDeletedDocuments();
+	}
+
 }
