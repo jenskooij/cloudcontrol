@@ -266,11 +266,7 @@ class Repository
 
 		$documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
 		foreach ($documents as $key => $document) {
-			if ($document->type === 'folder') {
-				$document->dbHandle = $db;
-				$document->documentStorage = new DocumentStorage($this);
-				$documents[$key] = $document;
-			}
+			$documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
 		}
 		//dump($documents);
 		return $documents;
@@ -303,11 +299,7 @@ class Repository
 
         $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
         foreach ($documents as $key => $document) {
-            if ($document->type === 'folder') {
-                $document->dbHandle = $db;
-                $document->documentStorage = new DocumentStorage($this);
-                $documents[$key] = $document;
-            }
+			$documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
         }
         return $documents;
     }
@@ -582,4 +574,23 @@ class Repository
             }
         }
     }
+
+	/**
+	 * @param $document
+	 * @param $db
+	 * @param $documents
+	 * @param $key
+	 *
+	 * @return mixed
+	 */
+	private function setAssetsToDocumentFolders($document, $db, $documents, $key)
+	{
+		if ($document->type === 'folder') {
+			$document->dbHandle = $db;
+			$document->documentStorage = new DocumentStorage($this);
+			$documents[$key] = $document;
+		}
+
+		return $documents;
+	}
 }
