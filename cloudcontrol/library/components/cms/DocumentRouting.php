@@ -38,18 +38,16 @@ class DocumentRouting implements CmsRouting
      */
     private function documentRouting($request, $relativeCmsUri, $cmsComponent)
     {
-        if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[CmsComponent::GET_PARAMETER_PATH])) {
+		if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[CmsComponent::GET_PARAMETER_PATH])) {
 			$this->documentNewRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/documents/edit-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$this->editDocumentRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/documents/get-brick' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$this->getBrickRoute($request, $cmsComponent);
-        } else if ($relativeCmsUri == '/documents/delete-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$this->deleteDocumentRoute($request, $cmsComponent);
-        } else if ($relativeCmsUri == '/documents/publish-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$this->publishDocumentRoute($request, $cmsComponent);
-		} else if ($relativeCmsUri == '/documents/unpublish-document' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-			$this->unpublishDocumentRoute($request, $cmsComponent);
+		} elseif (isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])){
+			switch ($relativeCmsUri) {
+				case '/documents/edit-document': $this->editDocumentRoute($request, $cmsComponent); break;
+				case '/documents/get-brick': $this->getBrickRoute($request, $cmsComponent); break;
+				case '/documents/delete-document': $this->deleteDocumentRoute($request, $cmsComponent); break;
+				case '/documents/publish-document': $this->publishDocumentRoute($request, $cmsComponent); break;
+				case '/documents/unpublish-document': $this->unpublishDocumentRoute($request, $cmsComponent); break;
+			}
 		}
     }
 
