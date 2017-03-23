@@ -404,16 +404,20 @@ class Repository
 		return $result;
 	}
 
-	public function publishDocumentByPath($path)
-	{
+	private function publishOrUnpublishDocumentByPath($path, $publish = true) {
+		if ($publish) {
+			$sql = '
+				INSERT OR REPLACE INTO documents_published 
+					  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
+				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" as state,`lastModificationDate`,`creationDate`,' . time() . ' as publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
+				  FROM documents_unpublished
+				 WHERE `path` = :path
+			';
+		} else {
+			$sql = 'DELETE FROM documents_published
+					  WHERE `path` = :path';
+		}
 		$db = $this->getContentDbHandle();
-		$sql = '
-			INSERT OR REPLACE INTO documents_published 
-				  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
-		    SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" as state,`lastModificationDate`,`creationDate`,' . time() . ' as publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
-		      FROM documents_unpublished
-		     WHERE `path` = :path
-		';
 		$stmt = $db->prepare($sql);
 		if ($stmt === false) {
 			$errorInfo = $db->errorInfo();
@@ -424,19 +428,14 @@ class Repository
 		$stmt->execute();
 	}
 
+	public function publishDocumentByPath($path)
+	{
+		$this->publishOrUnpublishDocumentByPath($path);
+	}
+
 	public function unpublishDocumentByPath($path)
 	{
-		$db = $this->getContentDbHandle();
-		$sql = 'DELETE FROM documents_published
-					  WHERE `path` = :path';
-		$stmt = $db->prepare($sql);
-		if ($stmt === false) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
-		$stmt->bindValue(':path', $path);
-		$stmt->execute();
+		$this->publishOrUnpublishDocumentByPath($path, false);
 	}
 
 	public function cleanPublishedDeletedDocuments()
