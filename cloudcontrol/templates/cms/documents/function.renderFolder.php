@@ -7,8 +7,15 @@
 		</h3>
 	</div>
 	<div class="documentActions grid-box-4">
-		<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-folder?slug=<?=$slugPrefix . $document->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
-		<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/delete-folder?slug=<?=$slugPrefix . $document->slug?>" title="Delete"><i class="fa fa-trash"></i></a>
+		<?renderAction('Edit',
+			'',
+			\library\cc\Request::$subfolders . $cmsPrefix . '/documents/edit-folder?slug=' . $slugPrefix . $document->slug,
+			'pencil');?>
+		<?renderAction('Delete',
+			'error',
+			\library\cc\Request::$subfolders . $cmsPrefix . '/documents/delete-folder?slug=' . $slugPrefix . $document->slug,
+			'trash',
+			'return confirm(\'Are you sure you want to delete this document?\');');?>
 	</div>
 	<ul class="documents grid-wrapper nested<?=$root ? ' root' : '' ?>">
 		<? foreach ($document->content as $subDocument) : ?>
