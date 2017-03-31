@@ -139,6 +139,42 @@
   form {
     @extend %panel;
 
+    .form-element {
+      display:table;
+      width:100%;
+
+      &>label {
+        display:table-cell;
+        width: 10em;
+        text-align: left;
+        margin: 1em;
+        vertical-align: middle;
+      }
+
+      &>input[type="text"], &>input[type="password"], &>input[type="email"], &>input[type="date"], &>input[type="number"], &>input[type="file"], &>select, &>textarea {
+        display:table-cell;
+      }
+    }
+
+    .brick {
+      .handles {
+        float:right;
+      }
+
+      & label {
+        display:block;
+        width:auto;
+        margin: 1em 0 2em 0;
+      }
+
+      div.form-element {
+        & label {
+          display:table-cell;
+          width:10em;
+        }
+      }
+    }
+
     .selected-image {
       width:10em;
       height:10em;

@@ -124,7 +124,7 @@
 									endforeach ?>
 									<? if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type && $currentBrickSlug === $myBrickSlug) : ?>
 									<li class="brick form-element">
-										<label><?=$brick->title?></label>
+
 										<?$static = true; ?>
 										<?include(__DIR__ . '/brick.php')?>
 									</li>

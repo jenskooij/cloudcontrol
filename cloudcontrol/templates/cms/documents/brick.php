@@ -2,6 +2,7 @@
 	<a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
 	<a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
 </div>
+<label><?=$brick->title?></label>
 <?if ($static == true) {
 	$fieldPrefix = 'bricks[' . $myBrickSlug . '][' . str_replace('.', '', str_replace(' ', '', microtime())) . '][fields]';
 } else {
