@@ -1,3 +1,4 @@
+<? include('documents/function.renderAction.php'); ?>
 <? include('documents/function.renderDocument.php'); ?>
 <? include('documents/function.renderFolder.php'); ?>
 <script>window.onload=function(){History.init();History.replaceState(null, 'Cloud Control CMS', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');};</script>

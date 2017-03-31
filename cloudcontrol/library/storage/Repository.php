@@ -432,7 +432,6 @@ class Repository
 
 	public function cleanPublishedDeletedDocuments()
 	{
-		$db = $this->getContentDbHandle();
 		$sql = '   DELETE FROM documents_published
 						 WHERE documents_published.path IN (
 						SELECT documents_published.path
@@ -441,12 +440,7 @@ class Repository
 							ON documents_unpublished.path = documents_published.path
 						 WHERE documents_unpublished.path IS NULL
 		)';
-		$stmt = $db->query($sql);
-		if ($stmt === false) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
+		$stmt = $this->getDbStatement($sql);
 		$stmt->execute();
 	}
 
