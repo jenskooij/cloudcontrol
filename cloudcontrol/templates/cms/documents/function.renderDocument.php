@@ -1,4 +1,10 @@
-<? function renderDocument($document, $cmsPrefix, $slugPrefix = '') {?>
+<?
+/**
+ * @param \library\storage\Document $document
+ * @param string                    $cmsPrefix
+ * @param string                    $slugPrefix
+ */
+function renderDocument($document, $cmsPrefix, $slugPrefix = '') {?>
 	<div class="grid-box-10">
 		<h3>
 			<a class="btn documentTitle" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/edit-document?slug=<?=$slugPrefix . $document->slug?>" title="Edit">

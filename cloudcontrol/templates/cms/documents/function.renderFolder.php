@@ -1,4 +1,11 @@
-<? function renderFolder($document, $cmsPrefix, $slugPrefix ='', $root = false) {?>
+<?
+/**
+ * @param \library\storage\Document $document
+ * @param string                    $cmsPrefix
+ * @param string                    $slugPrefix
+ * @param bool                      $root
+ */
+function renderFolder($document, $cmsPrefix, $slugPrefix ='', $root = false) {?>
 	<div class="grid-box-8">
 		<h3>
 			<a class="btn documentTitle openFolder" data-slug="<?=$slugPrefix . $document->slug?>" title="Open">
