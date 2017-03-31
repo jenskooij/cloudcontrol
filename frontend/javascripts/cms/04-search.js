@@ -37,10 +37,16 @@
     }
 
     function abortIndexing(responseText, status) {
+        var iframeElement = document.createElement("iframe"),
+            logLi = document.createElement("li");
         updateLog('Error occured.');
         searchIndexStatus.className = 'search-index-status error';
         updateProgress(0);
-        console.log(responseText);
+        logLi.appendChild(iframeElement);
+        searchIndexLog.appendChild(logLi);
+        iframeElement.contentWindow.document.open();
+        iframeElement.contentWindow.document.write(responseText);
+        iframeElement.contentWindow.close();
     }
 
     function httpGetAsync(theUrl, callback, errorCallback) {

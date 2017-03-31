@@ -62,6 +62,12 @@
       li {
         list-style-type:disc;
         margin: 0.5em 1em;
+        vertical-align:top;
+
+        iframe {
+          width:100%;
+          min-height:35em;
+        }
       }
     }
 
