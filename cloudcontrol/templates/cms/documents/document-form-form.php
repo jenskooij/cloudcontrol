@@ -13,7 +13,7 @@
                 <? endif ?>
                 <input type="hidden" name="state" value="<?=isset($document) ? $document->state : 'unpublished' ?>" />
                 <div class="title">
-                    <label for="title">Title</label>
+                    <label for="title">Document Title</label>
                     <input required="required" value="<?=isset($document) ? $document->title : '' ?>" type="text" id="title" name="title" placeholder="Title" />
                 </div>
 			<? endif ?>
