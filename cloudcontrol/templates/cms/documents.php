@@ -13,6 +13,9 @@
 				<a class="btn" onmousedown="this.setAttribute('href', '<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/new-folder?path=' + getParameterByName('path'));" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/new-folder" title="New Folder">
 					+ <i class="fa fa-folder-o"></i>
 				</a>
+				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/documents/valuelists" title="Valuelists">
+					<i class="fa fa-list-alt"></i>
+				</a>
 			</li>
 		</ul>
 	</nav>

@@ -24,7 +24,7 @@ class Repository
 {
     protected $storagePath;
 
-    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users');
+    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists');
 
     protected $sitemap;
     protected $sitemapChanges = false;
@@ -50,7 +50,11 @@ class Repository
     protected $users;
     protected $usersChanges = false;
 
+    protected $valuelists;
+    protected $valuelistsChanges = false;
+
     protected $contentDbHandle;
+
 
     /**
      * Repository constructor.
@@ -207,6 +211,8 @@ class Repository
         $this->filesChanges = true;
         $this->users = $json->users;
         $this->usersChanges = true;
+        $this->valuelists = $json->valuelists;
+        $this->valuelistsChanges = true;
     }
 
     /**

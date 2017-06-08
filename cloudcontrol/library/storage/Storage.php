@@ -11,6 +11,7 @@ namespace library\storage {
 	use library\storage\storage\ImagesStorage;
 	use library\storage\storage\SitemapStorage;
 	use library\storage\storage\UsersStorage;
+	use library\storage\storage\ValuelistsStorage;
 
 	/**
 	 * Class JsonStorage
@@ -50,10 +51,16 @@ namespace library\storage {
 		 * @var ApplicationComponentsStorage
 		 */
 		protected $applicationComponents;
+
+		/**
+		 * @var ValuelistsStorage
+		 */
+		protected $valuelists;
 		/**
 		 * @var DocumentStorage
 		 */
 		protected $documents;
+
 		/**
 		 * @var String
 		 */
@@ -302,6 +309,16 @@ namespace library\storage {
 			return $this->repository;
 		}
 
+		/**
+		 * @return \library\storage\storage\UsersStorage
+		 */
+		public function getValuelists()
+		{
+			if (!$this->valuelists instanceof ValuelistsStorage) {
+				$this->valuelists = new ValuelistsStorage($this->repository);
+			}
+			return $this->valuelists;
+		}
 
 	}
 }

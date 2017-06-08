@@ -51,6 +51,8 @@ namespace library\components {
 		const PARAMETER_USER = 'user';
 		const PARAMETER_USERS = 'users';
 		const PARAMETER_USER_RIGHTS = 'userRights';
+		const PARAMETER_VALUELIST = "valuelist";
+		const PARAMETER_VALUELISTS = "valuelists";
 		const PARAMETER_WHITELIST_IPS = 'whitelistIps';
 
 		const POST_PARAMETER_COMPONENT = 'component';

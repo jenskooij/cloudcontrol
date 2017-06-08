@@ -27,6 +27,7 @@ class DocumentRouting implements CmsRouting
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
         $this->folderRouting($request, $relativeCmsUri, $cmsComponent);
+		$this->valuelistsRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
 
@@ -66,6 +67,19 @@ class DocumentRouting implements CmsRouting
 			$this->deleteFolderRoute($request, $cmsComponent);
         }
     }
+
+	private function valuelistsRouting($request, $relativeCmsUri, $cmsComponent)
+	{
+		if ($relativeCmsUri == '/documents/valuelists') {
+			$this->valuelistsRoute($request, $cmsComponent);
+		} elseif ($relativeCmsUri == '/documents/valuelists/new') {
+			$this->newValuelistRoute($request, $cmsComponent);
+		} elseif ($relativeCmsUri == '/documents/valuelists/edit' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
+			$this->editValuelistRoute($request, $cmsComponent);
+		} elseif ($relativeCmsUri == '/documents/valuelists/delete' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
+			$this->deleteValuelistRoute($request, $cmsComponent);
+		}
+	}
 
 	/**
 	 * @param $request
@@ -218,6 +232,46 @@ class DocumentRouting implements CmsRouting
 	{
 		$cmsComponent->storage->unpublishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+		exit;
+	}
+
+	private function valuelistsRoute($request, $cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/documents/valuelists';
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_VALUELISTS, $cmsComponent->storage->getValuelists()->getValuelists());
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+	}
+
+	private function newValuelistRoute($request, $cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/documents/valuelist-form';
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
+			$cmsComponent->storage->getValuelists()->addValuelist($request::$post);
+			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
+			exit;
+		}
+	}
+
+	private function editValuelistRoute($request, $cmsComponent)
+	{
+		$cmsComponent->subTemplate = 'cms/documents/valuelist-form';
+		$folder = $cmsComponent->storage->getValuelists()->getValuelistBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+
+		if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
+			$cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
+			header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
+			exit;
+		}
+
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+		$cmsComponent->setParameter(CmsComponent::PARAMETER_VALUELIST, $folder);
+	}
+
+	private function deleteValuelistRoute($request, $cmsComponent)
+	{
+		$cmsComponent->storage->getValuelists()->deleteValuelistBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+		header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
 		exit;
 	}
 }
