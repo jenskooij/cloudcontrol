@@ -71,7 +71,7 @@ class DocumentRouting implements CmsRouting
 	private function valuelistsRouting($request, $relativeCmsUri, $cmsComponent)
 	{
 		if ($relativeCmsUri == '/documents/valuelists') {
-			$this->valuelistsRoute($request, $cmsComponent);
+			$this->valuelistsRoute($cmsComponent);
 		} elseif ($relativeCmsUri == '/documents/valuelists/new') {
 			$this->newValuelistRoute($request, $cmsComponent);
 		} elseif ($relativeCmsUri == '/documents/valuelists/edit' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
@@ -235,7 +235,7 @@ class DocumentRouting implements CmsRouting
 		exit;
 	}
 
-	private function valuelistsRoute($request, $cmsComponent)
+	private function valuelistsRoute($cmsComponent)
 	{
 		$cmsComponent->subTemplate = 'cms/documents/valuelists';
 		$cmsComponent->setParameter(CmsComponent::PARAMETER_VALUELISTS, $cmsComponent->storage->getValuelists()->getValuelists());

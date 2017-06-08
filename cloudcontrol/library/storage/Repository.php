@@ -19,6 +19,7 @@ use library\storage\storage\DocumentStorage;
  * @property array images
  * @property array files
  * @property array users
+ * @property array valuelists
  */
 class Repository
 {
