@@ -13,7 +13,7 @@
     <form method="post">
         <div class="form-element">
             <label>Title</label>
-            <input type="text" name="title" placeholder="Valuelist Title" value="<?=isset($valuelist) ? $valuelist->title : ''?>" />
+            <input type="text" name="title" required="required" placeholder="Valuelist Title" value="<?=isset($valuelist) ? $valuelist->title : ''?>" />
         </div>
         <div class="form-element">
             <label for="template">Key Value Pairs</label>
