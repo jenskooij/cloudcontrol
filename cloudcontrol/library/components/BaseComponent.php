@@ -13,7 +13,7 @@ namespace library\components
 		 */
 		protected $template;
 		/**
-		 * @var Request
+		 * @var \library\cc\Request
 		 */
 		protected $request;
 		/**

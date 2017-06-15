@@ -17,6 +17,7 @@ cloudcontrol/www/js/*
 cloudcontrol/www/sitemap.xml
 cloudcontrol/www/robots.txt
 cloudcontrol/www/favicon.ico
+cloudcontrol/www/img/*
 cloudcontrol/templates/*
 !cloudcontrol/templates/cms.php
 !cloudcontrol/templates/cms/*

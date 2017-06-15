@@ -310,7 +310,7 @@ namespace library\storage {
 		}
 
 		/**
-		 * @return \library\storage\storage\UsersStorage
+		 * @return \library\storage\storage\ValuelistsStorage
 		 */
 		public function getValuelists()
 		{
