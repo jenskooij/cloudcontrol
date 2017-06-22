@@ -1,247 +1,272 @@
 <?php
-namespace library\cc
-{
 
-	use library\components\Component;
-	use library\storage\Storage;
+namespace library\cc {
 
-	/**
-	 * Class Application
-	 * @package library\cc
-	 */
-	class Application
-	{
-		/**
-		 * @var \stdClass
-		 */
-		private $config;
-		/**
-		 * @var \library\storage\Storage $config
-		 */
-		private $storage;
+    use library\components\Component;
+    use library\storage\Storage;
 
-		/**
-		 * @var Request
-		 */
-		private $request;
+    /**
+     * Class Application
+     * @package library\cc
+     */
+    class Application
+    {
+        /**
+         * @var \stdClass
+         */
+        private $config;
+        /**
+         * @var \library\storage\Storage $config
+         */
+        private $storage;
 
-		/**
-		 * @var array
-		 */
-		private $matchedSitemapItems = array();
+        /**
+         * @var Request
+         */
+        private $request;
 
-		/**
-		 * @var array
-		 */
-		private $applicationComponents = array();
+        /**
+         * @var array
+         */
+        private $matchedSitemapItems = array();
 
-		/**
-		 * Application constructor.
-		 */
-		public function __construct()
-		{
-			$this->config();
-			$this->storage();
-			
-			$this->request = new Request();
-			
-			$this->sitemapMatching($this->request);
-			
-			$this->getApplicationComponents();
-			
-			$this->runApplicationComponents();
-			$this->runSitemapComponents();
+        /**
+         * @var array
+         */
+        private $applicationComponents = array();
 
-			$this->renderApplicationComponents();
-			$this->renderSitemapComponents();
-		}
+        /**
+         * Application constructor.
+         */
+        public function __construct()
+        {
+            $this->config();
+            $this->storage();
 
-		/**
-		 * Initialize the config
-		 *
-		 * @throws \Exception
-		 */
-		private function config()
-		{
-			$configPath = __DIR__ . '/../../config.json';
-			if (realpath($configPath) !== false) {
-				$json = file_get_contents($configPath);
-				$this->config = json_decode($json);
-			} else {
-				initFramework();
-				$this->config();
-			}
-		}
+            $this->request = new Request();
 
-		/**
-		 * Initialize the storage
-		 */
-		private function storage()
-		{
-			$this->storage = new Storage($this->getStorageDir());
-		}
+            $this->redirectMatching($this->request);
+            $this->sitemapMatching($this->request);
 
-		/**
-		 * Loop through sitemap items and see if one matches the requestUri.
-		 * If it does, add it tot the matchedSitemapItems array
-		 *
-		 * @param $request
-		 */
-		private function sitemapMatching($request)
-		{
-			$sitemap = $this->storage->getSitemap()->getSitemap();
-			$relativeUri = '/' . $request::$relativeUri;
+            $this->getApplicationComponents();
 
-			foreach ($sitemap as $sitemapItem) {
-				if ($sitemapItem->regex) {
-					$matches = array();
-					if (preg_match_all($sitemapItem->url, $relativeUri, $matches)) {
-						// Make a clone, so it doesnt add the matches to the original
-						$matchedClone = clone $sitemapItem;
-						$matchedClone->matches = $matches;
-						$this->matchedSitemapItems[] = $matchedClone;
-						return;
-					}
-				} else {
-					if ($sitemapItem->url == $relativeUri) {
-						$this->matchedSitemapItems[] = $sitemapItem;
-						return;
-					}
-				}
-			}
-		}
+            $this->runApplicationComponents();
+            $this->runSitemapComponents();
 
-		/**
-		 * Loop through all application components and run them
-		 *
-		 * @throws \Exception
-		 */
-		private function runApplicationComponents()
-		{
-			foreach ($this->applicationComponents as $key => $applicationComponent) {
-				$class = $applicationComponent->component;
-				$parameters = $applicationComponent->parameters;
-				$this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, null);
-				$this->applicationComponents[$key]->{'object'}->run($this->storage);
-			}
-		}
+            $this->renderApplicationComponents();
+            $this->renderSitemapComponents();
+        }
 
-		/**
-		 * Loop through all (matched) sitemap components and run them
-		 *
-		 * @throws \Exception
-		 */
-		private function runSitemapComponents()
-		{
-			foreach ($this->matchedSitemapItems as $key => $sitemapItem) {
-				$class = $sitemapItem->component;
-				$template = $sitemapItem->template;
-				$parameters = $sitemapItem->parameters;
-				
-				$this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
-				
-				$this->matchedSitemapItems[$key]->object->run($this->storage);
-			}
-		}
+        /**
+         * Initialize the config
+         *
+         * @throws \Exception
+         */
+        private function config()
+        {
+            $configPath = __DIR__ . '/../../config.json';
+            if (realpath($configPath) !== false) {
+                $json = file_get_contents($configPath);
+                $this->config = json_decode($json);
+            } else {
+                initFramework();
+                $this->config();
+            }
+        }
 
-		/**
-		 * @param string $class
-		 * @param string $template
-		 * @param array  $parameters
-		 * @param \stdClass|null  $matchedSitemapItem
-		 *
-		 * @return mixed
-		 * @throws \Exception
-		 */
-		private function getComponentObject($class='', $template='', $parameters=array(), $matchedSitemapItem)
-		{
-			$libraryComponentName = '\\library\\components\\' . $class;
-			$userComponentName = '\\components\\' . $class;
+        /**
+         * Initialize the storage
+         */
+        private function storage()
+        {
+            $this->storage = new Storage($this->getStorageDir());
+        }
 
-			if (AutoloadUtil::autoLoad($libraryComponentName, false)) {
-				$component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-			} elseif (AutoloadUtil::autoLoad($userComponentName, false)) {
-				$component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-			} else {
-				throw new \Exception('Could not load component ' . $class);
-			}
-			
-			if (!$component instanceof Component) {
-				throw new \Exception('Component not of type Component. Must inherit \library\components\Component');
-			}
-			
-			return $component;
-		}
+        private function redirectMatching($request)
+        {
+            $redirects = $this->storage->getRedirects()->getRedirects();
+            $relativeUri = '/' . $request::$relativeUri;
 
-		/**
-		 * Loop through all application components and render them
-		 */
-		private function renderApplicationComponents()
-		{
-			foreach ($this->applicationComponents as $applicationComponent) {
-				$applicationComponent->{'object'}->render();
-			}
-		}
+            foreach ($redirects as $redirect) {
+                if (preg_match_all($redirect->fromUrl, $relativeUri, $matches)) {
+                    $toUrl = preg_replace($redirect->fromUrl, $redirect->toUrl, $relativeUri);
+                    if (substr($toUrl, 0, 1) == '/') {
+                        $toUrl = substr($toUrl, 1);
+                    }
+                    if ($redirect->type == '301') {
+                        header('HTTP/1.1 301 Moved Permanently');
+                        header('Location: ' . $request::$subfolders . $toUrl);
+                        exit;
+                    } elseif ($redirect->type == '302') {
+                        header('Location: ' . $request::$subfolders . $toUrl, true, 302);
+                        exit;
+                    } else {
+                        throw new \Exception('Invalid redirect type.');
+                    }
+                }
+            }
+        }
 
-		/**
-		 * Loop through all (matched) sitemap components and render them
-		 */
-		private function renderSitemapComponents()
-		{
-			foreach ($this->matchedSitemapItems as $sitemapItem) {
-				$this->setCachingHeaders();
-				$sitemapItem->object->render($this);
-				ob_clean();
-				echo $sitemapItem->object->get();
-				ob_end_flush();
-				exit;
-			}
-		}
+        /**
+         * Loop through sitemap items and see if one matches the requestUri.
+         * If it does, add it tot the matchedSitemapItems array
+         *
+         * @param $request
+         */
+        private function sitemapMatching($request)
+        {
+            $sitemap = $this->storage->getSitemap()->getSitemap();
+            $relativeUri = '/' . $request::$relativeUri;
 
-		public function getAllApplicationComponentParameters()
-		{
-			$allParameters = array();
-			foreach ($this->applicationComponents as $applicationComponent) {
-				$parameters = $applicationComponent->{'object'}->getParameters();
-				$allParameters[] = $parameters;
-			}
-			return $allParameters;
-		}
+            foreach ($sitemap as $sitemapItem) {
+                if ($sitemapItem->regex) {
+                    $matches = array();
+                    if (preg_match_all($sitemapItem->url, $relativeUri, $matches)) {
+                        // Make a clone, so it doesnt add the matches to the original
+                        $matchedClone = clone $sitemapItem;
+                        $matchedClone->matches = $matches;
+                        $this->matchedSitemapItems[] = $matchedClone;
+                        return;
+                    }
+                } else {
+                    if ($sitemapItem->url == $relativeUri) {
+                        $this->matchedSitemapItems[] = $sitemapItem;
+                        return;
+                    }
+                }
+            }
+        }
 
-		public function unlockApplicationComponentParameters()
-		{
-			foreach ($this->applicationComponents as $applicationComponent) {
-				$parameters = $applicationComponent->{'object'}->getParameters();
-				extract($parameters);
-			}
-		}
+        /**
+         * Loop through all application components and run them
+         *
+         * @throws \Exception
+         */
+        private function runApplicationComponents()
+        {
+            foreach ($this->applicationComponents as $key => $applicationComponent) {
+                $class = $applicationComponent->component;
+                $parameters = $applicationComponent->parameters;
+                $this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, null);
+                $this->applicationComponents[$key]->{'object'}->run($this->storage);
+            }
+        }
 
-		/**
-		 * Set the default caching of pages to 2 days
-		 */
-		public function setCachingHeaders()
-		{
-			header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
-			header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
-		}
+        /**
+         * Loop through all (matched) sitemap components and run them
+         *
+         * @throws \Exception
+         */
+        private function runSitemapComponents()
+        {
+            foreach ($this->matchedSitemapItems as $key => $sitemapItem) {
+                $class = $sitemapItem->component;
+                $template = $sitemapItem->template;
+                $parameters = $sitemapItem->parameters;
 
-		/**
-		 * @return string
-		 */
-		public function getStoragePath()
-		{
-			return $this->config->storagePath;
-		}
+                $this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
 
-		public function getStorageDir()
-		{
-			return $this->config->storageDir;
-		}
+                $this->matchedSitemapItems[$key]->object->run($this->storage);
+            }
+        }
 
-		public function getApplicationComponents()
-		{
-			$this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
-		}
+        /**
+         * @param string $class
+         * @param string $template
+         * @param array $parameters
+         * @param \stdClass|null $matchedSitemapItem
+         *
+         * @return mixed
+         * @throws \Exception
+         */
+        private function getComponentObject($class = '', $template = '', $parameters = array(), $matchedSitemapItem)
+        {
+            $libraryComponentName = '\\library\\components\\' . $class;
+            $userComponentName = '\\components\\' . $class;
 
-	}
+            if (AutoloadUtil::autoLoad($libraryComponentName, false)) {
+                $component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
+            } elseif (AutoloadUtil::autoLoad($userComponentName, false)) {
+                $component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
+            } else {
+                throw new \Exception('Could not load component ' . $class);
+            }
+
+            if (!$component instanceof Component) {
+                throw new \Exception('Component not of type Component. Must inherit \library\components\Component');
+            }
+
+            return $component;
+        }
+
+        /**
+         * Loop through all application components and render them
+         */
+        private function renderApplicationComponents()
+        {
+            foreach ($this->applicationComponents as $applicationComponent) {
+                $applicationComponent->{'object'}->render();
+            }
+        }
+
+        /**
+         * Loop through all (matched) sitemap components and render them
+         */
+        private function renderSitemapComponents()
+        {
+            foreach ($this->matchedSitemapItems as $sitemapItem) {
+                $this->setCachingHeaders();
+                $sitemapItem->object->render($this);
+                ob_clean();
+                echo $sitemapItem->object->get();
+                ob_end_flush();
+                exit;
+            }
+        }
+
+        public function getAllApplicationComponentParameters()
+        {
+            $allParameters = array();
+            foreach ($this->applicationComponents as $applicationComponent) {
+                $parameters = $applicationComponent->{'object'}->getParameters();
+                $allParameters[] = $parameters;
+            }
+            return $allParameters;
+        }
+
+        public function unlockApplicationComponentParameters()
+        {
+            foreach ($this->applicationComponents as $applicationComponent) {
+                $parameters = $applicationComponent->{'object'}->getParameters();
+                extract($parameters);
+            }
+        }
+
+        /**
+         * Set the default caching of pages to 2 days
+         */
+        public function setCachingHeaders()
+        {
+            header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
+            header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
+        }
+
+        /**
+         * @return string
+         */
+        public function getStoragePath()
+        {
+            return $this->config->storagePath;
+        }
+
+        public function getStorageDir()
+        {
+            return $this->config->storageDir;
+        }
+
+        public function getApplicationComponents()
+        {
+            $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
+        }
+    }
 }
