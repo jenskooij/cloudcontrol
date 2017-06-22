@@ -12,7 +12,7 @@ namespace library\components {
 
 	class CmsComponent extends BaseComponent
 	{
-		/**
+        /**
 		 * @var \library\storage\Storage
 		 */
 		public $storage;
@@ -41,6 +41,8 @@ namespace library\components {
 		const PARAMETER_IMAGE_SET = 'imageSet';
 		const PARAMETER_MAIN_NAV_CLASS = 'mainNavClass';
 		const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
+        const PARAMETER_REDIRECT = 'redirect';
+        const PARAMETER_REDIRECTS = 'redirects';
 		const PARAMETER_SEARCH = 'search';
 		const PARAMETER_SEARCH_LOG = "searchLog";
 		const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";
@@ -55,12 +57,14 @@ namespace library\components {
 		const PARAMETER_VALUELISTS = "valuelists";
 		const PARAMETER_WHITELIST_IPS = 'whitelistIps';
 
-		const POST_PARAMETER_COMPONENT = 'component';
-		const POST_PARAMETER_PASSWORD = 'password';
-		const POST_PARAMETER_SAVE = 'save';
-		const POST_PARAMETER_TEMPLATE = 'template';
-		const POST_PARAMETER_TITLE = 'title';
-		const POST_PARAMETER_USERNAME = 'username';
+        const POST_PARAMETER_COMPONENT = 'component';
+        const POST_PARAMETER_FROM_URL = "fromUrl";
+        const POST_PARAMETER_PASSWORD = 'password';
+        const POST_PARAMETER_SAVE = 'save';
+        const POST_PARAMETER_TEMPLATE = 'template';
+        const POST_PARAMETER_TITLE = 'title';
+        const POST_PARAMETER_TO_URL = "toUrl";
+        const POST_PARAMETER_USERNAME = 'username';
 
 		const GET_PARAMETER_PATH = 'path';
 		const GET_PARAMETER_SLUG = 'slug';

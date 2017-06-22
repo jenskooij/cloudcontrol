@@ -4,6 +4,9 @@
 		<ul>
 			<li>
 				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/new" title="New">+</a>
+				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/redirects" title="Redirects">
+          <i class="fa fa-random"></i>
+        </a>
 			</li>
 		</ul>
 	</nav>
@@ -15,9 +18,9 @@
 			<li>
 				<h3><?=$sitemapItem->title?></h3>
 				<span class="url"><?=$sitemapItem->url?></span>
-				<a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/edit?slug=<?=$sitemapItem->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
+        <a class="btn move" title="Move"><i class="fa fa-arrows-v"></i></a>
 				<a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/delete?slug=<?=$sitemapItem->slug?>" title="Delete"><i class="fa fa-trash"></i></a>
-				<a class="btn move" title="Move"><i class="fa fa-arrows-v"></i></a>
+        <a class="btn" href="<?=\library\cc\Request::$subfolders?><?=$cmsPrefix?>/sitemap/edit?slug=<?=$sitemapItem->slug?>" title="Edit"><i class="fa fa-pencil"></i></a>
 				<textarea name="sitemapitem[]"><?=json_encode($sitemapItem)?></textarea>
 			</li>
 		<? endforeach ?>

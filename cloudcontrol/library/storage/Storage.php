@@ -1,21 +1,22 @@
 <?php
 namespace library\storage {
 
-	use library\storage\factories\DocumentFolderFactory;
-	use library\storage\storage\ApplicationComponentsStorage;
-	use library\storage\storage\BricksStorage;
-	use library\storage\storage\DocumentStorage;
-	use library\storage\storage\DocumentTypesStorage;
-	use library\storage\storage\FilesStorage;
-	use library\storage\storage\ImageSetStorage;
-	use library\storage\storage\ImagesStorage;
-	use library\storage\storage\SitemapStorage;
-	use library\storage\storage\UsersStorage;
-	use library\storage\storage\ValuelistsStorage;
+    use library\storage\factories\DocumentFolderFactory;
+    use library\storage\storage\ApplicationComponentsStorage;
+    use library\storage\storage\BricksStorage;
+    use library\storage\storage\DocumentStorage;
+    use library\storage\storage\DocumentTypesStorage;
+    use library\storage\storage\FilesStorage;
+    use library\storage\storage\ImageSetStorage;
+    use library\storage\storage\ImagesStorage;
+    use library\storage\storage\RedirectsStorage;
+    use library\storage\storage\SitemapStorage;
+    use library\storage\storage\UsersStorage;
+    use library\storage\storage\ValuelistsStorage;
 
-	/**
+    /**
 	 * Class JsonStorage
-	 * @package library\storage
+     * @package library\storage
 	 */
 	class Storage
 	{
@@ -60,6 +61,10 @@ namespace library\storage {
 		 * @var DocumentStorage
 		 */
 		protected $documents;
+        /**
+         * @var RedirectsStorage
+         */
+        protected $redirects;
 
 		/**
 		 * @var String
@@ -319,6 +324,17 @@ namespace library\storage {
 			}
 			return $this->valuelists;
 		}
+
+        /**
+         * @return RedirectsStorage
+         */
+        public function getRedirects()
+        {
+            if (!$this->redirects instanceof RedirectsStorage) {
+                $this->redirects = new RedirectsStorage($this->repository);
+            }
+            return $this->redirects;
+        }
 
 	}
 }

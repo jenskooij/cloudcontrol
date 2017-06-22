@@ -20,12 +20,13 @@ use library\storage\storage\DocumentStorage;
  * @property array files
  * @property array users
  * @property array valuelists
+ * @property array redirects
  */
 class Repository
 {
     protected $storagePath;
 
-    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists');
+    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists', 'redirects');
 
     protected $sitemap;
     protected $sitemapChanges = false;
@@ -53,6 +54,9 @@ class Repository
 
     protected $valuelists;
     protected $valuelistsChanges = false;
+
+    protected $redirects;
+    protected $redirectsChanges = false;
 
     protected $contentDbHandle;
 

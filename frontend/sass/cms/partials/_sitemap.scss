@@ -1,6 +1,15 @@
 .sitemap {
 	h2 {
 		color:$sitemap-color;
+
+		a {
+			color: $sitemap-color;
+
+			&:hover {
+				color: lighten($sitemap-color, 10%);
+				text-decoration: none;
+			}
+		}
 	}
 	
 	ul.sitemap > li {
@@ -10,13 +19,24 @@
 		@include breakpoint(desktop) {
 			width:100%;
 		}
-		
+
+		h3 {
+			display:inline-block;
+			margin:0;
+			min-width:7em;
+		}
+
 		.url {
 			font-family:$font-family-code;
-			display:block;
+			display:inline-block;
 			border:1px solid #f0f0f0;
 			padding:1em;
-			margin:1em 0;
+			margin:0;
+			min-width:10em;
+		}
+
+		.btn {
+			float:right;
 		}
 		
 		textarea {
