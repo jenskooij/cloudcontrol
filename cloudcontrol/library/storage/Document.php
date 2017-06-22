@@ -84,35 +84,12 @@ class Document
 	 */
     public function getContent($orderBy = 'title', $order = 'ASC')
     {
-    	$docs = $this->documentStorage->getDocumentsWithState($this->path);
-    	return $docs;
-    	//dump($this->path, $docs);
-        $folderPathWithWildcard = $this->path . '%';
-        $sql = '    SELECT *
-                      FROM documents_published
-                     WHERE `path` LIKE ' . $this->dbHandle->quote($folderPathWithWildcard) . '
-                       AND substr(`path`, ' . (strlen($this->path) + 2) . ') NOT LIKE "%/%"
-                       AND substr(`path`, ' . (strlen($this->path) + 1) . ', 1) = "/"
-                       AND path != ' . $this->dbHandle->quote($this->path) . '
-                  ORDER BY ' . (in_array($orderBy, $this->orderableFields) ? $orderBy : 'title') . ' ' . ($order === 'ASC' ? 'ASC' : 'DESC') . '
-                    ';
-        $stmt = $this->dbHandle->prepare($sql);
-		if ($stmt === false) {
-			$errorInfo = $this->dbHandle->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
-        $stmt->bindColumn(':orderBy', $orderBy, \PDO::PARAM_STMT);
-		$stmt->execute();
-        $contents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\library\storage\Document');
-        foreach ($contents as $key => $document) {
-            if ($document->type === 'folder') {
-                $document->dbHandle = $this->dbHandle;
-                $contents[$key] = $document;
-            }
+        if (empty($this->content)) {
+            $docs = $this->documentStorage->getDocumentsWithState($this->path);
+            $this->content = $docs;
         }
-        $this->content = $contents;
-        return $this->content;
+
+    	return $this->content;
     }
 
 	/**
