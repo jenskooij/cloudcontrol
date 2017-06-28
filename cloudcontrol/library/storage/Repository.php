@@ -148,8 +148,9 @@ class Repository
      */
     public function save()
     {
-        array_map(function ($value) {
-        	$this->saveSubset($value);
+        $host = $this;
+        array_map(function ($value) use ($host) {
+            $host->saveSubset($value);
 		}, $this->fileBasedSubsets);
     }
 
@@ -157,11 +158,15 @@ class Repository
      * Persist subset to disk
      * @param $subset
      */
-    protected function saveSubset($subset)
+    public function saveSubset($subset)
     {
 		$changes = $subset . 'Changes';
 		if ($this->$changes === true) {
-			$json = json_encode($this->$subset, JSON_PRETTY_PRINT);
+            if (!defined('JSON_PRETTY_PRINT')) {
+                $json = json_encode($this->$subset);
+            } else {
+                $json = json_encode($this->$subset, JSON_PRETTY_PRINT);
+            }
 			$subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
 			file_put_contents($subsetStoragePath, $json);
 
