@@ -44,7 +44,9 @@ class CharacterFilter
 	 */
 	private function filterSpecialCharacters($string)
 	{
+		$string = str_replace('<', ' <', $string); // This is need, otherwise this: <h1>something</h1><h2>something</h2> will result in somethingsomething
 		$string = strip_tags($string);
+		$string = trim($string);
 		$string = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string); // Remove special alphanumeric characters
 		$string = str_replace(array('+', '=', '!', ',', '.',';', ':', '?'), ' ', $string); // Replace sentence breaking charaters with spaces
 		$string = preg_replace("/[\r\n]+/", " ", $string); // Replace multiple newlines with a single space.
