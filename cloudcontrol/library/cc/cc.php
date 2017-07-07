@@ -13,7 +13,28 @@ mb_internal_encoding("UTF-8");
 setlocale(LC_ALL, 'nl_NL');
 date_default_timezone_set('Europe/Amsterdam');
 
-ob_start();
+function sanitize_output($buffer) {
+
+    $search = array(
+        '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
+        '/[^\S ]+\</s',     // strip whitespaces before tags, except space
+        '/(\s)+/s',         // shorten multiple whitespace sequences
+        '/<!--(.|\s)*?-->/' // Remove HTML comments
+    );
+
+    $replace = array(
+        '>',
+        '<',
+        '\\1',
+        ''
+    );
+
+    $buffer = preg_replace($search, $replace, $buffer);
+
+    return $buffer;
+}
+
+ob_start("sanitize_output");
 session_start();
 
 include('errorhandler.php');
