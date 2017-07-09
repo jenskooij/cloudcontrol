@@ -44,7 +44,7 @@ function httpGetAsync(theUrl, callback) {
             callback(xmlHttp.responseText);
         }
     };
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.open("GET", theUrl, true); /* true for asynchronous */
     xmlHttp.send(null);
 }
 

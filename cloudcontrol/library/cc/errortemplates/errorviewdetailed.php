@@ -60,7 +60,7 @@
 </pre>
 <h2>Trace</h2>
 <pre>
-<code><?print_r($error['trace'])?></code>
+<?print_r($error['trace'])?>
 </pre>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css" />

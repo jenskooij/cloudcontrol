@@ -48,7 +48,7 @@ $(function() {
 			};
 		}
 	});
-	//$( ".sortable" ).disableSelection();
+	/*$( ".sortable" ).disableSelection();*/
 	var cache = $(".sortable").html();
 	$('.reset').click(function () {
 		$(".sortable").html(cache).sortable("refresh");

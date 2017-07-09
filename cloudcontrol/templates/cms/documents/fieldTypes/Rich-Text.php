@@ -14,8 +14,7 @@ if (isset($summernoteInstances)) {
 		$('#summernote_<?=str_replace(']', '-', str_replace('[','-', $fieldPrefix)) . $field->slug?>_rte_<?=$summernoteInstances?>').summernote({
 			height: 300,
 			toolbar: [
-				//[groupname, [button list]]
-
+				/*[groupname, [button list]]*/
 				['style', ['bold', 'italic', 'underline', 'clear', 'style']],
 				['font', ['strikethrough', 'superscript', 'subscript']],
 				['para', ['ul', 'ol']],
