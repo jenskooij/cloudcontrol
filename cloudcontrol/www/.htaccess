@@ -15,3 +15,25 @@ mod_gzip_item_include mime ^application/x-javascript.*
 mod_gzip_item_exclude mime ^image/.*
 mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 </ifModule>
+
+<IfModule mod_headers.c>
+# Unset Server Signature header
+ServerSignature Off
+# Unset Server Technology header
+Header unset X-Powered-By
+</IfModule>
+
+<IfModule mod_expires.c>
+# Enable expirations
+ExpiresActive On
+# Favicon
+ExpiresByType image/x-icon "access plus 1 year"
+# Images
+ExpiresByType image/gif "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType image/jpg "access plus 1 month"
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/svg+xml "access plus 1 month"
+# Javascript
+ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

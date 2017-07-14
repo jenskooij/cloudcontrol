@@ -63,7 +63,8 @@ function dump()
 			var_dump($data);
 		}
 	} else {
-		ob_clean();
+		ob_end_clean();
+		ob_start();
 		echo '<div>Dump: ' . $debug_backtrace['file'] . ':<b>' . $debug_backtrace['line'] . "</b></div>";
 		echo '<pre>';
 		foreach (func_get_args() as $data) {
