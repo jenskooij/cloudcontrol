@@ -1,0 +1,22 @@
+{
+  "name": "cloudcontrol/cms",
+  "scripts": {
+    "post-update-cmd": [
+      "CloudControl\\Cms\\CloudControl::postUpdate"
+    ],
+    "post-install-cmd": [
+      "CloudControl\\Cms\\CloudControl::postInstall"
+    ]
+  },
+  "require": {
+    "filp/whoops": "2.1.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "CloudControl\\Cms\\": "src"
+    },
+    "files": [
+      "src/util/functions.php"
+    ]
+  }
+}

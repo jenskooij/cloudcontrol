@@ -1,4 +1,0 @@
-config.json
-!storage/*
-storage/content.db
-storage/search.db

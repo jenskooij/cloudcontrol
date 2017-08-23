@@ -1,0 +1,70 @@
+{
+  "sitemap": [
+    {
+      "title": "root",
+      "slug": "root",
+      "url": "/",
+      "regex": false,
+      "component": "BaseComponent",
+      "template": "base",
+      "parameters": {
+      }
+    },
+    {
+      "title": "cms",
+      "slug": "cms",
+      "url": "/^\\/cms(.*)/",
+      "component": "CmsComponent",
+      "template": "cms",
+      "regex": true,
+      "parameters": {
+        "cmsPrefix": "cms",
+        "whitelistIps": "localhost, ::1, 127.0.0.1",
+        "blacklistIps": "222.227.164.73"
+      }
+    }
+  ],
+  "applicationComponents": [],
+  "documents": [],
+  "documentTypes": [],
+  "bricks": [],
+  "imageSet": [
+    {
+      "title": "Thumbnail",
+      "slug": "thumbnail",
+      "width": "180",
+      "height": "180",
+      "method": "smartcrop"
+    }
+  ],
+  "images": [],
+  "files": [],
+  "users": [
+    {
+      "username": "admin",
+      "slug": "admin",
+      "rights": [
+        "documents",
+        "sitemap",
+        "images",
+        "files",
+        "configuration",
+        "search"
+      ],
+      "password": "$2a$16$58fnnoHshwN74KkemWkuIeGUbOQ0Rko0pyC3e/rIIhAvL9v89Qc22",
+      "salt": "$2a$16$58fnnoHshwN74KkemWkuIe"
+    },
+    {
+      "username": "editor",
+      "slug": "editor",
+      "rights": [
+        "documents",
+        "images"
+      ],
+      "password": "$2a$16$RgdbaPy/xjohoAtKPhnwd.bXB.hea5UHzwPmt90XLJxZheyyEjZFq",
+      "salt": "$2a$16$RgdbaPy/xjohoAtKPhnwd."
+    }
+  ],
+  "valuelists": [],
+  "redirects": []
+}
