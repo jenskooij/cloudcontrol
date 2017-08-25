@@ -33,6 +33,10 @@ class CloudControl
      */
     private static function checkInstall(Event $event)
     {
+        if (!function_exists('getRelativePath')) {
+            require_once(__DIR__ . DIRECTORY_SEPARATOR . 'util' . DIRECTORY_SEPARATOR . 'functions.php');
+        }
+
         $event->getIO()->write("*** Checking installation of Cloud Control framework ***");
 
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
@@ -46,10 +50,10 @@ class CloudControl
         $configObject->{'templateDir'} = self::createDir($event, $rootDir, 'templates');
         $configObject->{'storageDir'} = self::createDir($event, $rootDir, $configObject->{'storageDir'});
         $configObject->{'publicDir'} = self::createDir($event, $rootDir, 'public');
-        $configObject->{'jsDir'} = self::createDir($event, $configObject->{'publicDir'}, 'js');
-        $configObject->{'cssDir'} = self::createDir($event, $configObject->{'publicDir'}, 'css');
-        $configObject->{'imagesDir'} = self::createDir($event, $configObject->{'publicDir'}, 'images');
-        $configObject->{'filesDir'} = self::createDir($event, $configObject->{'publicDir'}, 'files');
+        $configObject->{'jsDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'js');
+        $configObject->{'cssDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'css');
+        $configObject->{'imagesDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'images');
+        $configObject->{'filesDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'files');
 
         $baseStorageDefaultPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.json';
         $baseStorageSqlPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.sql';
@@ -117,7 +121,8 @@ class CloudControl
             mkdir($dir);
             $event->getIO()->write("Created dir: " . $dir);
         }
-        return realpath($dir);
+        //return realpath($dir);
+        return \getRelativePath($rootDir, $dir);
     }
 
     /**
