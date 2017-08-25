@@ -2,6 +2,7 @@
 namespace CloudControl\Cms\components
 {
 
+    use CloudControl\Cms\cc\Application;
     use CloudControl\Cms\cc\Request;
     use CloudControl\Cms\storage\Storage;
 
@@ -86,14 +87,24 @@ namespace CloudControl\Cms\components
 		 * @param string $template
 		 *
 		 * @param bool   $obClean
-		 * @param null|Application   $application
+		 * @param null | Application   $application
 		 *
 		 * @return string
 		 * @throws \Exception
 		 */
 		public function renderTemplate($template='', $obClean = true, $application=null)
 		{
-		    $templatePath = $this->getTemplatePath($template, $application);
+		    $templateDir = $this->getTemplateDir($template, $application);
+		    if ($application !== null) {
+                $rootDir = $application->getRootDir();
+                if (strpos($templateDir, $rootDir) === false) {
+                    $templatePath = $rootDir . DIRECTORY_SEPARATOR . $templateDir;
+                } else {
+                    $templatePath = $templateDir;
+                }
+            } else {
+		        $templatePath = $templateDir;
+            }
 			if (realpath($templatePath) !== false) {
 				if ($obClean) {
 					ob_clean();
@@ -142,13 +153,16 @@ namespace CloudControl\Cms\components
 
         /**
          * @param $template
-         * @param null $application
+         * @param null | Application $application
          * @return string
          */
-        protected function getTemplatePath($template, $application=null)
+        protected function getTemplateDir($template, $application=null)
         {
-            $templatePath = $application->getTemplatePath();
-            $templatePath = $templatePath . DIRECTORY_SEPARATOR . $template . '.php';
+            $templatePath = '';
+            if ($application !== null) {
+                $templatePath = $application->getTemplateDir();
+            }
+            $templatePath = $templatePath . $template . '.php';
             return $templatePath;
         }
     }

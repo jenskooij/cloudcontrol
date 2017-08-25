@@ -369,7 +369,7 @@ namespace CloudControl\Cms\components {
 			}
 		}
 
-        protected function getTemplatePath($template, $application = null)
+        protected function getTemplateDir($template, $application = null)
         {
             return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.php';
         }

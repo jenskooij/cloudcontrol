@@ -255,15 +255,7 @@ namespace CloudControl\Cms\cc {
         /**
          * @return string
          */
-        public function getStoragePath()
-        {
-            return $this->config->storagePath;
-        }
-
-        /**
-         * @return string
-         */
-        public function getTemplatePath()
+        public function getTemplateDir()
         {
             return $this->config->templateDir;
         }
@@ -276,6 +268,11 @@ namespace CloudControl\Cms\cc {
         public function getApplicationComponents()
         {
             $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
+        }
+
+        public function getRootDir()
+        {
+            return $this->config->rootDir;
         }
     }
 }
