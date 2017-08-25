@@ -80,7 +80,7 @@ namespace CloudControl\Cms\cc {
          */
         private function storage()
         {
-            $this->storage = new Storage($this->getStorageDir(), $this->config->imagesDir, $this->config->filesDir);
+            $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->imagesDir, $this->config->filesDir);
         }
 
         private function redirectMatching($request)

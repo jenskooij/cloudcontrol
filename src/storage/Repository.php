@@ -94,7 +94,6 @@ class Repository
      */
     public function init($baseStorageDefaultPath, $baseStorageSqlPath)
     {
-        // TODO Make sure storage isnt overwritten when its already initialized
         $storageDefaultPath = realpath($baseStorageDefaultPath);
         $contentSqlPath = realpath($baseStorageSqlPath);
 
@@ -207,26 +206,16 @@ class Repository
     {
         $json = file_get_contents($storageDefaultPath);
         $json = json_decode($json);
-        $this->sitemap = $json->sitemap;
-        $this->sitemapChanges = true;
-        $this->applicationComponents = $json->applicationComponents;
-        $this->applicationComponentsChanges = true;
-        $this->documentTypes = $json->documentTypes;
-        $this->documentTypesChanges = true;
-        $this->bricks = $json->bricks;
-        $this->bricksChanges = true;
-        $this->imageSet = $json->imageSet;
-        $this->imageSetChanges = true;
-        $this->images = $json->images;
-        $this->imagesChanges = true;
-        $this->files = $json->files;
-        $this->filesChanges = true;
-        $this->users = $json->users;
-        $this->usersChanges = true;
-        $this->valuelists = $json->valuelists;
-        $this->valuelistsChanges = true;
-        $this->redirects = $json->redirects;
-        $this->redirectsChanges = true;
+        $this->initConfigIfNotExists($json, 'sitemap');
+        $this->initConfigIfNotExists($json, 'applicationComponents');
+        $this->initConfigIfNotExists($json, 'documentTypes');
+        $this->initConfigIfNotExists($json, 'bricks');
+        $this->initConfigIfNotExists($json, 'imageSet');
+        $this->initConfigIfNotExists($json, 'images');
+        $this->initConfigIfNotExists($json, 'files');
+        $this->initConfigIfNotExists($json, 'users');
+        $this->initConfigIfNotExists($json, 'valuelists');
+        $this->initConfigIfNotExists($json, 'redirects');
     }
 
     /**
@@ -607,4 +596,16 @@ class Repository
 
 		return $documents;
 	}
+
+    private function initConfigIfNotExists($json, $subsetName)
+    {
+        $subsetFileName = $this->storagePath . DIRECTORY_SEPARATOR . $subsetName . '.json';
+        if (file_exists($subsetFileName)) {
+            $this->loadSubset($subsetName);
+        } else {
+            $changes = $subsetName . 'Changes';
+            $this->$subsetName = $json->$subsetName;
+            $this->$changes = true;
+        }
+    }
 }

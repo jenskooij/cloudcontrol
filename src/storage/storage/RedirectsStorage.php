@@ -18,6 +18,9 @@ class RedirectsStorage extends AbstractStorage
     public function getRedirects()
     {
         $redirects = $this->repository->redirects;
+        if ($redirects === null) {
+            $redirects = array();
+        }
         usort($redirects, array($this, 'cmp'));
         return $redirects;
     }

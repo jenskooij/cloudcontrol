@@ -39,8 +39,7 @@ class FilesRouting implements CmsRouting
 	private function downloadRoute($slug, $cmsComponent)
 	{
 		$file = $cmsComponent->storage->getFiles()->getFileByName($slug);
-		// TODO FIX THIS PATH
-		$path = realpath(__DIR__ . '/../www/files/');
+		$path = realpath($cmsComponent->storage->getFiles()->getFilesDir());
 		$quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
 		$size = filesize($path . '/' . $file->file);
 

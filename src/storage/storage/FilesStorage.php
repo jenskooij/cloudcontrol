@@ -100,7 +100,15 @@ class FilesStorage extends AbstractStorage
 		}
 	}
 
-	/**
+    /**
+     * @return mixed
+     */
+    public function getFilesDir()
+    {
+        return $this->filesDir;
+    }
+
+    /**
 	 * @param $a
 	 * @param $b
 	 *
