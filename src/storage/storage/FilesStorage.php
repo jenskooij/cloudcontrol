@@ -8,7 +8,16 @@ namespace CloudControl\Cms\storage\storage;
 
 class FilesStorage extends AbstractStorage
 {
-	/**
+    protected $filesDir;
+
+    public function __construct($repository, $filesDir)
+    {
+        parent::__construct($repository);
+        $this->filesDir = $filesDir;
+    }
+
+
+    /**
 	 * @return array
 	 */
 	public function getFiles() {
@@ -25,7 +34,7 @@ class FilesStorage extends AbstractStorage
 	 */
 	public function addFile($postValues)
 	{
-		$destinationPath = realpath(__DIR__ . '/../../../www/files/');
+		$destinationPath = $this->getDestinationPath();
 
 		$filename = $this->validateFilename($postValues['name'], $destinationPath);
 		$destination = $destinationPath . '/' . $filename;
@@ -73,7 +82,7 @@ class FilesStorage extends AbstractStorage
 	 */
 	public function deleteFileByName($filename)
 	{
-		$destinationPath = realpath(__DIR__ . '/../../../www/files/');
+		$destinationPath = $this->getDestinationPath();
 		$destination = $destinationPath . '/' . $filename;
 
 		if (file_exists($destination)) {
@@ -101,4 +110,10 @@ class FilesStorage extends AbstractStorage
 	{
 		return strcmp($a->file, $b->file);
 	}
+
+    protected function getDestinationPath()
+    {
+        $destinationPath = realpath($this->filesDir . DIRECTORY_SEPARATOR);
+        return $destinationPath;
+    }
 }

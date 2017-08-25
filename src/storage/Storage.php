@@ -251,7 +251,7 @@ namespace CloudControl\Cms\storage {
 		public function getFiles()
 		{
 			if (!$this->files instanceof FilesStorage) {
-				$this->files = new FilesStorage($this->repository);
+				$this->files = new FilesStorage($this->repository, $this->filesDir);
 			}
 			return $this->files;
 		}

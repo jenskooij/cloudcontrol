@@ -51,8 +51,6 @@ class CloudControl
         $configObject->{'imagesDir'} = self::createDir($event, $configObject->{'publicDir'}, 'images');
         $configObject->{'filesDir'} = self::createDir($event, $configObject->{'publicDir'}, 'files');
 
-        // TODO Fie FilesStorage to use filesDir from config, similar to ImagesStorage
-
         $baseStorageDefaultPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.json';
         $baseStorageSqlPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.sql';
 
