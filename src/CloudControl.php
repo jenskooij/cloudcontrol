@@ -37,13 +37,17 @@ class CloudControl
             require_once(__DIR__ . DIRECTORY_SEPARATOR . 'util' . DIRECTORY_SEPARATOR . 'functions.php');
         }
 
+        $event->getIO()->write("");
+        $event->getIO()->write("********************************************************");
         $event->getIO()->write("*** Checking installation of Cloud Control framework ***");
+        $event->getIO()->write("********************************************************");
+        $event->getIO()->write("");
 
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $rootDir = realpath($vendorDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
 
         $baseConfigTargetPath = $rootDir . DIRECTORY_SEPARATOR . 'config.json';
-        $configObject = self::getConfig($baseConfigTargetPath);
+        $configObject = self::getConfig($event, $baseConfigTargetPath);
 
         $configObject->{'vendorDir'} = realpath($vendorDir);
         $configObject->{'rootDir'} = $rootDir;
@@ -66,6 +70,10 @@ class CloudControl
         self::copyInstallFile($event, 'cms.css', $configObject->{'cssDir'});
         self::copyInstallFile($event, 'cms.js', $configObject->{'jsDir'});
         self::copyInstallFile($event, 'index.php', $configObject->{'publicDir'});
+
+        $event->getIO()->write("");
+        $event->getIO()->write("[SUCCESS] Installation is complete");
+        $event->getIO()->write("");
     }
 
     /**
@@ -83,21 +91,26 @@ class CloudControl
     private static function saveConfig(Event $event, $baseConfigTargetPath, $configObject)
     {
         file_put_contents($baseConfigTargetPath, json_encode($configObject));
-        $event->getIO()->write("Saved config to: " . $baseConfigTargetPath);
+        $event->getIO()->write("[INFO] Saved config to: " . $baseConfigTargetPath);
     }
 
     private static function copyInstallFile(Event $event, $sourceFileName, $destinationPath, $destinationFileName = null)
     {
         $sourceFilePath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install/_' . $sourceFileName);
 
-        if (file_exists($sourceFilePath) && realpath($destinationPath) !== false) {
-            if ($destinationFileName !== null) {
-                copy($sourceFilePath, realpath($destinationPath) . DIRECTORY_SEPARATOR . $destinationFileName);
-            } else {
-                copy($sourceFilePath, realpath($destinationPath) . DIRECTORY_SEPARATOR . $sourceFileName);
-            }
 
-            $event->getIO()->write("Copied file: " . $sourceFileName . ' to ' . $destinationPath);
+        if ($destinationFileName === null) {
+            $destinationFileName = $sourceFileName;
+        }
+
+        if (file_exists($sourceFilePath) && realpath($destinationPath) !== false) {
+            $destinationFullPath = realpath($destinationPath) . DIRECTORY_SEPARATOR . $destinationFileName;
+            if (file_exists($destinationFullPath)) {
+                $event->getIO()->write("[INFO] File already exists: " . $destinationFullPath);
+            } else {
+                copy($sourceFilePath, $destinationFullPath);
+                $event->getIO()->write("[INSTALL] Copied file: " . $sourceFileName . ' to ' . $destinationPath);
+            }
         } else {
             $event->getIO()->write("[ERROR] Couldnt copy file: " . $sourceFileName . ' to ' . $destinationPath);
         }
@@ -119,9 +132,10 @@ class CloudControl
         $dir = $rootDir . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR;
         if (!is_dir($dir)) {
             mkdir($dir);
-            $event->getIO()->write("Created dir: " . $dir);
+            $event->getIO()->write("[INSTALL] Created dir: " . $dir);
+        } else {
+            $event->getIO()->write("[INFO] Dir already exists: " . $dir);
         }
-        //return realpath($dir);
         return \getRelativePath($rootDir, $dir);
     }
 
@@ -129,14 +143,16 @@ class CloudControl
      * @param $configTargetPath
      * @return mixed
      */
-    private static function getConfig($configTargetPath)
+    private static function getConfig(Event $event, $configTargetPath)
     {
-        $baseConfigDefaultPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install/_config.json');
+        $baseConfigDefaultPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_config.json');
 
         if (file_exists($configTargetPath)) {
             $config = json_decode(file_get_contents($configTargetPath));
+            $event->getIO()->write("[INFO] Using existing config");
         } else {
             $config = json_decode(file_get_contents($baseConfigDefaultPath));
+            $event->getIO()->write("[INSTALL] Created default config");
         }
         return $config;
     }
