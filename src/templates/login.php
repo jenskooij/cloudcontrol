@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>Cloud Control CMS</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto|Ubuntu+Mono:400italic,700italic,400,700"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="<?= $request::$subfolders ?>css/cms.css"/>
     <link rel="shortcut icon" type="image/png" href="<?= $request::$subfolders ?>favicon.ico"/>
   </head>
