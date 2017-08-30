@@ -33,10 +33,6 @@ class CloudControl
      */
     private static function checkInstall(Event $event)
     {
-        if (!function_exists('getRelativePath')) {
-            require_once(__DIR__ . DIRECTORY_SEPARATOR . 'util' . DIRECTORY_SEPARATOR . 'functions.php');
-        }
-
         $event->getIO()->write("");
         $event->getIO()->write("********************************************************");
         $event->getIO()->write("*** Checking installation of Cloud Control framework ***");
@@ -136,7 +132,7 @@ class CloudControl
         } else {
             $event->getIO()->write("[INFO] Dir already exists: " . $dir);
         }
-        return \getRelativePath($rootDir, $dir);
+        return self::getRelativePath($rootDir, $dir);
     }
 
     /**
@@ -155,6 +151,73 @@ class CloudControl
             $event->getIO()->write("[INSTALL] Created default config");
         }
         return $config;
+    }
+
+    /**
+     * Calculate the relative path from $from to $to
+     * Derived from https://stackoverflow.com/a/2638272/
+     *
+     * @param $from
+     * @param $to
+     * @return string
+     */
+    private static function getRelativePath($from, $to)
+    {
+        // some compatibility fixes for Windows paths
+        $from = is_dir($from) ? rtrim($from, '\/') . DIRECTORY_SEPARATOR : $from;
+        $to = is_dir($to) ? rtrim($to, '\/') . DIRECTORY_SEPARATOR : $to;
+        $from = str_replace('\\', DIRECTORY_SEPARATOR, $from);
+        $to = str_replace('\\', DIRECTORY_SEPARATOR, $to);
+
+        $from = explode(DIRECTORY_SEPARATOR, $from);
+        $to = explode(DIRECTORY_SEPARATOR, $to);
+        $relPath = $to;
+
+        $relPath = self::calculateRelativePath($from, $to, $relPath);
+        $relPath = implode(DIRECTORY_SEPARATOR, $relPath);
+        $relPath = self::removePointerToCurrentDir($relPath);
+        return $relPath;
+    }
+
+    /**
+     * @param $relPath
+     * @return mixed
+     */
+    private static function removePointerToCurrentDir($relPath)
+    {
+        while (strpos($relPath, '.' . DIRECTORY_SEPARATOR . '.' . DIRECTORY_SEPARATOR) !== false) {
+            $relPath = str_replace('.' . DIRECTORY_SEPARATOR . '.' . DIRECTORY_SEPARATOR, '.' . DIRECTORY_SEPARATOR, $relPath);
+        }
+        return $relPath;
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @param $relPath
+     * @return array
+     */
+    private static function calculateRelativePath($from, $to, $relPath)
+    {
+        foreach ($from as $depth => $dir) {
+            // find first non-matching dir
+            if ($dir === $to[$depth]) {
+                // ignore this directory
+                array_shift($relPath);
+            } else {
+                // get number of remaining dirs to $from
+                $remaining = count($from) - $depth;
+                if ($remaining > 1) {
+                    // add traversals up to first matching dir
+                    $padLength = (count($relPath) + $remaining - 1) * -1;
+                    $relPath = array_pad($relPath, $padLength, '..');
+                    break;
+                } else {
+                    $relPath[0] = '.' . DIRECTORY_SEPARATOR . $relPath[0];
+                }
+            }
+        }
+        return $relPath;
     }
 
 }
