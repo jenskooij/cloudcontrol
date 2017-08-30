@@ -25,19 +25,10 @@ class SearchRouting implements CmsRouting
     public function __construct($request, $relativeCmsUri, $cmsComponent)
     {
         switch ($relativeCmsUri) {
-            case '/search':
-                $this->overviewRoute($cmsComponent);
-                break;
-            case '/search/update-index' :
-                $this->updateIndexRoute($cmsComponent);
-                break;
-            case '/search/ajax-update-index':
-                $this->ajaxUpdateIndexRoute($request, $cmsComponent);
-                break;
-            case '/search/manual-update-index' :
-                $indexer = new Indexer($cmsComponent->storage);
-                $indexer->updateIndex();
-                break;
+            case '/search': $this->overviewRoute($cmsComponent); break;
+            case '/search/update-index' : $this->updateIndexRoute($cmsComponent); break;
+            case '/search/ajax-update-index': $this->ajaxUpdateIndexRoute($request, $cmsComponent); break;
+            case '/search/manual-update-index' : $indexer = new Indexer($cmsComponent->storage); $indexer->updateIndex(); break;
         }
     }
 
@@ -92,31 +83,17 @@ class SearchRouting implements CmsRouting
     private function stepRouting($step, $cmsComponent, $indexer)
     {
         switch ($step) {
-            case 'resetIndex':
-                $indexer->resetIndex();
-                break;
-            case 'cleanPublishedDeletedDocuments':
-                $cmsComponent->storage->getDocuments()->cleanPublishedDeletedDocuments();
-                break;
+            case 'resetIndex': $indexer->resetIndex(); break;
+            case 'cleanPublishedDeletedDocuments': $cmsComponent->storage->getDocuments()->cleanPublishedDeletedDocuments(); break;
             case 'createDocumentTermCount':
                 $documents = $cmsComponent->storage->getDocuments()->getPublishedDocumentsNoFolders();
                 $indexer->createDocumentTermCount($documents);
                 break;
-            case 'createDocumentTermFrequency':
-                $indexer->createDocumentTermFrequency();
-                break;
-            case 'createTermFieldLengthNorm':
-                $indexer->createTermFieldLengthNorm();
-                break;
-            case 'createInverseDocumentFrequency':
-                $indexer->createInverseDocumentFrequency();
-                break;
-            case 'replaceOldIndex':
-                $indexer->replaceOldIndex();
-                break;
-            default :
-                $this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error');
-                break;
+            case 'createDocumentTermFrequency': $indexer->createDocumentTermFrequency(); break;
+            case 'createTermFieldLengthNorm': $indexer->createTermFieldLengthNorm(); break;
+            case 'createInverseDocumentFrequency': $indexer->createInverseDocumentFrequency(); break;
+            case 'replaceOldIndex': $indexer->replaceOldIndex(); break;
+            default : $this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error'); break;
         }
         $this->showJson('done');
     }

@@ -43,21 +43,11 @@ class DocumentRouting implements CmsRouting
             $this->documentNewRoute($request, $cmsComponent);
         } elseif (isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
             switch ($relativeCmsUri) {
-                case '/documents/edit-document':
-                    $this->editDocumentRoute($request, $cmsComponent);
-                    break;
-                case '/documents/get-brick':
-                    $this->getBrickRoute($request, $cmsComponent);
-                    break;
-                case '/documents/delete-document':
-                    $this->deleteDocumentRoute($request, $cmsComponent);
-                    break;
-                case '/documents/publish-document':
-                    $this->publishDocumentRoute($request, $cmsComponent);
-                    break;
-                case '/documents/unpublish-document':
-                    $this->unpublishDocumentRoute($request, $cmsComponent);
-                    break;
+                case '/documents/edit-document': $this->editDocumentRoute($request, $cmsComponent); break;
+                case '/documents/get-brick': $this->getBrickRoute($request, $cmsComponent); break;
+                case '/documents/delete-document': $this->deleteDocumentRoute($request, $cmsComponent); break;
+                case '/documents/publish-document': $this->publishDocumentRoute($request, $cmsComponent); break;
+                case '/documents/unpublish-document': $this->unpublishDocumentRoute($request, $cmsComponent); break;
             }
         }
     }
