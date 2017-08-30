@@ -11,10 +11,5 @@ vendor
 /storage
 /js
 /css
-/public/index.php
-/public/images/
-/public/files/
-/public/css/cms.css
-/public/js/cms.js
-/public/.htaccess
+/public
 /.htaccess
