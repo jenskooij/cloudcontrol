@@ -8,8 +8,8 @@
 namespace CloudControl\Cms\search\results;
 
 
-use storage\Document;
-use storage\Storage;
+use CloudControl\Cms\storage\Document;
+use CloudControl\Cms\storage\Storage;
 
 class SearchResult
 {

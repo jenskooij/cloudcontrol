@@ -108,13 +108,7 @@ namespace CloudControl\Cms\storage {
 		{
 			$storagePath = $this->storageDir;
 			if (realpath($storagePath) === false) {
-				if (Repository::create($storagePath)) {
-					$repository = new Repository($storagePath);
-					$repository->init();
-					$this->repository = $repository;
-				} else {
-					throw new \Exception('Could not create repository directory: ' . $storagePath);
-				}
+				throw new \Exception('Storage doesnt seem to be initialized, consider running composer install to do so.');
 			} else {
 				$this->repository = new Repository($storagePath);
 			}
