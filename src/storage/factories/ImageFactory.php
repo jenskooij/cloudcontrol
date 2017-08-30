@@ -8,21 +8,21 @@ namespace CloudControl\Cms\storage\factories;
 
 class ImageFactory
 {
-	/**
-	 * @param $postValues
-	 * @param $filename
-	 * @param $fileNames
-	 *
-	 * @return \stdClass
-	 */
-	public static function createImageFromPostValues($postValues, $filename, $fileNames)
-	{
-		$imageObject = new \stdClass();
-		$imageObject->file = $filename;
-		$imageObject->type = $postValues['type'];
-		$imageObject->size = $postValues['size'];
-		$imageObject->set = $fileNames;
+    /**
+     * @param $postValues
+     * @param $filename
+     * @param $fileNames
+     *
+     * @return \stdClass
+     */
+    public static function createImageFromPostValues($postValues, $filename, $fileNames)
+    {
+        $imageObject = new \stdClass();
+        $imageObject->file = $filename;
+        $imageObject->type = $postValues['type'];
+        $imageObject->size = $postValues['size'];
+        $imageObject->set = $fileNames;
 
-		return $imageObject;
-	}
+        return $imageObject;
+    }
 }

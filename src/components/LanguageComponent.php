@@ -1,4 +1,5 @@
 <?php
+
 namespace CloudControl\Cms\components;
 
 
@@ -25,7 +26,7 @@ class LanguageComponent implements Component
      */
     public function __construct($template, Request $request, $parameters, $matchedSitemapItem)
     {
-        $this->parameters = (array) $parameters;
+        $this->parameters = (array)$parameters;
         $this->checkParameters();
 
         $lang = substr(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : $this->defaultLanguage, 0, 2);
@@ -62,7 +63,7 @@ class LanguageComponent implements Component
             unset($this->parameters['languageParameterName']);
         }
         if (isset($this->parameters['forceRedirect'])) {
-            $this->forceRedirect = (bool) $this->parameters['forceRedirect'];
+            $this->forceRedirect = (bool)$this->parameters['forceRedirect'];
             unset($this->parameters['forceRedirect']);
         }
     }
@@ -98,7 +99,7 @@ class LanguageComponent implements Component
         $this->sessionValues = $_SESSION['LanguageComponent'];
 
         if ($this->forceRedirect === true) {
-            if (substr($request::$relativeUri, 0, 2) !== $lang ) {
+            if (substr($request::$relativeUri, 0, 2) !== $lang) {
                 if ($lang !== $this->defaultLanguage) {
                     header('Location: ' . $request::$subfolders . $lang . '/' . $request::$relativeUri);
                     exit;
@@ -123,7 +124,15 @@ class LanguageComponent implements Component
     /*
      * These functions are required by the interface, but not for the functionality
      */
-    public function run(JsonStorage $storage) {}
-    public function render() {}
-    public function get() {}
+    public function run(JsonStorage $storage)
+    {
+    }
+
+    public function render()
+    {
+    }
+
+    public function get()
+    {
+    }
 }

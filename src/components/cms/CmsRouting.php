@@ -14,12 +14,12 @@ use CloudControl\Cms\components\CmsComponent;
 
 interface CmsRouting
 {
-	/**
-	 * CmsRouting constructor.
-	 *
-	 * @param Request $request
-	 * @param string $relativeCmsUri
-	 * @param CmsComponent $cmsComponent
-	 */
-	public function __construct($request, $relativeCmsUri, $cmsComponent);
+    /**
+     * CmsRouting constructor.
+     *
+     * @param Request $request
+     * @param string $relativeCmsUri
+     * @param CmsComponent $cmsComponent
+     */
+    public function __construct($request, $relativeCmsUri, $cmsComponent);
 }

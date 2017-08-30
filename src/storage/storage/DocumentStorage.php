@@ -10,123 +10,123 @@ use CloudControl\Cms\storage\factories\DocumentFactory;
 
 class DocumentStorage extends AbstractStorage
 {
-	/**
-	 * Get documents
-	 *
-	 * @param string $state
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
-	public function getDocuments($state = 'published')
-	{
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
-		return $this->repository->getDocuments($state);
-	}
+    /**
+     * Get documents
+     *
+     * @param string $state
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getDocuments($state = 'published')
+    {
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
+        return $this->repository->getDocuments($state);
+    }
 
-	public function getDocumentsWithState($folderPath = '/')
-	{
-		return $this->repository->getDocumentsWithState($folderPath);
-	}
+    public function getDocumentsWithState($folderPath = '/')
+    {
+        return $this->repository->getDocumentsWithState($folderPath);
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getTotalDocumentCount()
-	{
-		return $this->repository->getTotalDocumentCount();
-	}
+    /**
+     * @return int
+     */
+    public function getTotalDocumentCount()
+    {
+        return $this->repository->getTotalDocumentCount();
+    }
 
-	/**
-	 * @param string $slug
-	 *
-	 * @param string $state
-	 *
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	public function getDocumentBySlug($slug, $state = 'published')
-	{
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
-		$path = '/' . $slug;
+    /**
+     * @param string $slug
+     *
+     * @param string $state
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getDocumentBySlug($slug, $state = 'published')
+    {
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
+        $path = '/' . $slug;
 
-		return $this->repository->getDocumentByPath($path, $state);
-	}
+        return $this->repository->getDocumentByPath($path, $state);
+    }
 
-	/**
-	 * @param $postValues
-	 * @param $state
-	 *
-	 * @throws \Exception
-	 */
-	public function saveDocument($postValues, $state = 'unpublished')
-	{
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
-		$oldPath = '/' . $postValues['path'];
+    /**
+     * @param $postValues
+     * @param $state
+     *
+     * @throws \Exception
+     */
+    public function saveDocument($postValues, $state = 'unpublished')
+    {
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
+        $oldPath = '/' . $postValues['path'];
 
-		$container = $this->getDocumentContainerByPath($oldPath);
-		$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
-		if ($container->path === '/') {
-			$newPath = $container->path . $documentObject->slug;
-		} else {
-			$newPath = $container->path . '/' . $documentObject->slug;
-		}
-		$documentObject->path = $newPath;
-		$this->repository->saveDocument($documentObject, $state);
-	}
+        $container = $this->getDocumentContainerByPath($oldPath);
+        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
+        if ($container->path === '/') {
+            $newPath = $container->path . $documentObject->slug;
+        } else {
+            $newPath = $container->path . '/' . $documentObject->slug;
+        }
+        $documentObject->path = $newPath;
+        $this->repository->saveDocument($documentObject, $state);
+    }
 
-	/**
-	 * @param        $postValues
-	 * @param string $state
-	 */
-	public function addDocument($postValues, $state = 'unpublished')
-	{
-		$documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
-		if ($postValues['path'] === '/') {
-			$documentObject->path = $postValues['path'] . $documentObject->slug;
-		} else {
-			$documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
-		}
+    /**
+     * @param        $postValues
+     * @param string $state
+     */
+    public function addDocument($postValues, $state = 'unpublished')
+    {
+        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
+        if ($postValues['path'] === '/') {
+            $documentObject->path = $postValues['path'] . $documentObject->slug;
+        } else {
+            $documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
+        }
 
-		$this->repository->saveDocument($documentObject, $state);
-	}
+        $this->repository->saveDocument($documentObject, $state);
+    }
 
-	/**
-	 * @param $slug
-	 */
-	public function deleteDocumentBySlug($slug)
-	{
-		$path = '/' . $slug;
-		$this->repository->deleteDocumentByPath($path);
-	}
+    /**
+     * @param $slug
+     */
+    public function deleteDocumentBySlug($slug)
+    {
+        $path = '/' . $slug;
+        $this->repository->deleteDocumentByPath($path);
+    }
 
-	/**
-	 * Returns the folder containing the document
-	 *
-	 * @param $path
-	 *
-	 * @return bool|\CloudControl\Cms\storage\Document
-	 * @throws \Exception
-	 */
-	private function getDocumentContainerByPath($path)
-	{
-		return $this->repository->getDocumentContainerByPath($path);
-	}
+    /**
+     * Returns the folder containing the document
+     *
+     * @param $path
+     *
+     * @return bool|\CloudControl\Cms\storage\Document
+     * @throws \Exception
+     */
+    private function getDocumentContainerByPath($path)
+    {
+        return $this->repository->getDocumentContainerByPath($path);
+    }
 
-	public function getPublishedDocumentsNoFolders()
-	{
-		return $this->repository->getPublishedDocumentsNoFolders();
-	}
+    public function getPublishedDocumentsNoFolders()
+    {
+        return $this->repository->getPublishedDocumentsNoFolders();
+    }
 
-	public function cleanPublishedDeletedDocuments()
-	{
-		$this->repository->cleanPublishedDeletedDocuments();
-	}
+    public function cleanPublishedDeletedDocuments()
+    {
+        $this->repository->cleanPublishedDeletedDocuments();
+    }
 
 }

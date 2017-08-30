@@ -29,7 +29,8 @@ class RedirectsStorage extends AbstractStorage
      * Add a new redirect
      * @param $postValues
      */
-    public function addRedirect($postValues) {
+    public function addRedirect($postValues)
+    {
         $redirectObject = RedirectsFactory::createRedirectFromPostValues($postValues);
         $redirects = $this->repository->redirects;
         $redirects[] = $redirectObject;
@@ -97,7 +98,8 @@ class RedirectsStorage extends AbstractStorage
      * @param $b
      * @return int
      */
-    public static function cmp($a, $b) {
+    public static function cmp($a, $b)
+    {
         return strcmp($a->title, $b->title);
     }
 }

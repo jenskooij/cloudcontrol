@@ -34,7 +34,7 @@ class ValuelistFactory
             }
             $object_vars = get_object_vars($valuelistObject->pairs);
             ksort($object_vars);
-            $valuelistObject->pairs = (object) $object_vars;
+            $valuelistObject->pairs = (object)$object_vars;
 
             return $valuelistObject;
         } else {

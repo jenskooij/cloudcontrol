@@ -6,6 +6,7 @@
  */
 
 namespace CloudControl\Cms\storage;
+
 use CloudControl\Cms\storage\storage\DocumentStorage;
 
 /**
@@ -152,7 +153,7 @@ class Repository
         $host = $this;
         array_map(function ($value) use ($host) {
             $host->saveSubset($value);
-		}, $this->fileBasedSubsets);
+        }, $this->fileBasedSubsets);
     }
 
     /**
@@ -161,18 +162,18 @@ class Repository
      */
     public function saveSubset($subset)
     {
-		$changes = $subset . 'Changes';
-		if ($this->$changes === true) {
+        $changes = $subset . 'Changes';
+        if ($this->$changes === true) {
             if (!defined('JSON_PRETTY_PRINT')) {
                 $json = json_encode($this->$subset);
             } else {
                 $json = json_encode($this->$subset, JSON_PRETTY_PRINT);
             }
-			$subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
-			file_put_contents($subsetStoragePath, $json);
+            $subsetStoragePath = $this->storagePath . DIRECTORY_SEPARATOR . $subset . '.json';
+            file_put_contents($subsetStoragePath, $json);
 
-			$this->$changes = false;
-		}
+            $this->$changes = false;
+        }
     }
 
     /**
@@ -229,33 +230,33 @@ class Repository
         return $this->contentDbHandle;
     }
 
-	/**
-	 * Get all documents
-	 *
-	 * @param string $state
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
+    /**
+     * Get all documents
+     *
+     * @param string $state
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getDocuments($state = 'published')
     {
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
         return $this->getDocumentsByPath('/', $state);
     }
 
-	public function getDocumentsWithState($folderPath = '/')
-	{
-		$db = $this->getContentDbHandle();
-		$folderPathWithWildcard = $folderPath . '%';
+    public function getDocumentsWithState($folderPath = '/')
+    {
+        $db = $this->getContentDbHandle();
+        $folderPathWithWildcard = $folderPath . '%';
 
-		$ifRootIndex = 1;
-		if ($folderPath == '/') {
-			$ifRootIndex = 0;
-		}
+        $ifRootIndex = 1;
+        if ($folderPath == '/') {
+            $ifRootIndex = 0;
+        }
 
-		$sql = '
+        $sql = '
             SELECT documents_unpublished.*,
             	   IFNULL(documents_published.state,"unpublished") as state,
             	   IFNULL(documents_published.publicationDate,NULL) as publicationDate,
@@ -269,32 +270,31 @@ class Repository
                AND documents_unpublished.path != ' . $db->quote($folderPath) . '
           ORDER BY documents_unpublished.`type` DESC, documents_unpublished.`path` ASC
         ';
-		$stmt = $this->getDbStatement($sql);
+        $stmt = $this->getDbStatement($sql);
 
 
+        $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
+        foreach ($documents as $key => $document) {
+            $documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
+        }
+        //dump($documents);
+        return $documents;
+    }
 
-		$documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
-		foreach ($documents as $key => $document) {
-			$documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
-		}
-		//dump($documents);
-		return $documents;
-	}
-
-	/**
-	 * Get all documents and folders in a certain path
-	 *
-	 * @param        $folderPath
-	 * @param string $state
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
+    /**
+     * Get all documents and folders in a certain path
+     *
+     * @param        $folderPath
+     * @param string $state
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getDocumentsByPath($folderPath, $state = 'published')
     {
-    	if (!in_array($state, Document::$DOCUMENT_STATES)) {
-    		throw new \Exception('Unsupported document state: ' . $state);
-		}
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
         $db = $this->getContentDbHandle();
         $folderPathWithWildcard = $folderPath . '%';
 
@@ -308,7 +308,7 @@ class Repository
 
         $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
         foreach ($documents as $key => $document) {
-			$documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
+            $documents = $this->setAssetsToDocumentFolders($document, $db, $documents, $key);
         }
         return $documents;
     }
@@ -329,29 +329,29 @@ class Repository
         if ($containerPath === '/') {
             return $this->getRootFolder();
         }
-        if (substr($containerPath, -1) === '/'){
-			$containerPath = substr($containerPath, 0, -1);
-		}
+        if (substr($containerPath, -1) === '/') {
+            $containerPath = substr($containerPath, 0, -1);
+        }
         $containerFolder = $this->getDocumentByPath($containerPath, 'unpublished');
         return $containerFolder;
     }
 
-	/**
-	 * @param        $path
-	 * @param string $state
-	 *
-	 * @return bool|\CloudControl\Cms\storage\Document
-	 * @throws \Exception
-	 */
+    /**
+     * @param        $path
+     * @param string $state
+     *
+     * @return bool|\CloudControl\Cms\storage\Document
+     * @throws \Exception
+     */
     public function getDocumentByPath($path, $state = 'published')
     {
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
         $db = $this->getContentDbHandle();
         $document = $this->fetchDocument('
             SELECT *
-              FROM documents_' .  $state . '
+              FROM documents_' . $state . '
              WHERE path = ' . $db->quote($path) . '
         ');
         if ($document instanceof Document && $document->type === 'folder') {
@@ -361,87 +361,88 @@ class Repository
         return $document;
     }
 
-	/**
-	 * Returns the count of all documents stored in the db
-	 *
-	 * @param string $state
-	 *
-	 * @return int
-	 * @throws \Exception
-	 */
-	public function getTotalDocumentCount($state = 'published')
-	{
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
-		$db = $this->getContentDbHandle();
-		$stmt = $db->query('
+    /**
+     * Returns the count of all documents stored in the db
+     *
+     * @param string $state
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function getTotalDocumentCount($state = 'published')
+    {
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
+        $db = $this->getContentDbHandle();
+        $stmt = $db->query('
 			SELECT count(*)
 			  FROM documents_' . $state . '
 			 WHERE `type` != "folder"
 		');
-		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
-		if (!is_array($result )) {
-			return 0;
-		}
-		return intval(current($result));
-	}
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!is_array($result)) {
+            return 0;
+        }
+        return intval(current($result));
+    }
 
-	public function getPublishedDocumentsNoFolders()
-	{
-		$db = $this->getContentDbHandle();
-		$sql = '
+    public function getPublishedDocumentsNoFolders()
+    {
+        $db = $this->getContentDbHandle();
+        $sql = '
 			SELECT *
 			  FROM documents_published
 			 WHERE `type` != "folder"
 		';
-		$stmt = $db->query($sql);
-		$result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
-		if ($stmt === false || !$stmt->execute()) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
-		return $result;
-	}
+        $stmt = $db->query($sql);
+        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
+        if ($stmt === false || !$stmt->execute()) {
+            $errorInfo = $db->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        return $result;
+    }
 
-	private function publishOrUnpublishDocumentByPath($path, $publish = true) {
-		if ($publish) {
-			$sql = '
+    private function publishOrUnpublishDocumentByPath($path, $publish = true)
+    {
+        if ($publish) {
+            $sql = '
 				INSERT OR REPLACE INTO documents_published 
 					  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
 				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" as state,`lastModificationDate`,`creationDate`,' . time() . ' as publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
 				  FROM documents_unpublished
 				 WHERE `path` = :path
 			';
-		} else {
-			$sql = 'DELETE FROM documents_published
+        } else {
+            $sql = 'DELETE FROM documents_published
 					  WHERE `path` = :path';
-		}
-		$db = $this->getContentDbHandle();
-		$stmt = $db->prepare($sql);
-		if ($stmt === false) {
-			$errorInfo = $db->errorInfo();
-			$errorMsg = $errorInfo[2];
-			throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-		}
-		$stmt->bindValue(':path', $path);
-		$stmt->execute();
-	}
+        }
+        $db = $this->getContentDbHandle();
+        $stmt = $db->prepare($sql);
+        if ($stmt === false) {
+            $errorInfo = $db->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        $stmt->bindValue(':path', $path);
+        $stmt->execute();
+    }
 
-	public function publishDocumentByPath($path)
-	{
-		$this->publishOrUnpublishDocumentByPath($path);
-	}
+    public function publishDocumentByPath($path)
+    {
+        $this->publishOrUnpublishDocumentByPath($path);
+    }
 
-	public function unpublishDocumentByPath($path)
-	{
-		$this->publishOrUnpublishDocumentByPath($path, false);
-	}
+    public function unpublishDocumentByPath($path)
+    {
+        $this->publishOrUnpublishDocumentByPath($path, false);
+    }
 
-	public function cleanPublishedDeletedDocuments()
-	{
-		$sql = '   DELETE FROM documents_published
+    public function cleanPublishedDeletedDocuments()
+    {
+        $sql = '   DELETE FROM documents_published
 						 WHERE documents_published.path IN (
 						SELECT documents_published.path
 						  FROM documents_published
@@ -449,11 +450,11 @@ class Repository
 							ON documents_unpublished.path = documents_published.path
 						 WHERE documents_unpublished.path IS NULL
 		)';
-		$stmt = $this->getDbStatement($sql);
-		$stmt->execute();
-	}
+        $stmt = $this->getDbStatement($sql);
+        $stmt->execute();
+    }
 
-	/**
+    /**
      * Return the results of the query as array of Documents
      * @param $sql
      * @return array
@@ -507,21 +508,21 @@ class Repository
         return $rootFolder;
     }
 
-	/**
-	 * Save the document to the database
-	 *
-	 * @param Document $documentObject
-	 * @param string   $state
-	 *
-	 * @return bool
-	 * @throws \Exception
-	 * @internal param $path
-	 */
+    /**
+     * Save the document to the database
+     *
+     * @param Document $documentObject
+     * @param string $state
+     *
+     * @return bool
+     * @throws \Exception
+     * @internal param $path
+     */
     public function saveDocument($documentObject, $state = 'published')
     {
-		if (!in_array($state, Document::$DOCUMENT_STATES)) {
-			throw new \Exception('Unsupported document state: ' . $state);
-		}
+        if (!in_array($state, Document::$DOCUMENT_STATES)) {
+            throw new \Exception('Unsupported document state: ' . $state);
+        }
         $db = $this->getContentDbHandle();
         $stmt = $this->getDbStatement('
             INSERT OR REPLACE INTO documents_' . $state . ' (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
@@ -545,15 +546,15 @@ class Repository
         return $result;
     }
 
-	/**
-	 * Delete the document from the database
-	 * If it's a folder, also delete it's contents
-	 *
-	 * @param        $path
-	 *
-	 * @internal param string $state
-	 *
-	 */
+    /**
+     * Delete the document from the database
+     * If it's a folder, also delete it's contents
+     *
+     * @param        $path
+     *
+     * @internal param string $state
+     *
+     */
     public function deleteDocumentByPath($path)
     {
         $db = $this->getContentDbHandle();
@@ -578,24 +579,24 @@ class Repository
         }
     }
 
-	/**
-	 * @param $document
-	 * @param $db
-	 * @param $documents
-	 * @param $key
-	 *
-	 * @return mixed
-	 */
-	private function setAssetsToDocumentFolders($document, $db, $documents, $key)
-	{
-		if ($document->type === 'folder') {
-			$document->dbHandle = $db;
-			$document->documentStorage = new DocumentStorage($this);
-			$documents[$key] = $document;
-		}
+    /**
+     * @param $document
+     * @param $db
+     * @param $documents
+     * @param $key
+     *
+     * @return mixed
+     */
+    private function setAssetsToDocumentFolders($document, $db, $documents, $key)
+    {
+        if ($document->type === 'folder') {
+            $document->dbHandle = $db;
+            $document->documentStorage = new DocumentStorage($this);
+            $documents[$key] = $document;
+        }
 
-		return $documents;
-	}
+        return $documents;
+    }
 
     private function initConfigIfNotExists($json, $subsetName)
     {

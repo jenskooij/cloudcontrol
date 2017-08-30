@@ -13,26 +13,26 @@ use CloudControl\Cms\storage\Document;
 
 class DocumentFolderFactory
 {
-	/**
-	 * Create folder from post values
-	 *
-	 * @param $postValues
-	 *
-	 * @return Document
-	 * @throws \Exception
-	 */
-	public static function createDocumentFolderFromPostValues($postValues)
-	{
-		if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
-			$documentFolderObject = new Document();
-			$documentFolderObject->title = $postValues['title'];
-			$documentFolderObject->slug = StringUtil::slugify($postValues['title']);
-			$documentFolderObject->type = 'folder';
-			$documentFolderObject->content = json_decode($postValues['content']);
+    /**
+     * Create folder from post values
+     *
+     * @param $postValues
+     *
+     * @return Document
+     * @throws \Exception
+     */
+    public static function createDocumentFolderFromPostValues($postValues)
+    {
+        if (isset($postValues['title'], $postValues['path'], $postValues['content'])) {
+            $documentFolderObject = new Document();
+            $documentFolderObject->title = $postValues['title'];
+            $documentFolderObject->slug = StringUtil::slugify($postValues['title']);
+            $documentFolderObject->type = 'folder';
+            $documentFolderObject->content = json_decode($postValues['content']);
 
-			return $documentFolderObject;
-		} else {
-			throw new \Exception('Trying to create document folder with invalid data.');
-		}
-	}
+            return $documentFolderObject;
+        } else {
+            throw new \Exception('Trying to create document folder with invalid data.');
+        }
+    }
 }

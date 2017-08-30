@@ -17,61 +17,61 @@ use CloudControl\Cms\storage\Storage;
  */
 abstract class SearchDbConnected
 {
-	/**
-	 * @var \PDO
-	 */
-	protected $searchDbHandle;
+    /**
+     * @var \PDO
+     */
+    protected $searchDbHandle;
 
-	/**
-	 * @var \CloudControl\Cms\storage\Storage
-	 */
-	protected $storage;
-	/**
-	 * @var string
-	 */
-	protected $storageDir;
+    /**
+     * @var \CloudControl\Cms\storage\Storage
+     */
+    protected $storage;
+    /**
+     * @var string
+     */
+    protected $storageDir;
 
-	/**
-	 * Indexer constructor.
-	 *
-	 * @param \CloudControl\Cms\storage\Storage $storage
-	 */
-	public function __construct(Storage $storage)
-	{
-		$this->storageDir = $storage->getStorageDir();
-		$this->storage = $storage;
-		$this->initializeDb();
-	}
+    /**
+     * Indexer constructor.
+     *
+     * @param \CloudControl\Cms\storage\Storage $storage
+     */
+    public function __construct(Storage $storage)
+    {
+        $this->storageDir = $storage->getStorageDir();
+        $this->storage = $storage;
+        $this->initializeDb();
+    }
 
-	protected function initializeDb()
-	{
-		if (!$this->isDatabaseConfigured()) {
-			$this->configureDatabase();
-		}
-	}
+    protected function initializeDb()
+    {
+        if (!$this->isDatabaseConfigured()) {
+            $this->configureDatabase();
+        }
+    }
 
-	protected function configureDatabase()
-	{
-		$db = $this->getSearchDbHandle();
-		$sqlPath = __DIR__ . DIRECTORY_SEPARATOR . '../cc/install/search.sql';
-		$searchSql = file_get_contents($sqlPath);
-		$db->exec($searchSql);
-	}
+    protected function configureDatabase()
+    {
+        $db = $this->getSearchDbHandle();
+        $sqlPath = __DIR__ . DIRECTORY_SEPARATOR . '../cc/install/search.sql';
+        $searchSql = file_get_contents($sqlPath);
+        $db->exec($searchSql);
+    }
 
-	protected function isDatabaseConfigured()
-	{
-		$db = $this->getSearchDbHandle();
-		$stmt = $db->query('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'term_count\';');
-		$result = $stmt->fetchAll();
-		return !empty($result);
-	}
+    protected function isDatabaseConfigured()
+    {
+        $db = $this->getSearchDbHandle();
+        $stmt = $db->query('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'term_count\';');
+        $result = $stmt->fetchAll();
+        return !empty($result);
+    }
 
-	protected function getSearchDbHandle()
-	{
-		if ($this->searchDbHandle === null) {
-			$path = $this->storageDir . DIRECTORY_SEPARATOR;
-			$this->searchDbHandle = new \PDO('sqlite:' . $path . 'search.db');
-		}
-		return $this->searchDbHandle;
-	}
+    protected function getSearchDbHandle()
+    {
+        if ($this->searchDbHandle === null) {
+            $path = $this->storageDir . DIRECTORY_SEPARATOR;
+            $this->searchDbHandle = new \PDO('sqlite:' . $path . 'search.db');
+        }
+        return $this->searchDbHandle;
+    }
 }
