@@ -70,7 +70,7 @@
       <li class="grid-box-6">
         <ul class="grid-inner activityLog">
             <? foreach ($activityLog as $row) : ?>
-              <li>
+              <li class="row">
                   <? if ($row->icon !== null) : ?>
                     <i class="fa fa-<?=$row->icon?>"></i>
                   <? endif ?>

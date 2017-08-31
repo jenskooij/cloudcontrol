@@ -92,7 +92,10 @@ class SearchRouting implements CmsRouting
             case 'createDocumentTermFrequency': $indexer->createDocumentTermFrequency(); break;
             case 'createTermFieldLengthNorm': $indexer->createTermFieldLengthNorm(); break;
             case 'createInverseDocumentFrequency': $indexer->createInverseDocumentFrequency(); break;
-            case 'replaceOldIndex': $indexer->replaceOldIndex(); break;
+            case 'replaceOldIndex':
+                $indexer->replaceOldIndex();
+                $cmsComponent->storage->getActivityLog()->add('updated search index', 'search');
+                break;
             default : $this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error'); break;
         }
         $this->showJson('done');

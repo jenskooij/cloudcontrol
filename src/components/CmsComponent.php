@@ -229,6 +229,7 @@ namespace CloudControl\Cms\components {
         private function logOffRouting($request, $relativeCmsUri)
         {
             if ($relativeCmsUri == '/log-off') {
+                $this->storage->getActivityLog()->add('logged off', 'user');
                 $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = null;
                 unset($_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]);
                 header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX]);
@@ -344,6 +345,7 @@ namespace CloudControl\Cms\components {
 
             if ($passwordCorrect) {
                 $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = $user;
+                $this->storage->getActivityLog()->add('logged in', 'user');
             } else {
                 $this->parameters[self::PARAMETER_ERROR_MESSAGE] = self::INVALID_CREDENTIALS_MESSAGE;
                 $this->showLogin();
