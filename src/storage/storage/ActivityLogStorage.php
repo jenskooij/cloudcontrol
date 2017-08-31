@@ -17,9 +17,9 @@ class ActivityLogStorage extends AbstractStorage
         return $this->repository->activityLog;
     }
 
-    public function add($message)
+    public function add($message, $icon = null)
     {
-        $activity = $this->createActivity($message);
+        $activity = $this->createActivity($message, $icon);
 
         $activityLog = $this->repository->activityLog;
         $activityLog[] = $activity;
@@ -31,13 +31,15 @@ class ActivityLogStorage extends AbstractStorage
 
     /**
      * @param $message
+     * @param $icon
      * @return \stdClass
      */
-    private function createActivity($message)
+    private function createActivity($message, $icon)
     {
         $stdObj = new \stdClass();
         $stdObj->timestamp = time();
         $stdObj->message = $message;
+        $stdObj->icon = $icon;
         $ccSessionObj = $_SESSION[CmsComponent::SESSION_PARAMETER_CLOUD_CONTROL];
         $stdObj->user = isset($ccSessionObj->username) ? $ccSessionObj->username : 'undefined';
         return $stdObj;

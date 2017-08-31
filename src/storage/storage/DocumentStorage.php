@@ -61,6 +61,7 @@ class DocumentStorage extends AbstractStorage
      * @param $postValues
      * @param $state
      *
+     * @return string path
      * @throws \Exception
      */
     public function saveDocument($postValues, $state = 'unpublished')
@@ -79,22 +80,26 @@ class DocumentStorage extends AbstractStorage
         }
         $documentObject->path = $newPath;
         $this->repository->saveDocument($documentObject, $state);
+        return $newPath;
     }
 
     /**
      * @param        $postValues
      * @param string $state
+     * @return string path
      */
     public function addDocument($postValues, $state = 'unpublished')
     {
         $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
         if ($postValues['path'] === '/') {
-            $documentObject->path = $postValues['path'] . $documentObject->slug;
+            $path = $postValues['path'] . $documentObject->slug;
         } else {
-            $documentObject->path = $postValues['path'] . '/' . $documentObject->slug;
+            $path = $postValues['path'] . '/' . $documentObject->slug;
         }
 
+        $documentObject->path = $path;
         $this->repository->saveDocument($documentObject, $state);
+        return $path;
     }
 
     /**

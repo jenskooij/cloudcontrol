@@ -8,6 +8,7 @@
 namespace CloudControl\Cms\components\cms;
 
 
+use CloudControl\Cms\cc\StringUtil;
 use CloudControl\Cms\components\CmsComponent;
 
 class DocumentRouting implements CmsRouting
@@ -94,8 +95,9 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         if (isset($request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE])) {
             if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsComponent::GET_PARAMETER_PATH])) {
-                $cmsComponent->storage->getDocuments()->addDocument($request::$post);
-                $cmsComponent->storage->getActivityLog()->add('created document ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH]);
+                $path = substr($cmsComponent->storage->getDocuments()->addDocument($request::$post), 1);
+                $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+                $cmsComponent->storage->getActivityLog()->add('created document <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a> in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'plus');
                 header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
                 exit;
             }
@@ -120,8 +122,9 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         $cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $cmsComponent->storage->getDocuments()->saveDocument($request::$post);
-            $cmsComponent->storage->getActivityLog()->add('edited document ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+            $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
+            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+            $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
         }
@@ -159,7 +162,7 @@ class DocumentRouting implements CmsRouting
     private function deleteDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->deleteDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        $cmsComponent->storage->getActivityLog()->add('deleted document /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getActivityLog()->add('deleted document /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
         exit;
     }
@@ -174,7 +177,7 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post[CmsComponent::GET_PARAMETER_PATH])) {
             $cmsComponent->storage->addDocumentFolder($request::$post);
-            $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH]);
+            $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'plus');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
         }
@@ -198,7 +201,7 @@ class DocumentRouting implements CmsRouting
 
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post['content'])) {
             $cmsComponent->storage->saveDocumentFolder($request::$post);
-            $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH]);
+            $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
         }
@@ -214,7 +217,7 @@ class DocumentRouting implements CmsRouting
     private function deleteFolderRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
         exit;
     }
@@ -226,6 +229,9 @@ class DocumentRouting implements CmsRouting
     private function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->publishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add('published document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'check-circle-o');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
         exit;
     }
@@ -237,6 +243,9 @@ class DocumentRouting implements CmsRouting
     private function unpublishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->unpublishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
         exit;
     }
@@ -248,12 +257,18 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
     }
 
+    /**
+     * @param $request
+     * @param CmsComponent $cmsComponent
+     */
     private function newValuelistRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents/valuelist-form';
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-            $cmsComponent->storage->getValuelists()->addValuelist($request::$post);
+            $slug = $cmsComponent->storage->getValuelists()->addValuelist($request::$post);
+            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists/edit?slug=' . $slug;
+            $cmsComponent->storage->getActivityLog()->add('created valuelist <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a>', 'plus');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
             exit;
         }
@@ -266,6 +281,8 @@ class DocumentRouting implements CmsRouting
 
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
             $cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
+            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists/edit?slug=' . $request::$get[CmsComponent::GET_PARAMETER_SLUG];
+            $cmsComponent->storage->getActivityLog()->add('edited valuelist <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a>', 'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
             exit;
         }
@@ -277,6 +294,7 @@ class DocumentRouting implements CmsRouting
     private function deleteValuelistRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getValuelists()->deleteValuelistBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getActivityLog()->add('deleted valuelist ' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
         exit;
     }

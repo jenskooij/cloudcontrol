@@ -22,6 +22,10 @@ class ValuelistsStorage extends AbstractStorage
         return $this->repository->valuelists;
     }
 
+    /**
+     * @param $postValues
+     * @return string slug
+     */
     public function addValuelist($postValues)
     {
         $valueListObject = ValuelistFactory::createValuelistFromPostValues($postValues);
@@ -29,6 +33,7 @@ class ValuelistsStorage extends AbstractStorage
         $valuelists[] = $valueListObject;
         $this->repository->valuelists = $valuelists;
         $this->save();
+        return $valueListObject->slug;
     }
 
     /**
