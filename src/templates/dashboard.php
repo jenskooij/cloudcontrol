@@ -1,11 +1,21 @@
 <section class="dashboard ">
   <nav class="tiles grid-wrapper">
     <ul class="grid-container">
+
       <li class="tile grid-box-3">
         <a class="btn return" href="<?= $request::$subfolders ?>">
           <i class="fa fa-reply"></i>
           Return to site
         </a>
+      </li>
+      <li class="activityLog grid-box-6">
+        <ul class="grid-inner">
+          <? foreach ($activityLog as $row) : ?>
+            <li>
+              <span class="timestamp"><?=\CloudControl\Cms\cc\StringUtil::timeElapsedString($row->timestamp)?></span> <b><?=$row->user?></b> <?=$row->message?>
+            </li>
+          <? endforeach ?>
+        </ul>
       </li>
         <? if (in_array('documents', $userRights)) : ?>
           <li class="tile grid-box-3">

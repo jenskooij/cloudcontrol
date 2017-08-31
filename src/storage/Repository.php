@@ -22,12 +22,13 @@ use CloudControl\Cms\storage\storage\DocumentStorage;
  * @property array users
  * @property array valuelists
  * @property array redirects
+ * @property array activityLog
  */
 class Repository
 {
     protected $storagePath;
 
-    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists', 'redirects');
+    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists', 'redirects', 'activityLog');
 
     protected $sitemap;
     protected $sitemapChanges = false;
@@ -58,6 +59,9 @@ class Repository
 
     protected $redirects;
     protected $redirectsChanges = false;
+
+    protected $activityLog;
+    protected $activityLogChanges = false;
 
     protected $contentDbHandle;
 
@@ -217,6 +221,7 @@ class Repository
         $this->initConfigIfNotExists($json, 'users');
         $this->initConfigIfNotExists($json, 'valuelists');
         $this->initConfigIfNotExists($json, 'redirects');
+        $this->initConfigIfNotExists($json, 'activityLog');
     }
 
     /**
@@ -516,7 +521,6 @@ class Repository
      *
      * @return bool
      * @throws \Exception
-     * @internal param $path
      */
     public function saveDocument($documentObject, $state = 'published')
     {
@@ -551,9 +555,6 @@ class Repository
      * If it's a folder, also delete it's contents
      *
      * @param        $path
-     *
-     * @internal param string $state
-     *
      */
     public function deleteDocumentByPath($path)
     {

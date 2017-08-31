@@ -253,6 +253,7 @@ namespace CloudControl\Cms\components {
         {
             if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
                 $this->subTemplate = 'dashboard';
+                $this->parameters['activityLog'] = $this->storage->getActivityLog()->getActivityLog();
             }
         }
 

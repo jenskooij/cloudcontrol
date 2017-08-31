@@ -3,6 +3,7 @@
 namespace CloudControl\Cms\storage {
 
     use CloudControl\Cms\storage\factories\DocumentFolderFactory;
+    use CloudControl\Cms\storage\storage\ActivityLogStorage;
     use CloudControl\Cms\storage\storage\ApplicationComponentsStorage;
     use CloudControl\Cms\storage\storage\BricksStorage;
     use CloudControl\Cms\storage\storage\DocumentStorage;
@@ -66,6 +67,11 @@ namespace CloudControl\Cms\storage {
          * @var RedirectsStorage
          */
         protected $redirects;
+
+        /**
+         * @var ActivityLogStorage
+         */
+        protected $activityLog;
         /**
          * @var String
          */
@@ -342,6 +348,18 @@ namespace CloudControl\Cms\storage {
             }
             return $this->redirects;
         }
+
+        /**
+         * @return ActivityLogStorage
+         */
+        public function getActivityLog()
+        {
+            if (!$this->activityLog instanceof ActivityLogStorage) {
+                $this->activityLog = new ActivityLogStorage($this->repository);
+            }
+            return $this->activityLog;
+        }
+
 
     }
 }
