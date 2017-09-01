@@ -7,10 +7,10 @@
 
 namespace CloudControl\Cms\components;
 
-use search\CharacterFilter;
-use search\Search;
-use search\Tokenizer;
-use storage\Storage;
+use CloudControl\Cms\search\CharacterFilter;
+use CloudControl\Cms\search\Search;
+use CloudControl\Cms\search\Tokenizer;
+use CloudControl\Cms\storage\Storage;
 
 class SearchComponent extends BaseComponent
 {

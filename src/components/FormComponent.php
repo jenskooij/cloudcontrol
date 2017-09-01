@@ -3,8 +3,9 @@
 namespace CloudControl\Cms\components;
 
 
-use cc\Application;
-use storage\Storage;
+use CloudControl\Cms\cc\Application;
+use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\storage\Storage;
 
 class FormComponent Extends BaseComponent
 {
@@ -182,7 +183,7 @@ class FormComponent Extends BaseComponent
     }
 
     /**
-     * @param \cc\Request $request
+     * @param Request $request
      * @return array
      */
     private function getPostValues($request)
@@ -293,7 +294,7 @@ class FormComponent Extends BaseComponent
     }
 
     /**
-     * @return \cc\Request
+     * @return Request
      */
     private function setPathBackup()
     {
@@ -307,7 +308,7 @@ class FormComponent Extends BaseComponent
     }
 
     /**
-     * @param \cc\Request $request
+     * @param Request $request
      */
     private function resetPathBackup($request)
     {

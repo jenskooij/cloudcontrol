@@ -3,7 +3,8 @@
 namespace CloudControl\Cms\components;
 
 
-use cc\Request;
+use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\storage\Storage;
 
 class LanguageComponent implements Component
 {
@@ -121,18 +122,19 @@ class LanguageComponent implements Component
         }
     }
 
-    /*
-     * These functions are required by the interface, but not for the functionality
-     */
-    public function run(JsonStorage $storage)
-    {
-    }
-
     public function render()
     {
     }
 
     public function get()
     {
+    }
+
+    /**
+     * @param Storage $storage
+     */
+    function run(Storage $storage)
+    {
+        // To be implemented
     }
 }

@@ -6,7 +6,7 @@
 namespace CloudControl\Cms\components;
 
 
-use storage\Storage;
+use CloudControl\Cms\storage\Storage;
 
 class DocumentFolderComponent extends BaseComponent
 {
