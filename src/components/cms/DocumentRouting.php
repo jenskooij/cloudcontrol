@@ -8,6 +8,7 @@
 namespace CloudControl\Cms\components\cms;
 
 
+use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\storage\Document;
 
@@ -22,21 +23,7 @@ class DocumentRouting implements CmsRouting
     public function __construct($request, $relativeCmsUri, $cmsComponent)
     {
         if ($relativeCmsUri == '/documents') {
-            $cmsComponent->subTemplate = 'documents';
-            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocumentsWithState());
-            $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-            if (isset($_GET['not-found'])) {
-                $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
-                $cmsComponent->setParameter('infoMessageClass', 'error');
-            } elseif (isset($_GET['published'])) {
-                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-check-circle-o"></i> Document ' . $_GET['published'] . ' published');
-            } elseif (isset($_GET['unpublished'])) {
-                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-times-circle-o"></i> Document ' . $_GET['unpublished'] . ' unpublished');
-            } elseif (isset($_GET['folder-delete'])) {
-                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Folder deleted');
-            } elseif (isset($_GET['document-delete'])) {
-                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Document deleted');
-            }
+            $this->overviewRouting($cmsComponent, $request);
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
         $this->folderRouting($request, $relativeCmsUri, $cmsComponent);
@@ -117,8 +104,13 @@ class DocumentRouting implements CmsRouting
             $cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
         } else {
             $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-            if (count($documentTypes) < 1) {
-                throw new \Exception('No Document Types defined yet. Please do so first.');
+            $docTypesCount = count($documentTypes);
+            if ($docTypesCount < 1) {
+                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?no-document-types');
+                exit;
+            } elseif ($docTypesCount == 1) {
+                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
+                exit;
             }
             $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPES, $documentTypes);
         }
@@ -317,5 +309,31 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->storage->getActivityLog()->add('deleted valuelist ' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
         exit;
+    }
+
+    /**
+     * @param $cmsComponent
+     * @param Request $request
+     */
+    private function overviewRouting($cmsComponent, $request)
+    {
+        $cmsComponent->subTemplate = 'documents';
+        $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocumentsWithState());
+        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+        if (isset($_GET['not-found'])) {
+            $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
+            $cmsComponent->setParameter('infoMessageClass', 'error');
+        } elseif (isset($_GET['published'])) {
+            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-check-circle-o"></i> Document ' . $_GET['published'] . ' published');
+        } elseif (isset($_GET['unpublished'])) {
+            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-times-circle-o"></i> Document ' . $_GET['unpublished'] . ' unpublished');
+        } elseif (isset($_GET['folder-delete'])) {
+            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Folder deleted');
+        } elseif (isset($_GET['document-delete'])) {
+            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Document deleted');
+        } elseif (isset($_GET['no-document-types'])) {
+            $documentTypesLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/configuration/document-types/new';
+            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-exclamation-circle"></i> No document types defined yet. Please do so first, <a href="' . $documentTypesLink . '">here</a>.');
+        }
     }
 }
