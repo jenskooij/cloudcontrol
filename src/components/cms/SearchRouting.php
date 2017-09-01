@@ -8,6 +8,7 @@
 namespace CloudControl\Cms\components\cms;
 
 
+use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Indexer;
 use CloudControl\Cms\search\Search;
@@ -26,7 +27,7 @@ class SearchRouting implements CmsRouting
     {
         switch ($relativeCmsUri) {
             case '/search': $this->overviewRoute($cmsComponent); break;
-            case '/search/update-index' : $this->updateIndexRoute($cmsComponent); break;
+            case '/search/update-index' : $this->updateIndexRoute($cmsComponent, $request); break;
             case '/search/ajax-update-index': $this->ajaxUpdateIndexRoute($request, $cmsComponent); break;
             case '/search/manual-update-index' : $indexer = new Indexer($cmsComponent->storage); $indexer->updateIndex(); break;
         }
@@ -47,8 +48,9 @@ class SearchRouting implements CmsRouting
 
     /**
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
+     * @param Request $request
      */
-    private function updateIndexRoute($cmsComponent)
+    private function updateIndexRoute($cmsComponent, $request)
     {
         $cmsComponent->subTemplate = 'search/update-index';
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
