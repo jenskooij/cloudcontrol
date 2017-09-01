@@ -8,8 +8,8 @@
 namespace CloudControl\Cms\components\cms;
 
 
-use CloudControl\Cms\cc\StringUtil;
 use CloudControl\Cms\components\CmsComponent;
+use CloudControl\Cms\storage\Document;
 
 class DocumentRouting implements CmsRouting
 {
@@ -25,6 +25,18 @@ class DocumentRouting implements CmsRouting
             $cmsComponent->subTemplate = 'documents';
             $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocumentsWithState());
             $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+            if (isset($_GET['not-found'])) {
+                $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
+                $cmsComponent->setParameter('infoMessageClass', 'error');
+            } elseif (isset($_GET['published'])) {
+                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-check-circle-o"></i> Document ' . $_GET['published'] . ' published');
+            } elseif (isset($_GET['unpublished'])) {
+                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-times-circle-o"></i> Document ' . $_GET['unpublished'] . ' unpublished');
+            } elseif (isset($_GET['folder-delete'])) {
+                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Folder deleted');
+            } elseif (isset($_GET['document-delete'])) {
+                $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Document deleted');
+            }
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
         $this->folderRouting($request, $relativeCmsUri, $cmsComponent);
@@ -128,9 +140,17 @@ class DocumentRouting implements CmsRouting
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
         }
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG], 'unpublished'));
+        $document = $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG], 'unpublished');
+        $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT, $document);
+
         $request::$get[CmsComponent::GET_PARAMETER_PATH] = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($cmsComponent->getParameter(CmsComponent::PARAMETER_DOCUMENT)->documentTypeSlug, true));
+        if ($document instanceof Document) {
+            $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug, true));
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?not-found');
+            exit;
+        }
+
         $cmsComponent->setParameter(CmsComponent::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
     }
 
@@ -163,7 +183,7 @@ class DocumentRouting implements CmsRouting
     {
         $cmsComponent->storage->getDocuments()->deleteDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         $cmsComponent->storage->getActivityLog()->add('deleted document /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?document-delete');
         exit;
     }
 
@@ -218,7 +238,7 @@ class DocumentRouting implements CmsRouting
     {
         $cmsComponent->storage->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?folder-delete');
         exit;
     }
 
@@ -232,7 +252,7 @@ class DocumentRouting implements CmsRouting
         $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('published document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'check-circle-o');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?published=' . htmlentities($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
         exit;
     }
 
@@ -246,7 +266,7 @@ class DocumentRouting implements CmsRouting
         $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' . htmlentities($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
         exit;
     }
 

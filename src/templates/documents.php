@@ -7,6 +7,11 @@
   };</script>
 <section class="documents">
   <h2><i class="fa fa-file-text-o"></i> Documents</h2>
+    <? if (isset($infoMessage)) : ?>
+      <div class="infoMessage <?= isset($infoMessageClass) ? $infoMessageClass : '' ?>">
+          <?= $infoMessage ?>
+      </div>
+    <? endif ?>
   <nav class="actions">
     <ul>
       <li>
