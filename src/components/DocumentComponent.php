@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\components {
 
+    use CloudControl\Cms\storage\Document;
     use CloudControl\Cms\storage\Storage;
 
     /**
@@ -14,7 +15,7 @@ namespace CloudControl\Cms\components {
      *
      * @package CloudControl\Cms\components
      */
-    class DocumentComponent extends BaseComponent
+    class DocumentComponent extends NotFoundComponent
     {
         protected $documentParameterName = 'document';
 
@@ -110,14 +111,21 @@ namespace CloudControl\Cms\components {
 
                 $document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri);
 
-                if ($document->type == 'folder') {
-                    throw new \Exception('The found document is a folder.');
+                if ($document instanceof Document) {
+                    if ($document->type == 'folder') {
+                        throw new \Exception('The found document is a folder.');
+                    }
+
+                    if ($document->state != 'published') {
+                        throw new \Exception('Found document is unpublished.');
+                    }
+                    $this->parameters[$this->documentParameterName] = $document;
+                } else {
+                    $this->set404Header();
+                    $this->set404Template();
                 }
 
-                if ($document->state != 'published') {
-                    throw new \Exception('Found document is unpublished.');
-                }
-                $this->parameters[$this->documentParameterName] = $document;
+
             }
         }
 
@@ -126,7 +134,13 @@ namespace CloudControl\Cms\components {
          */
         private function runByDocumentParameter()
         {
-            $this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
+            $document = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
+            if ($document instanceof Document) {
+                $this->parameters[$this->documentParameterName] = $document;
+            } else {
+                $this->set404Header();
+                $this->set404Template();
+            }
         }
     }
 }
