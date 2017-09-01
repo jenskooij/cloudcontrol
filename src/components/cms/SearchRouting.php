@@ -52,6 +52,12 @@ class SearchRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'search/update-index';
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
+        if (isset($_GET['returnUrl'])) {
+            $returnUrl = $_GET['returnUrl'];
+        } else {
+            $returnUrl = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/search';
+        }
+        $cmsComponent->setParameter(CmsComponent::PARAMETER_RETURN_URL, $returnUrl);
     }
 
     private function ajaxUpdateIndexRoute($request, $cmsComponent)

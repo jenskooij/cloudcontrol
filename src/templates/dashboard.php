@@ -1,4 +1,11 @@
-<? /** @var \stdClass $activityLog */ ?>
+<?
+/** @var \stdClass $activityLog
+ * @var bool $searchNeedsUpdate
+ * @var \CloudControl\Cms\cc\Request $request
+ * @var array $userRights
+ * @var string $cmsPrefix
+ */
+?>
 <section class="dashboard ">
 
   <div class="grid-wrapper">
@@ -69,6 +76,20 @@
       </li>
       <li class="grid-box-6">
         <div class="grid-inner">
+          <div class="search">
+              <? if ($searchNeedsUpdate) : ?>
+                <div class="message warning">
+                  <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+                    <? if (in_array('search', $userRights)) : ?>
+                      <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?=urlencode($request::$subfolders . $cmsPrefix)?>" title="Update Index">Update Index</a>
+                    <? endif ?>
+                </div>
+              <? else : ?>
+                <div class="message valid">
+                  <i class="fa fa-check"></i> Search index is in sync with documents.
+                </div>
+              <? endif ?>
+          </div>
           <ul class="activityLog">
               <? foreach ($activityLog as $row) : ?>
                 <li class="row">

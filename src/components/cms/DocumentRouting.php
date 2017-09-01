@@ -10,6 +10,7 @@ namespace CloudControl\Cms\components\cms;
 
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
+use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\Document;
 
 class DocumentRouting implements CmsRouting
@@ -312,7 +313,7 @@ class DocumentRouting implements CmsRouting
     }
 
     /**
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param Request $request
      */
     private function overviewRouting($cmsComponent, $request)
@@ -320,6 +321,12 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->subTemplate = 'documents';
         $cmsComponent->setParameter(CmsComponent::PARAMETER_DOCUMENTS, $cmsComponent->storage->getDocuments()->getDocumentsWithState());
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
+
+        $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
+        $indexer = new Search($cmsComponent->storage);
+        $indexedDocuments = $indexer->getIndexedDocuments();
+        $cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
+
         if (isset($_GET['not-found'])) {
             $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
             $cmsComponent->setParameter('infoMessageClass', 'error');

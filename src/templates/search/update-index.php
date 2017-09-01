@@ -4,7 +4,7 @@
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search" title="Back">Back</a>
+        <a class="btn" href="<?=$returnUrl?>" title="Back">Back</a>
       </li>
     </ul>
   </nav>

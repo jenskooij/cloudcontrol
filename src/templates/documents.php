@@ -12,6 +12,20 @@
           <?= $infoMessage ?>
       </div>
     <? endif ?>
+  <div class="search">
+      <? if ($searchNeedsUpdate) : ?>
+        <div class="message warning">
+          <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+            <? if (in_array('search', $userRights)) : ?>
+              <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?=urlencode($request::$subfolders . $cmsPrefix . '/documents')?>" title="Update Index">Update Index</a>
+            <? endif ?>
+        </div>
+      <? else : ?>
+        <div class="message valid">
+          <i class="fa fa-check"></i> Search index is in sync with documents.
+        </div>
+      <? endif ?>
+  </div>
   <nav class="actions">
     <ul>
       <li>

@@ -9,6 +9,7 @@ namespace CloudControl\Cms\components {
     use CloudControl\Cms\components\cms\SearchRouting;
     use CloudControl\Cms\components\cms\SitemapRouting;
     use CloudControl\Cms\crypt\Crypt;
+    use CloudControl\Cms\search\Search;
     use CloudControl\Cms\storage\Storage;
 
     class CmsComponent extends BaseComponent
@@ -44,6 +45,7 @@ namespace CloudControl\Cms\components {
         const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
         const PARAMETER_REDIRECT = 'redirect';
         const PARAMETER_REDIRECTS = 'redirects';
+        const PARAMETER_RETURN_URL = 'returnUrl';
         const PARAMETER_SEARCH = 'search';
         const PARAMETER_SEARCH_LOG = "searchLog";
         const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";
@@ -255,6 +257,10 @@ namespace CloudControl\Cms\components {
             if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
                 $this->subTemplate = 'dashboard';
                 $this->parameters['activityLog'] = $this->storage->getActivityLog()->getActivityLog();
+                $documentCount = $this->storage->getDocuments()->getTotalDocumentCount();
+                $indexer = new Search($this->storage);
+                $indexedDocuments = $indexer->getIndexedDocuments();
+                $this->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
             }
         }
 
