@@ -68,18 +68,20 @@
         </div>
       </li>
       <li class="grid-box-6">
-        <ul class="grid-inner activityLog">
-            <? foreach ($activityLog as $row) : ?>
-              <li class="row">
-                  <? if ($row->icon !== null) : ?>
-                    <i class="fa fa-<?=$row->icon?>"></i>
-                  <? endif ?>
-                <span class="timestamp"><?= \CloudControl\Cms\cc\StringUtil::timeElapsedString($row->timestamp) ?></span>
-                <b><?= $row->user ?></b>
-                <span class="message"><?= $row->message ?></span>
-              </li>
-            <? endforeach ?>
-        </ul>
+        <div class="grid-inner">
+          <ul class="activityLog">
+              <? foreach ($activityLog as $row) : ?>
+                <li class="row">
+                    <? if ($row->icon !== null) : ?>
+                      <i class="fa fa-<?= $row->icon ?>"></i>
+                    <? endif ?>
+                  <span class="timestamp"><?= \CloudControl\Cms\cc\StringUtil::timeElapsedString($row->timestamp) ?></span>
+                  <b><?= $row->user ?></b>
+                  <span class="message"><?= $row->message ?></span>
+                </li>
+              <? endforeach ?>
+          </ul>
+        </div>
       </li>
     </ul>
   </div>
