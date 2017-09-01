@@ -70,7 +70,7 @@ namespace CloudControl\Cms\components {
          */
         private function runLikeRegularComponent()
         {
-            if ($this->matchedSitemapItem->regex == false) {
+            if ($this->matchedSitemapItem->regex == false || isset($this->parameters['document'])) {
                 $this->runWithoutRegex();
             } else {
                 $this->runWithRegex();
@@ -98,34 +98,15 @@ namespace CloudControl\Cms\components {
          */
         private function runWithRegex()
         {
-            if (isset($this->parameters['document'])) {
-                $this->runByDocumentParameter();
+            $relativeDocumentUri = $this->checkForSpecificFolder();
+
+            $document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri);
+
+            if ($document instanceof Document && $document->state == 'published' && $document->type != 'folder') {
+                $this->parameters[$this->documentParameterName] = $document;
             } else {
-                $relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
-                if (isset($this->parameters['folder'])) {
-                    if (substr($this->parameters['folder'], -1) !== '/') {
-                        $this->parameters['folder'] = $this->parameters['folder'] . '/';
-                    }
-                    $relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
-                }
-
-                $document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri);
-
-                if ($document instanceof Document) {
-                    if ($document->type == 'folder') {
-                        throw new \Exception('The found document is a folder.');
-                    }
-
-                    if ($document->state != 'published') {
-                        throw new \Exception('Found document is unpublished.');
-                    }
-                    $this->parameters[$this->documentParameterName] = $document;
-                } else {
-                    $this->set404Header();
-                    $this->set404Template();
-                }
-
-
+                $this->set404Header();
+                $this->set404Template();
             }
         }
 
@@ -141,6 +122,21 @@ namespace CloudControl\Cms\components {
                 $this->set404Header();
                 $this->set404Template();
             }
+        }
+
+        /**
+         * @return mixed|string
+         */
+        private function checkForSpecificFolder()
+        {
+            $relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
+            if (isset($this->parameters['folder'])) {
+                if (substr($this->parameters['folder'], -1) !== '/') {
+                    $this->parameters['folder'] = $this->parameters['folder'] . '/';
+                }
+                $relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
+            }
+            return $relativeDocumentUri;
         }
     }
 }

@@ -327,6 +327,15 @@ class DocumentRouting implements CmsRouting
         $indexedDocuments = $indexer->getIndexedDocuments();
         $cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
 
+        $this->handleInfoMessages($cmsComponent, $request);
+    }
+
+    /**
+     * @param CmsComponent $cmsComponent
+     * @param Request $request
+     */
+    private function handleInfoMessages($cmsComponent, $request)
+    {
         if (isset($_GET['not-found'])) {
             $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
             $cmsComponent->setParameter('infoMessageClass', 'error');
