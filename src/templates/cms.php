@@ -30,6 +30,15 @@
               </li>
                 <? $nrOfMenuItems += 1 ?>
             <? endif ?>
+            <? if (in_array('valuelists', $userRights)) : ?>
+              <li class="grid-box-1">
+                <a class="btn valuelists grid-inner<?= $mainNavClass == 'valuelists' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists">
+                  <i class="fa fa-tags"></i>
+                  <span>Valuelists</span>
+                </a>
+              </li>
+                <? $nrOfMenuItems += 1 ?>
+            <? endif ?>
             <? if (in_array('sitemap', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn sitemap grid-inner<?= $mainNavClass == 'sitemap' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap">
@@ -53,15 +62,6 @@
                 <a class="btn files grid-inner<?= $mainNavClass == 'files' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files">
                   <i class="fa fa-files-o"></i>
                   <span>Files</span>
-                </a>
-              </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('search', $userRights)) : ?>
-              <li class="grid-box-1">
-                <a class="btn search grid-inner<?= $mainNavClass == 'search' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search">
-                  <i class="fa fa-search"></i>
-                  <span>Search</span>
                 </a>
               </li>
                 <? $nrOfMenuItems += 1 ?>

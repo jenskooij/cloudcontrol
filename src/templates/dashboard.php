@@ -30,6 +30,14 @@
                     </a>
                   </li>
                 <? endif ?>
+                <? if (in_array('valuelists', $userRights)) : ?>
+                  <li class="tile grid-box-4">
+                    <a class="btn valuelists" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists">
+                      <i class="fa fa-tags"></i>
+                      Valuelists
+                    </a>
+                  </li>
+                <? endif ?>
                 <? if (in_array('sitemap', $userRights)) : ?>
                   <li class="tile grid-box-4">
                     <a class="btn sitemap" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap">
@@ -51,14 +59,6 @@
                     <a class="btn files" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files">
                       <i class="fa fa-files-o"></i>
                       Files
-                    </a>
-                  </li>
-                <? endif ?>
-                <? if (in_array('search', $userRights)) : ?>
-                  <li class="tile grid-box-4">
-                    <a class="btn search" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search">
-                      <i class="fa fa-search"></i>
-                      Search
                     </a>
                   </li>
                 <? endif ?>

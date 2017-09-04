@@ -30,7 +30,6 @@ class DocumentRouting implements CmsRouting
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
         new FolderRouting($request, $relativeCmsUri, $cmsComponent);
-        new ValuelistRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
 

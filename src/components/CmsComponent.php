@@ -8,6 +8,7 @@ namespace CloudControl\Cms\components {
     use CloudControl\Cms\components\cms\ImagesRouting;
     use CloudControl\Cms\components\cms\SearchRouting;
     use CloudControl\Cms\components\cms\SitemapRouting;
+    use CloudControl\Cms\components\cms\ValuelistRouting;
     use CloudControl\Cms\crypt\Crypt;
     use CloudControl\Cms\search\Search;
     use CloudControl\Cms\storage\Storage;
@@ -153,6 +154,7 @@ namespace CloudControl\Cms\components {
             $this->logOffRouting($this->request, $relativeCmsUri);
             $this->apiRouting($relativeCmsUri);
             $this->documentRouting($userRights, $relativeCmsUri);
+            $this->valuelistsRouting($userRights, $relativeCmsUri);
             $this->sitemapRouting($userRights, $relativeCmsUri);
             $this->imageRouting($userRights, $relativeCmsUri);
             $this->filesRouting($userRights, $relativeCmsUri);
@@ -279,6 +281,17 @@ namespace CloudControl\Cms\components {
          * @param $userRights
          * @param $relativeCmsUri
          */
+        protected function valuelistsRouting($userRights, $relativeCmsUri)
+        {
+            if (in_array(self::PARAMETER_VALUELISTS, $userRights)) {
+                new ValuelistRouting($this->request, $relativeCmsUri, $this);
+            }
+        }
+
+        /**
+         * @param $userRights
+         * @param $relativeCmsUri
+         */
         protected function sitemapRouting($userRights, $relativeCmsUri)
         {
             if (in_array(self::PARAMETER_SITEMAP, $userRights)) {
@@ -374,9 +387,7 @@ namespace CloudControl\Cms\components {
 
         private function searchRouting($userRights, $relativeCmsUri)
         {
-            if (in_array(self::PARAMETER_SEARCH, $userRights)) {
-                new SearchRouting($this->request, $relativeCmsUri, $this);
-            }
+            new SearchRouting($this->request, $relativeCmsUri, $this);
         }
 
         protected function getTemplateDir($template, $application = null)

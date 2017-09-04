@@ -35,9 +35,6 @@
         <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder" title="New Folder">
           + <i class="fa fa-folder-o"></i>
         </a>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/valuelists" title="Valuelists">
-          <i class="fa fa-list-alt"></i>
-        </a>
       </li>
     </ul>
   </nav>
