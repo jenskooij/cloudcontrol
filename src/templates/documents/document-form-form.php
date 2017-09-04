@@ -236,7 +236,7 @@
 
 			<? if (count($documentType->dynamicBricks) > 0) : ?>
 			<div class="dynamicBrickWrapper">
-				<label>Dynamic Bricks</label>
+				<label>Bricks</label>
 				<select>
 					<? foreach ($documentType->dynamicBricks as $dynamicBrick) : ?>
 					<option value="<?=$dynamicBrick->slug?>"><?=$dynamicBrick->title?></option>

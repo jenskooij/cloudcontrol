@@ -132,7 +132,7 @@ class DocumentRouting implements CmsRouting
             $cmsComponent->setParameter(CmsComponent::PARAMETER_MY_BRICK_SLUG, $request::$get[CmsComponent::PARAMETER_MY_BRICK_SLUG]);
         }
         $result = new \stdClass();
-        $result->body = $cmsComponent->renderTemplate('cms/documents/brick');
+        $result->body = $cmsComponent->renderTemplate('documents/brick');
         $result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
         ob_clean();
         header(CmsComponent::CONTENT_TYPE_APPLICATION_JSON);

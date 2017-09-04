@@ -83,8 +83,12 @@ class DocumentTokenizer
     {
         $bricks = $this->document->bricks;
         foreach ($bricks as $brickSlug => $bricks) {
-            foreach ($bricks as $brick) {
-                $this->tokenizeBrick($brick, $brickSlug);
+            if (is_array($bricks)) {
+                foreach ($bricks as $brick) {
+                    $this->tokenizeBrick($brick, $brickSlug);
+                }
+            } else {
+                $this->tokenizeBrick($bricks, $brickSlug);
             }
         }
     }
