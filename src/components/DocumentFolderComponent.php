@@ -28,7 +28,7 @@ class DocumentFolderComponent extends BaseComponent
 
         $this->checkParameters();
 
-        $this->parameters[$this->documentFolderParameterName] = $this->storage->getDocumentFolderBySlug($this->documentFolderPath);
+        $this->parameters[$this->documentFolderParameterName] = $this->storage->getDocuments()->getDocumentFolderBySlug($this->documentFolderPath);
     }
 
 

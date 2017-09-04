@@ -7,6 +7,7 @@ namespace CloudControl\Cms\storage\storage;
 
 use CloudControl\Cms\storage\Document;
 use CloudControl\Cms\storage\factories\DocumentFactory;
+use CloudControl\Cms\storage\factories\DocumentFolderFactory;
 
 class DocumentStorage extends AbstractStorage
 {
@@ -132,6 +133,72 @@ class DocumentStorage extends AbstractStorage
     public function cleanPublishedDeletedDocuments()
     {
         $this->repository->cleanPublishedDeletedDocuments();
+    }
+
+    /**
+     * Add new document in given path
+     *
+     * @param array $postValues
+     *
+     * @throws \Exception
+     */
+    public function addDocumentFolder($postValues)
+    {
+        $documentFolderObject = DocumentFolderFactory::createDocumentFolderFromPostValues($postValues);
+        if ($postValues['path'] === '/') {
+            $documentFolderObject->path = $postValues['path'] . $documentFolderObject->slug;
+        } else {
+            $documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
+        }
+        $this->repository->saveDocument($documentFolderObject, 'published');
+        $this->repository->saveDocument($documentFolderObject, 'unpublished');
+    }
+
+    /**
+     * Delete a folder by its compound slug
+     *
+     * @param $slug
+     *
+     * @throws \Exception
+     */
+    public function deleteDocumentFolderBySlug($slug)
+    {
+        $path = '/' . $slug;
+        $this->repository->deleteDocumentByPath($path);
+        $this->repository->cleanPublishedDeletedDocuments();
+    }
+
+    /**
+     * @param string $slug
+     */
+    public function publishDocumentBySlug($slug)
+    {
+        $path = '/' . $slug;
+        $this->repository->publishDocumentByPath($path);
+    }
+
+    /**
+     * @param string $slug
+     */
+    public function unpublishDocumentBySlug($slug)
+    {
+        $path = '/' . $slug;
+        $this->repository->unpublishDocumentByPath($path);
+    }
+
+    /**
+     * Retrieve a folder by its compound slug
+     *
+     * @param $slug
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getDocumentFolderBySlug($slug)
+    {
+        $path = '/' . $slug;
+
+        return $this->repository->getDocumentByPath($path);
     }
 
 }

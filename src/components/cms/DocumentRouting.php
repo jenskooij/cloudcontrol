@@ -189,7 +189,7 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->subTemplate = 'documents/folder-form';
         $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post[CmsComponent::GET_PARAMETER_PATH])) {
-            $cmsComponent->storage->addDocumentFolder($request::$post);
+            $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
             $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'plus');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
@@ -203,7 +203,7 @@ class DocumentRouting implements CmsRouting
     private function editFolderRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents/folder-form';
-        $folder = $cmsComponent->storage->getDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $folder = $cmsComponent->storage->getDocuments()->getDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
 
         $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
         $path = explode('/', $path);
@@ -213,7 +213,7 @@ class DocumentRouting implements CmsRouting
         $request::$get[CmsComponent::GET_PARAMETER_PATH] = '/' . $path;
 
         if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post['content'])) {
-            $cmsComponent->storage->saveDocumentFolder($request::$post);
+            $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
             $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
             exit;
@@ -229,7 +229,7 @@ class DocumentRouting implements CmsRouting
      */
     private function deleteFolderRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getDocuments()->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?folder-delete');
         exit;
@@ -241,7 +241,7 @@ class DocumentRouting implements CmsRouting
      */
     private function publishDocumentRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->publishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('published document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'check-circle-o');
@@ -255,7 +255,7 @@ class DocumentRouting implements CmsRouting
      */
     private function unpublishDocumentRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->unpublishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
+        $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
