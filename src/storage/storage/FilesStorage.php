@@ -64,7 +64,7 @@ class FilesStorage extends AbstractStorage
     /**
      * @param $filename
      *
-     * @return null
+     * @return \stdClass|null
      */
     public function getFileByName($filename)
     {

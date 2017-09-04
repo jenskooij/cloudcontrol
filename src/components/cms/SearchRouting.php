@@ -39,11 +39,11 @@ class SearchRouting implements CmsRouting
     private function overviewRoute($cmsComponent)
     {
         $cmsComponent->subTemplate = 'search';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
         $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
         $indexer = new Search($cmsComponent->storage);
         $indexedDocuments = $indexer->getIndexedDocuments();
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
     }
 
     /**
@@ -53,13 +53,13 @@ class SearchRouting implements CmsRouting
     private function updateIndexRoute($cmsComponent, $request)
     {
         $cmsComponent->subTemplate = 'search/update-index';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SEARCH);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
         if (isset($_GET['returnUrl'])) {
             $returnUrl = $_GET['returnUrl'];
         } else {
-            $returnUrl = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/search';
+            $returnUrl = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search';
         }
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_RETURN_URL, $returnUrl);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_RETURN_URL, $returnUrl);
     }
 
     private function ajaxUpdateIndexRoute($request, $cmsComponent)

@@ -29,7 +29,7 @@ class ConfigurationRouting implements CmsRouting
     {
         if ($relativeCmsUri == '/configuration') {
             $cmsComponent->subTemplate = 'configuration';
-            $cmsComponent->setParameter(CmsCOmponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_CONFIGURATION);
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
         }
 
         new UsersRouting($request, $relativeCmsUri, $cmsComponent);

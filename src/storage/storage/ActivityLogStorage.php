@@ -8,7 +8,7 @@
 namespace CloudControl\Cms\storage\storage;
 
 
-use CloudControl\Cms\components\CmsComponent;
+use CloudControl\Cms\components\cms\CmsConstants;
 
 class ActivityLogStorage extends AbstractStorage
 {
@@ -40,7 +40,7 @@ class ActivityLogStorage extends AbstractStorage
         $stdObj->timestamp = time();
         $stdObj->message = $message;
         $stdObj->icon = $icon;
-        $ccSessionObj = $_SESSION[CmsComponent::SESSION_PARAMETER_CLOUD_CONTROL];
+        $ccSessionObj = $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL];
         $stdObj->user = isset($ccSessionObj->username) ? $ccSessionObj->username : 'undefined';
         return $stdObj;
     }

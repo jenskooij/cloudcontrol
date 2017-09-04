@@ -27,9 +27,9 @@ class FilesRouting implements CmsRouting
             $this->newRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/files/new-ajax') {
             $this->newAjaxRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/files/get' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
-            $this->downloadRoute($request::$get[CmsComponent::FILES_PARAMETER_FILE], $cmsComponent);
-        } elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
+        } elseif ($relativeCmsUri == '/files/get' && isset($request::$get[CmsConstants::FILES_PARAMETER_FILE])) {
+            $this->downloadRoute($request::$get[CmsConstants::FILES_PARAMETER_FILE], $cmsComponent);
+        } elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[CmsConstants::FILES_PARAMETER_FILE])) {
             $this->deleteRoute($request, $cmsComponent);
         }
     }
@@ -65,8 +65,8 @@ class FilesRouting implements CmsRouting
     private function overviewRoute($cmsComponent)
     {
         $cmsComponent->subTemplate = 'files';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_FILES, $cmsComponent->storage->getFiles()->getFiles());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_FILES);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_FILES, $cmsComponent->storage->getFiles()->getFiles());
     }
 
     /**
@@ -76,10 +76,10 @@ class FilesRouting implements CmsRouting
     private function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'files/form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_FILES);
-        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-            $cmsComponent->storage->getFiles()->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_FILES);
+        if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
+            $cmsComponent->storage->getFiles()->addFile($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/files');
             exit;
         }
     }
@@ -89,8 +89,8 @@ class FilesRouting implements CmsRouting
      */
     private function newAjaxRoute($cmsComponent)
     {
-        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-            $file = $cmsComponent->storage->getFiles()->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+        if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
+            $file = $cmsComponent->storage->getFiles()->addFile($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
             header('Content-type: application/json');
             die(json_encode($file));
         }
@@ -103,8 +103,8 @@ class FilesRouting implements CmsRouting
      */
     private function deleteRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->getFiles()->deleteFileByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
+        $cmsComponent->storage->getFiles()->deleteFileByName($request::$get[CmsConstants::FILES_PARAMETER_FILE]);
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/files');
         exit;
     }
 
