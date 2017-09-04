@@ -7,7 +7,7 @@
 
 namespace CloudControl\Cms\storage;
 
-use storage\storage\DocumentStorage;
+use CloudControl\Cms\storage\storage\DocumentStorage;
 
 /**
  * Class Document
@@ -18,6 +18,7 @@ use storage\storage\DocumentStorage;
  * @property array content
  * @property-write \PDO dbHandle
  * @property-write DocumentStorage documentStorage
+ * @property boolean unpublishedChanges
  */
 class Document
 {

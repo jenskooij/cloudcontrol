@@ -16,7 +16,8 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
           <?= $document->title ?>
       </a>
         <? if ($document->unpublishedChanges) : ?>
-          <small class="small unpublished-changes">Unpublished Changes</small><? endif ?>
+          <small class="small unpublished-changes">Unpublished Changes</small>
+        <? endif ?>
       <small class="small documentType"><?= $document->documentType ?></small>
       <small class="small lastModified" title="<?= date('r', $document->lastModificationDate) ?>">
         <span class="label">Modified:</span>
@@ -29,28 +30,30 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
     </h3>
   </div>
   <div class="documentActions grid-box-2">
-      <? if ($document->state == 'unpublished' || $document->unpublishedChanges) : ?>
-          <? renderAction('Publish',
-              'publish',
-              $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $slugPrefix . $document->slug,
-              'check'); ?>
-      <? endif ?>
-      <? if ($document->state == 'published') : ?>
-          <? renderAction('Unpublish',
-              'unpublish',
-              $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $slugPrefix . $document->slug,
-              'times'); ?>
-      <? endif ?>
-      <? renderAction('Edit',
+      <? renderAction(
+          $document->state == 'unpublished' || $document->unpublishedChanges,
+          'Publish',
+          'publish',
+          $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $slugPrefix . $document->slug,
+          'check'); ?>
+      <? renderAction(
+          $document->state == 'published',
+          'Unpublish',
+          'unpublish',
+          $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $slugPrefix . $document->slug,
+          'times'); ?>
+      <? renderAction(
+          true,
+          'Edit',
           '',
           $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $slugPrefix . $document->slug,
           'pencil'); ?>
-      <? if ($document->state == 'unpublished') : ?>
-          <? renderAction('Delete',
-              'error',
-              $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $slugPrefix . $document->slug,
-              'trash',
-              'return confirm(\'Are you sure you want to delete this document?\');'); ?>
-      <? endif ?>
+      <? renderAction(
+          $document->state == 'unpublished',
+          'Delete',
+          'error',
+          $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $slugPrefix . $document->slug,
+          'trash',
+          'return confirm(\'Are you sure you want to delete this document?\');'); ?>
   </div>
 <? } ?>
