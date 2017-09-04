@@ -43,7 +43,7 @@ class ValuelistRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newValuelistRoute($request, $cmsComponent)

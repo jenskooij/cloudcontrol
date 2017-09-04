@@ -33,8 +33,8 @@ class DocumentRouting implements CmsRouting
 
 
     /**
-     * @param $request
-     * @param $relativeCmsUri
+     * @param Request $request
+     * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */

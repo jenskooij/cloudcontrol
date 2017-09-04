@@ -35,7 +35,7 @@ class SitemapRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function overviewRoute($request, $cmsComponent)
@@ -49,7 +49,7 @@ class SitemapRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newRoute($request, $cmsComponent)
@@ -64,7 +64,7 @@ class SitemapRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function editRoute($request, $cmsComponent)
@@ -81,7 +81,7 @@ class SitemapRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function deleteRoute($request, $cmsComponent)

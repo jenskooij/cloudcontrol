@@ -112,7 +112,7 @@ class LanguageComponent implements Component
     /**
      * Detect if the language is switched manually
      *
-     * @param $request
+     * @param Request $request
      */
     private function checkLanguageSwitch($request)
     {

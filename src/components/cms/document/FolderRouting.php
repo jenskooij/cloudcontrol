@@ -33,7 +33,7 @@ namespace CloudControl\Cms\components\cms\document {
         }
 
         /**
-         * @param $request
+         * @param Request $request
          * @param CmsComponent $cmsComponent
          */
         private function newFolderRoute($request, $cmsComponent)
@@ -49,7 +49,7 @@ namespace CloudControl\Cms\components\cms\document {
         }
 
         /**
-         * @param $request
+         * @param Request $request
          * @param CmsComponent $cmsComponent
          */
         private function editFolderRoute($request, $cmsComponent)
@@ -76,7 +76,7 @@ namespace CloudControl\Cms\components\cms\document {
         }
 
         /**
-         * @param $request
+         * @param Request $request
          * @param CmsComponent $cmsComponent
          */
         private function deleteFolderRoute($request, $cmsComponent)

@@ -69,7 +69,7 @@ class BaseRouting implements CmsRouting
     }
 
     /**
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function dashboardRouting($relativeCmsUri)
     {
@@ -84,8 +84,8 @@ class BaseRouting implements CmsRouting
     }
 
     /**
-     * @param $request
-     * @param $relativeCmsUri
+     * @param Request $request
+     * @param string $relativeCmsUri
      */
     protected function logOffRouting($request, $relativeCmsUri)
     {
@@ -99,7 +99,7 @@ class BaseRouting implements CmsRouting
     }
 
     /**
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function apiRouting($relativeCmsUri)
     {
@@ -117,7 +117,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function documentRouting($userRights, $relativeCmsUri)
     {
@@ -128,7 +128,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function valuelistsRouting($userRights, $relativeCmsUri)
     {
@@ -139,7 +139,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function sitemapRouting($userRights, $relativeCmsUri)
     {
@@ -150,7 +150,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function redirectRouting($userRights, $relativeCmsUri)
     {
@@ -161,7 +161,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function imageRouting($userRights, $relativeCmsUri)
     {
@@ -172,7 +172,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function filesRouting($userRights, $relativeCmsUri)
     {
@@ -183,7 +183,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param $userRights
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function configurationRouting($userRights, $relativeCmsUri)
     {
@@ -193,7 +193,7 @@ class BaseRouting implements CmsRouting
     }
 
     /**
-     * @param $relativeCmsUri
+     * @param string $relativeCmsUri
      */
     protected function searchRouting($relativeCmsUri)
     {

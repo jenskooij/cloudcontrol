@@ -149,7 +149,7 @@ class FormComponent Extends BaseComponent
      * submitting the form
      *
      * @param $postValues
-     * @param $storage
+     * @param Storage $storage
      */
     protected function postSubmit($postValues, $storage)
     {
@@ -320,7 +320,7 @@ class FormComponent Extends BaseComponent
     }
 
     /**
-     * @param $form
+     * @param string|null $form
      */
     private function setFormParameter($form)
     {

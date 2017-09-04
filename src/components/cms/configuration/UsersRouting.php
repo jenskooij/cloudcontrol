@@ -48,7 +48,7 @@ class UsersRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newRoute($request, $cmsComponent)
@@ -63,7 +63,7 @@ class UsersRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function deleteRoute($request, $cmsComponent)
@@ -74,7 +74,7 @@ class UsersRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function editRoute($request, $cmsComponent)

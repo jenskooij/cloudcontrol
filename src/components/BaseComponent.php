@@ -88,6 +88,7 @@ namespace CloudControl\Cms\components {
          *
          * @param bool $obClean
          * @param null | Application $application
+         * @param Application $application
          *
          * @return string
          * @throws \Exception
@@ -157,7 +158,7 @@ namespace CloudControl\Cms\components {
         }
 
         /**
-         * @param $template
+         * @param string $template
          * @param $application
          * @return string
          */

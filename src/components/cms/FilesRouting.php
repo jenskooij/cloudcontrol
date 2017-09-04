@@ -70,7 +70,7 @@ class FilesRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newRoute($request, $cmsComponent)
@@ -98,7 +98,7 @@ class FilesRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function deleteRoute($request, $cmsComponent)

@@ -46,7 +46,7 @@ class BricksRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newRoute($request, $cmsComponent)
@@ -61,7 +61,7 @@ class BricksRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function editRoute($request, $cmsComponent)
@@ -78,7 +78,7 @@ class BricksRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function deleteRoute($request, $cmsComponent)
