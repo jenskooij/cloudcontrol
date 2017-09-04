@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by jensk on 17-3-2017.
- */
+6 */
 
 namespace CloudControl\Cms\storage\storage;
 
@@ -13,6 +13,10 @@ class ImagesStorage extends AbstractStorage
 {
     protected $imagesDir;
 
+    /**
+     * @param \CloudControl\Cms\storage\Repository $repository
+     * @param string $imagesDir
+     */
     public function __construct($repository, $imagesDir)
     {
         parent::__construct($repository);
@@ -38,6 +42,7 @@ class ImagesStorage extends AbstractStorage
     /**
      * @param $postValues
      *
+     * @return \stdClass
      * @throws \Exception
      */
     public function addImage($postValues)
@@ -62,6 +67,8 @@ class ImagesStorage extends AbstractStorage
             $this->repository->images = $images;
 
             $this->save();
+
+            return $imageObject;
         } else {
             throw new \Exception('Error moving uploaded file');
         }

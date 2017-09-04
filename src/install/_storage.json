@@ -45,11 +45,12 @@
       "slug": "admin",
       "rights": [
         "documents",
+        "valuelists",
         "sitemap",
+        "redirects",
         "images",
         "files",
-        "configuration",
-        "search"
+        "configuration"
       ],
       "password": "$2a$16$58fnnoHshwN74KkemWkuIeGUbOQ0Rko0pyC3e/rIIhAvL9v89Qc22",
       "salt": "$2a$16$58fnnoHshwN74KkemWkuIe"
@@ -66,5 +67,6 @@
     }
   ],
   "valuelists": [],
-  "redirects": []
+  "redirects": [],
+  "activityLog":[]
 }

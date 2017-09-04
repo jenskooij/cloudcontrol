@@ -1,44 +1,44 @@
 <?php
-namespace CloudControl\Cms\components
-{
+
+namespace CloudControl\Cms\components {
 
     use CloudControl\Cms\cc\Request;
     use CloudControl\Cms\storage\Storage;
 
     /**
-	 * Interface Component
-	 * @package CloudControl\Cms\components
-	 */
-	interface Component
-	{
-		/**
-		 * Component constructor.
-		 *
-		 * @param                     $template
-		 * @param Request $request
-		 * @param                     $parameters
-		 * @param                     $matchedSitemapItem
-		 */
-		function __construct($template, Request $request, $parameters, $matchedSitemapItem);
+     * Interface Component
+     * @package CloudControl\Cms\components
+     */
+    interface Component
+    {
+        /**
+         * Component constructor.
+         *
+         * @param                     $template
+         * @param Request $request
+         * @param                     $parameters
+         * @param                     $matchedSitemapItem
+         */
+        function __construct($template, Request $request, $parameters, $matchedSitemapItem);
 
-		/**
-		 * @param Storage $storage
-		 */
-		function run(Storage $storage);
+        /**
+         * @param Storage $storage
+         */
+        function run(Storage $storage);
 
-		/**
-		 * @return void
-		 */
-		function render();
+        /**
+         * @return void
+         */
+        function render();
 
-		/**
-		 * @return mixed
-		 */
-		function get();
+        /**
+         * @return mixed
+         */
+        function get();
 
-		/**
-		 * @return \stdClass
-		 */
-		function getParameters();
-	}
+        /**
+         * @return \stdClass
+         */
+        function getParameters();
+    }
 }

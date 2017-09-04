@@ -14,7 +14,7 @@
                 <input type="hidden" name="state" value="<?=isset($document) ? $document->state : 'unpublished' ?>" />
                 <div class="title">
                     <label for="title">Document Title</label>
-                    <input required="required" value="<?=isset($document) ? $document->title : '' ?>" type="text" id="title" name="title" placeholder="Title" />
+                    <input required="required" value="<?=isset($document) ? $document->title : '' ?>"<?= isset($document, $document->title) && !empty($document->title) ? ' readonly="readonly"' : '' ?> type="text" id="title" name="title" placeholder="Title" />
                 </div>
 			<? endif ?>
 			<?$fieldPrefix='fields';?>
@@ -236,7 +236,7 @@
 
 			<? if (count($documentType->dynamicBricks) > 0) : ?>
 			<div class="dynamicBrickWrapper">
-				<label>Dynamic Bricks</label>
+				<label>Bricks</label>
 				<select>
 					<? foreach ($documentType->dynamicBricks as $dynamicBrick) : ?>
 					<option value="<?=$dynamicBrick->slug?>"><?=$dynamicBrick->title?></option>

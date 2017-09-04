@@ -1,11 +1,9 @@
-<section class="documents">
-  <h2><i class="fa fa-file-text-o"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents">Documents</a> &raquo;
-    Valuelists</h2>
+<section class="documents valuelists">
+  <h2><i class="fa fa-tags"></i> Valuelists</h2>
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/valuelists" title="Back">
+        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists" title="Back">
           Back
         </a>
       </li>

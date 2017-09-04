@@ -7,6 +7,23 @@
   };</script>
 <section class="documents">
   <h2><i class="fa fa-file-text-o"></i> Documents</h2>
+    <? if (isset($infoMessage)) : ?>
+      <div class="infoMessage <?= isset($infoMessageClass) ? $infoMessageClass : '' ?>">
+          <?= $infoMessage ?>
+      </div>
+    <? endif ?>
+  <div class="search">
+      <? if ($searchNeedsUpdate) : ?>
+        <div class="message warning">
+          <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+          <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?= urlencode($request::$subfolders . $cmsPrefix . '/documents') ?>" title="Update Index">Update Index</a>
+        </div>
+      <? else : ?>
+        <div class="message valid">
+          <i class="fa fa-check"></i> Search index is in sync with documents.
+        </div>
+      <? endif ?>
+  </div>
   <nav class="actions">
     <ul>
       <li>
@@ -15,9 +32,6 @@
         </a>
         <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder" title="New Folder">
           + <i class="fa fa-folder-o"></i>
-        </a>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/valuelists" title="Valuelists">
-          <i class="fa fa-list-alt"></i>
         </a>
       </li>
     </ul>

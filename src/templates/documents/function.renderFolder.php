@@ -16,11 +16,15 @@ function renderFolder($document, $cmsPrefix, $slugPrefix = '', $root = false, $r
     </h3>
   </div>
   <div class="documentActions grid-box-4">
-      <? renderAction('Edit',
+      <? renderAction(
+          true,
+          'Edit',
           '',
           $request::$subfolders . $cmsPrefix . '/documents/edit-folder?slug=' . $slugPrefix . $document->slug,
           'pencil'); ?>
-      <? renderAction('Delete',
+      <? renderAction(
+          true,
+          'Delete',
           'error',
           $request::$subfolders . $cmsPrefix . '/documents/delete-folder?slug=' . $slugPrefix . $document->slug,
           'trash',

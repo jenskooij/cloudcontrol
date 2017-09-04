@@ -8,97 +8,127 @@ namespace CloudControl\Cms\storage\storage;
 
 class FilesStorage extends AbstractStorage
 {
-	/**
-	 * @return array
-	 */
-	public function getFiles() {
-		$files = $this->repository->files;
-		usort($files, array($this, 'compareFiles'));
+    protected $filesDir;
 
-		return $files;
-	}
+    /**
+     * @param \CloudControl\Cms\storage\Repository $repository
+     * @param string $filesDir
+     */
+    public function __construct($repository, $filesDir)
+    {
+        parent::__construct($repository);
+        $this->filesDir = $filesDir;
+    }
 
-	/**
-	 * @param $postValues
-	 *
-	 * @throws \Exception
-	 */
-	public function addFile($postValues)
-	{
-		$destinationPath = realpath(__DIR__ . '/../../../www/files/');
 
-		$filename = $this->validateFilename($postValues['name'], $destinationPath);
-		$destination = $destinationPath . '/' . $filename;
+    /**
+     * @return array
+     */
+    public function getFiles()
+    {
+        $files = $this->repository->files;
+        usort($files, array($this, 'compareFiles'));
 
-		if ($postValues['error'] != '0') {
-			throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
-		}
+        return $files;
+    }
 
-		if (move_uploaded_file($postValues['tmp_name'], $destination)) {
-			$file = new \stdClass();
-			$file->file = $filename;
-			$file->type = $postValues['type'];
-			$file->size = $postValues['size'];
+    /**
+     * @param $postValues
+     *
+     * @return \stdClass
+     * @throws \Exception
+     */
+    public function addFile($postValues)
+    {
+        $destinationPath = $this->getDestinationPath();
 
-			$files = $this->repository->files;
-			$files[] = $file;
-			$this->repository->files = $files;
-			$this->save();
-		} else {
-			throw new \Exception('Error moving uploaded file');
-		}
-	}
+        $filename = $this->validateFilename($postValues['name'], $destinationPath);
+        $destination = $destinationPath . '/' . $filename;
 
-	/**
-	 * @param $filename
-	 *
-	 * @return null
-	 */
-	public function getFileByName($filename)
-	{
-		$files = $this->getFiles();
-		foreach ($files as $file) {
-			if ($filename == $file->file) {
-				return $file;
-			}
-		}
+        if ($postValues['error'] != '0') {
+            throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+        }
 
-		return null;
-	}
+        if (move_uploaded_file($postValues['tmp_name'], $destination)) {
+            $file = new \stdClass();
+            $file->file = $filename;
+            $file->type = $postValues['type'];
+            $file->size = $postValues['size'];
 
-	/**
-	 * @param $filename
-	 *
-	 * @throws \Exception
-	 */
-	public function deleteFileByName($filename)
-	{
-		$destinationPath = realpath(__DIR__ . '/../../../www/files/');
-		$destination = $destinationPath . '/' . $filename;
+            $files = $this->repository->files;
+            $files[] = $file;
+            $this->repository->files = $files;
+            $this->save();
+        } else {
+            throw new \Exception('Error moving uploaded file');
+        }
+        return $file;
+    }
 
-		if (file_exists($destination)) {
-			$files = $this->getFiles();
-			foreach ($files as $key => $file) {
-				if ($file->file == $filename) {
-					unlink($destination);
-					unset($files[$key]);
-				}
-			}
+    /**
+     * @param $filename
+     *
+     * @return \stdClass|null
+     */
+    public function getFileByName($filename)
+    {
+        $files = $this->getFiles();
+        foreach ($files as $file) {
+            if ($filename == $file->file) {
+                return $file;
+            }
+        }
 
-			$files = array_values($files);
-			$this->repository->files = $files;
-			$this->save();
-		}
-	}
+        return null;
+    }
 
-	/**
-	 * @param $a
-	 * @param $b
-	 *
-	 * @return int
-	 */
-	private function compareFiles($a, $b)
-	{
-		return strcmp($a->file, $b->file);
-	}
+    /**
+     * @param $filename
+     *
+     * @throws \Exception
+     */
+    public function deleteFileByName($filename)
+    {
+        $destinationPath = $this->getDestinationPath();
+        $destination = $destinationPath . '/' . $filename;
+
+        if (file_exists($destination)) {
+            $files = $this->getFiles();
+            foreach ($files as $key => $file) {
+                if ($file->file == $filename) {
+                    unlink($destination);
+                    unset($files[$key]);
+                }
+            }
+
+            $files = array_values($files);
+            $this->repository->files = $files;
+            $this->save();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilesDir()
+    {
+        return $this->filesDir;
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     *
+     * @return int
+     */
+    private function compareFiles($a, $b)
+    {
+        return strcmp($a->file, $b->file);
+    }
+
+    protected function getDestinationPath()
+    {
+        $destinationPath = realpath($this->filesDir . DIRECTORY_SEPARATOR);
+        return $destinationPath;
+    }
 }

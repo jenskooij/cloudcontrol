@@ -13,7 +13,7 @@
           <li class="grid-container">
             <div class="grid-box-10">
               <h3>
-                <a class="btn documentTitle" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files/get?file=<?= $file->file ?>" title="Edit">
+                <a class="btn documentTitle" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files/get?file=<?= $file->file ?>&amp;unsanitized" title="Edit">
                   <i class="fa fa-<?= \CloudControl\Cms\cc\StringUtil::iconByFileType($file->type) ?>"></i> <?= $file->file ?>
                 </a>
                 <small class="small fileType">

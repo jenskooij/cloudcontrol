@@ -1,377 +1,227 @@
 <?php
+
 namespace CloudControl\Cms\components {
 
-    use CloudControl\Cms\components\cms\ConfigurationRouting;
-    use CloudControl\Cms\components\cms\DocumentRouting;
-    use CloudControl\Cms\components\cms\FilesRouting;
-    use CloudControl\Cms\components\cms\ImagesRouting;
-    use CloudControl\Cms\components\cms\SearchRouting;
-    use CloudControl\Cms\components\cms\SitemapRouting;
+    use CloudControl\Cms\components\cms\BaseRouting;
+    use CloudControl\Cms\components\cms\CmsConstants;
     use CloudControl\Cms\crypt\Crypt;
     use CloudControl\Cms\storage\Storage;
 
     class CmsComponent extends BaseComponent
-	{
+    {
         /**
-		 * @var \CloudControl\Cms\storage\Storage
-		 */
-		public $storage;
+         * @var \CloudControl\Cms\storage\Storage
+         */
+        public $storage;
 
-		const INVALID_CREDENTIALS_MESSAGE = 'Invalid username / password combination';
-
-		const MAIN_NAV_CLASS = 'default';
-
-		const PARAMETER_APPLICATION_COMPONENT = 'applicationComponent';
-		const PARAMETER_APPLICATION_COMPONENTS = 'applicationComponents';
-		const PARAMETER_BLACKLIST_IPS = 'blacklistIps';
-		const PARAMETER_BODY = 'body';
-		const PARAMETER_BRICK = 'brick';
-		const PARAMETER_BRICKS = 'bricks';
-		const PARAMETER_CMS_PREFIX = 'cmsPrefix';
-		const PARAMETER_CONFIGURATION = 'configuration';
-		const PARAMETER_DOCUMENT = 'document';
-		const PARAMETER_DOCUMENTS = 'documents';
-		const PARAMETER_DOCUMENT_TYPE = 'documentType';
-		const PARAMETER_DOCUMENT_TYPES = 'documentTypes';
-		const PARAMETER_ERROR_MESSAGE = 'errorMsg';
-		const PARAMETER_FILES = 'files';
-		const PARAMETER_FOLDER = 'folder';
-		const PARAMETER_IMAGE = 'image';
-		const PARAMETER_IMAGES = 'images';
-		const PARAMETER_IMAGE_SET = 'imageSet';
-		const PARAMETER_MAIN_NAV_CLASS = 'mainNavClass';
-		const PARAMETER_MY_BRICK_SLUG = 'myBrickSlug';
-        const PARAMETER_REDIRECT = 'redirect';
-        const PARAMETER_REDIRECTS = 'redirects';
-		const PARAMETER_SEARCH = 'search';
-		const PARAMETER_SEARCH_LOG = "searchLog";
-		const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";
-		const PARAMETER_SITEMAP = 'sitemap';
-		const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
-		const PARAMETER_SMALLEST_IMAGE = 'smallestImage';
-		const PARAMETER_STATIC = 'static';
-		const PARAMETER_USER = 'user';
-		const PARAMETER_USERS = 'users';
-		const PARAMETER_USER_RIGHTS = 'userRights';
-		const PARAMETER_VALUELIST = "valuelist";
-		const PARAMETER_VALUELISTS = "valuelists";
-		const PARAMETER_WHITELIST_IPS = 'whitelistIps';
-
-        const POST_PARAMETER_COMPONENT = 'component';
-        const POST_PARAMETER_FROM_URL = "fromUrl";
-        const POST_PARAMETER_PASSWORD = 'password';
-        const POST_PARAMETER_SAVE = 'save';
-        const POST_PARAMETER_TEMPLATE = 'template';
-        const POST_PARAMETER_TITLE = 'title';
-        const POST_PARAMETER_TO_URL = "toUrl";
-        const POST_PARAMETER_USERNAME = 'username';
-
-		const GET_PARAMETER_PATH = 'path';
-		const GET_PARAMETER_SLUG = 'slug';
-
-		const FILES_PARAMETER_FILE = 'file';
-
-		const SESSION_PARAMETER_CLOUD_CONTROL = 'cloudcontrol';
-
-		const LOGIN_TEMPLATE_PATH = 'login';
-
-		const CONTENT_TYPE_APPLICATION_JSON = 'Content-type:application/json';
-
-		public $subTemplate = null;
+        public $subTemplate = null;
 
 
-		/**
-		 * @param Storage $storage
-		 *
-		 * @return void
-		 */
-		public function run(Storage $storage)
-		{
-			$this->parameters[self::PARAMETER_MAIN_NAV_CLASS] = self::MAIN_NAV_CLASS;
-			$this->storage = $storage;
+        /**
+         * @param Storage $storage
+         *
+         * @return void
+         */
+        public function run(Storage $storage)
+        {
+            $this->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::MAIN_NAV_CLASS);
+            $this->storage = $storage;
 
-			$remoteAddress = $_SERVER['REMOTE_ADDR'];
-			$this->checkWhiteList($remoteAddress);
-			$this->checkBlackList($remoteAddress);
+            $remoteAddress = $_SERVER['REMOTE_ADDR'];
+            $this->checkWhiteList($remoteAddress);
+            $this->checkBlackList($remoteAddress);
 
-			$this->checkLogin();
+            $this->checkLogin();
 
-			$this->parameters[self::PARAMETER_USER_RIGHTS] = $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]->rights;
+            $this->setParameter(CmsConstants::PARAMETER_USER_RIGHTS, $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]->rights);
 
-			$this->routing();
-		}
+            $this->routing();
 
-		/**
-		 * See if a user is logged or wants to log in and
-		 * takes appropriate actions.
-		 *
-		 * @throws \Exception
-		 */
-		protected function checkLogin()
-		{
-			$request = $this->request;
+            $this->renderBody();
+        }
 
-			if (!isset($_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL])) {
-				if (isset($request::$post[self::POST_PARAMETER_USERNAME], $request::$post[self::POST_PARAMETER_PASSWORD])) {
-					$this->checkLoginAttempt($request);
-				} else {
-					$this->showLogin();
-				}
-			}
-		}
+        /**
+         * See if a user is logged or wants to log in and
+         * takes appropriate actions.
+         *
+         * @throws \Exception
+         */
+        protected function checkLogin()
+        {
+            $request = $this->request;
 
-		/**
-		 * Overrides normal behaviour and only renders the
-		 * login screen
-		 *
-		 * @throws \Exception
-		 */
-		protected function showLogin()
-		{
-			$loginTemplatePath = self::LOGIN_TEMPLATE_PATH;
-			$this->renderTemplate($loginTemplatePath);
-			ob_end_flush();
-			exit;
-		}
+            if (!isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL])) {
+                if (isset($request::$post[CmsConstants::POST_PARAMETER_USERNAME], $request::$post[CmsConstants::POST_PARAMETER_PASSWORD])) {
+                    $this->checkLoginAttempt($request);
+                } else {
+                    $this->showLogin();
+                }
+            }
+        }
 
-		/**
-		 * As an exception, to keep the initial file structure simple
-		 * the cms implements it's own routing, apart from the regular sitemap functionality
-		 *
-		 * @throws \Exception
-		 */
-		protected function routing()
-		{
-			$relativeCmsUri = $this->getRelativeCmsUri($this->request);
+        /**
+         * Overrides normal behaviour and only renders the
+         * login screen
+         *
+         * @throws \Exception
+         */
+        protected function showLogin()
+        {
+            $loginTemplatePath = CmsConstants::LOGIN_TEMPLATE_PATH;
+            $this->renderTemplate($loginTemplatePath);
+            ob_end_flush();
+            exit;
+        }
 
-			$userRights = $_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]->rights;
+        /**
+         * As an exception, to keep the initial file structure simple
+         * the cms implements it's own routing, apart from the regular sitemap functionality
+         *
+         * @throws \Exception
+         */
+        protected function routing()
+        {
+            $relativeCmsUri = $this->getRelativeCmsUri($this->request);
+            $userRights = $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]->rights;
 
-			$this->dashboardRouting($relativeCmsUri);
-			$this->logOffRouting($this->request, $relativeCmsUri);
-			$this->apiRouting($relativeCmsUri);
-			$this->documentRouting($userRights, $relativeCmsUri);
-			$this->sitemapRouting($userRights, $relativeCmsUri);
-			$this->imageRouting($userRights, $relativeCmsUri);
-			$this->filesRouting($userRights, $relativeCmsUri);
-			$this->configurationRouting($userRights, $relativeCmsUri);
-			$this->searchRouting($userRights, $relativeCmsUri);
+            $baseRouting = new BaseRouting($this->request, $relativeCmsUri, $this);
+            $baseRouting->setUserRights($userRights);
+            $baseRouting->route();
+        }
 
-			$this->renderBody();
-		}
+        /**
+         * @param $remoteAddress
+         *
+         * @throws \Exception
+         */
+        private function checkWhiteList($remoteAddress)
+        {
+            if (isset($this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS])) {
+                $whitelistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS]);
+                $whitelistIps = array_map("trim", $whitelistIps);
+                if (!in_array($remoteAddress, $whitelistIps)) {
+                    throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
+                }
+            }
+        }
 
-		/**
-		 * @param $remoteAddress
-		 *
-		 * @throws \Exception
-		 */
-		private function checkWhiteList($remoteAddress)
-		{
-			if (isset($this->parameters[self::PARAMETER_WHITELIST_IPS])) {
-				$whitelistIps = explode(',', $this->parameters[self::PARAMETER_WHITELIST_IPS]);
-				$whitelistIps = array_map("trim", $whitelistIps);
-				if (!in_array($remoteAddress, $whitelistIps)) {
-					throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
-				}
-			}
-		}
+        /**
+         * @param $remoteAddress
+         *
+         * @throws \Exception
+         */
+        private function checkBlackList($remoteAddress)
+        {
+            if (isset($this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS])) {
+                $blacklistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS]);
+                $blacklistIps = array_map("trim", $blacklistIps);
+                if (in_array($remoteAddress, $blacklistIps)) {
+                    throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
+                }
+            }
+        }
 
-		/**
-		 * @param $remoteAddress
-		 *
-		 * @throws \Exception
-		 */
-		private function checkBlackList($remoteAddress)
-		{
-			if (isset($this->parameters[self::PARAMETER_BLACKLIST_IPS])) {
-				$blacklistIps = explode(',', $this->parameters[self::PARAMETER_BLACKLIST_IPS]);
-				$blacklistIps = array_map("trim", $blacklistIps);
-				if (in_array($remoteAddress, $blacklistIps)) {
-					throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
-				}
-			}
-		}
+        /**
+         * @param $request
+         *
+         * @return mixed|string
+         */
+        private function getRelativeCmsUri($request)
+        {
+            // TODO Use regex match parameter instead of calculating relative uri
+            $pos = strpos($request::$relativeUri, $this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]);
+            $relativeCmsUri = '/';
+            if ($pos !== false) {
+                $relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]));
+            }
 
-		/**
-		 * @param $request
-		 *
-		 * @return mixed|string
-		 */
-		private function getRelativeCmsUri($request)
-		{
-			// TODO Use regex match parameter instead of calculating relative uri
-			$pos = strpos($request::$relativeUri, $this->parameters[self::PARAMETER_CMS_PREFIX]);
-			$relativeCmsUri = '/';
-			if ($pos !== false) {
-				$relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters[self::PARAMETER_CMS_PREFIX]));
-			}
+            return $relativeCmsUri;
+        }
 
-			return $relativeCmsUri;
-		}
+        /**
+         * @param $parameterName
+         * @param $parameterValue
+         */
+        public function setParameter($parameterName, $parameterValue)
+        {
+            $this->parameters[$parameterName] = $parameterValue;
+        }
 
-		/**
-		 * @param $relativeCmsUri
-		 */
-		private function apiRouting($relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/images.json') {
-				header(self::CONTENT_TYPE_APPLICATION_JSON);
-				die(json_encode($this->storage->getImages()->getImages()));
-			} elseif ($relativeCmsUri == '/files.json') {
-				header(self::CONTENT_TYPE_APPLICATION_JSON);
-				die(json_encode($this->storage->getFiles()->getFiles()));
-			} elseif ($relativeCmsUri == '/documents.json') {
-				header(self::CONTENT_TYPE_APPLICATION_JSON);
-				die(json_encode($this->storage->getDocuments()->getDocuments()));
-			}
-		}
+        /**
+         * @param $parameterName
+         * @return mixed
+         */
+        public function getParameter($parameterName)
+        {
+            return $this->parameters[$parameterName];
+        }
 
-		private function logOffRouting($request, $relativeCmsUri)
-		{
-			if ($relativeCmsUri == '/log-off') {
-				$_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = null;
-				unset($_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL]);
-				header('Location: ' . $request::$subfolders . $this->parameters[self::PARAMETER_CMS_PREFIX]);
-				exit;
-			}
-		}
+        /**
+         * @throws \Exception
+         */
+        protected function renderBody()
+        {
+            if ($this->subTemplate !== null) {
+                $this->parameters[CmsConstants::PARAMETER_BODY] = $this->renderTemplate($this->subTemplate);
+            }
+        }
 
-		public function setParameter($parameterName, $parameterValue)
-		{
-			$this->parameters[$parameterName] = $parameterValue;
-		}
+        /**
+         * @param Crypt $crypt
+         * @param Request $request
+         */
+        protected function invalidCredentials($crypt, $request)
+        {
+            $crypt->encrypt($request::$post[CmsConstants::POST_PARAMETER_PASSWORD], 16); // Buy time, to avoid brute forcing
+            $this->parameters[CmsConstants::PARAMETER_ERROR_MESSAGE] = CmsConstants::INVALID_CREDENTIALS_MESSAGE;
+            $this->showLogin();
+        }
 
-		public function getParameter($parameterName)
-		{
-			return $this->parameters[$parameterName];
-		}
+        /**
+         * @param $user
+         * @param Crypt $crypt
+         * @param Request $request
+         */
+        protected function checkPassword($user, $crypt, $request)
+        {
+            $salt = $user->salt;
+            $password = $user->password;
 
-		/**
-		 * @param $relativeCmsUri
-		 */
-		protected function dashboardRouting($relativeCmsUri)
-		{
-			if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
-				$this->subTemplate = 'dashboard';
-			}
-		}
+            $passwordCorrect = $crypt->compare($request::$post[CmsConstants::POST_PARAMETER_PASSWORD], $password, $salt);
 
-		/**
-		 * @param $userRights
-		 * @param $relativeCmsUri
-		 */
-		protected function documentRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array(self::PARAMETER_DOCUMENTS, $userRights)) {
-				new DocumentRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
+            if ($passwordCorrect) {
+                $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL] = $user;
+                $this->storage->getActivityLog()->add('logged in', 'user');
+            } else {
+                $this->parameters[CmsConstants::PARAMETER_ERROR_MESSAGE] = CmsConstants::INVALID_CREDENTIALS_MESSAGE;
+                $this->showLogin();
+            }
+        }
 
-		/**
-		 * @param $userRights
-		 * @param $relativeCmsUri
-		 */
-		protected function sitemapRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array(self::PARAMETER_SITEMAP, $userRights)) {
-				new SitemapRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
+        /**
+         * @param $request
+         */
+        protected function checkLoginAttempt($request)
+        {
+            $user = $this->storage->getUsers()->getUserByUsername($request::$post[CmsConstants::POST_PARAMETER_USERNAME]);
+            $crypt = new Crypt();
+            if (empty($user)) {
+                $this->invalidCredentials($crypt, $request);
+            } else {
+                $this->checkPassword($user, $crypt, $request);
+            }
+        }
 
-		/**
-		 * @param $userRights
-		 * @param $relativeCmsUri
-		 */
-		protected function imageRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array(self::PARAMETER_IMAGES, $userRights)) {
-				new ImagesRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
-
-		/**
-		 * @param $userRights
-		 * @param $relativeCmsUri
-		 */
-		protected function filesRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array(self::PARAMETER_FILES, $userRights)) {
-				new FilesRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
-
-		/**
-		 * @param $userRights
-		 * @param $relativeCmsUri
-		 */
-		protected function configurationRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array('configuration', $userRights)) {
-				new ConfigurationRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
-
-		protected function renderBody()
-		{
-			if ($this->subTemplate !== null) {
-				$this->parameters[self::PARAMETER_BODY] = $this->renderTemplate($this->subTemplate);
-			}
-		}
-
-		/**
-		 * @param $crypt
-		 * @param $request
-		 */
-		protected function invalidCredentials($crypt, $request)
-		{
-			$crypt->encrypt($request::$post[self::POST_PARAMETER_PASSWORD], 16); // Buy time, to avoid brute forcing
-			$this->parameters[self::PARAMETER_ERROR_MESSAGE] = self::INVALID_CREDENTIALS_MESSAGE;
-			$this->showLogin();
-		}
-
-		/**
-		 * @param $user
-		 * @param $crypt
-		 * @param $request
-		 */
-		protected function checkPassword($user, $crypt, $request)
-		{
-			$salt = $user->salt;
-			$password = $user->password;
-
-			$passwordCorrect = $crypt->compare($request::$post[self::POST_PARAMETER_PASSWORD], $password, $salt);
-
-			if ($passwordCorrect) {
-				$_SESSION[self::SESSION_PARAMETER_CLOUD_CONTROL] = $user;
-			} else {
-				$this->parameters[self::PARAMETER_ERROR_MESSAGE] = self::INVALID_CREDENTIALS_MESSAGE;
-				$this->showLogin();
-			}
-		}
-
-		/**
-		 * @param $request
-		 */
-		protected function checkLoginAttempt($request)
-		{
-			$user = $this->storage->getUsers()->getUserByUsername($request::$post[self::POST_PARAMETER_USERNAME]);
-			$crypt = new Crypt();
-			if (empty($user)) {
-				$this->invalidCredentials($crypt, $request);
-			} else {
-				$this->checkPassword($user, $crypt, $request);
-			}
-		}
-
-		private function searchRouting($userRights, $relativeCmsUri)
-		{
-			if (in_array(self::PARAMETER_SEARCH, $userRights)) {
-				new SearchRouting($this->request, $relativeCmsUri, $this);
-			}
-		}
-
-        protected function getTemplatePath($template, $application = null)
+        /**
+         * @param $template
+         * @param null $application
+         * @return string
+         */
+        protected function getTemplateDir($template, $application = null)
         {
             return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.php';
         }
+
+
     }
 }

@@ -80,9 +80,12 @@ namespace CloudControl\Cms\cc {
          */
         private function storage()
         {
-            $this->storage = new Storage($this->getStorageDir(), $this->config->imagesDir, $this->config->filesDir);
+            $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
         }
 
+        /**
+         * @param Request $request
+         */
         private function redirectMatching($request)
         {
             $redirects = $this->storage->getRedirects()->getRedirects();
@@ -112,7 +115,7 @@ namespace CloudControl\Cms\cc {
          * Loop through sitemap items and see if one matches the requestUri.
          * If it does, add it tot the matchedSitemapItems array
          *
-         * @param $request
+         * @param Request $request
          */
         private function sitemapMatching($request)
         {
@@ -177,7 +180,7 @@ namespace CloudControl\Cms\cc {
          * @param array $parameters
          * @param \stdClass|null $matchedSitemapItem
          *
-         * @return mixed
+         * @return Component
          * @throws \Exception
          */
         private function getComponentObject($class = '', $template = '', $parameters = array(), $matchedSitemapItem)
@@ -255,15 +258,7 @@ namespace CloudControl\Cms\cc {
         /**
          * @return string
          */
-        public function getStoragePath()
-        {
-            return $this->config->storagePath;
-        }
-
-        /**
-         * @return string
-         */
-        public function getTemplatePath()
+        public function getTemplateDir()
         {
             return $this->config->templateDir;
         }
@@ -276,6 +271,11 @@ namespace CloudControl\Cms\cc {
         public function getApplicationComponents()
         {
             $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
+        }
+
+        public function getRootDir()
+        {
+            return $this->config->rootDir;
         }
     }
 }

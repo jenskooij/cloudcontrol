@@ -6,7 +6,8 @@
  */
 
 namespace CloudControl\Cms\storage;
-use storage\storage\DocumentStorage;
+
+use CloudControl\Cms\storage\storage\DocumentStorage;
 
 /**
  * Class Document
@@ -17,6 +18,7 @@ use storage\storage\DocumentStorage;
  * @property array content
  * @property-write \PDO dbHandle
  * @property-write DocumentStorage documentStorage
+ * @property boolean unpublishedChanges
  */
 class Document
 {
@@ -43,7 +45,8 @@ class Document
 
     public static $DOCUMENT_STATES = array('published', 'unpublished');
 
-    public function __get($name) {
+    public function __get($name)
+    {
         if (in_array($name, $this->jsonEncodedFields)) {
             if (is_string($this->$name)) {
                 return json_decode($this->$name);
@@ -64,7 +67,8 @@ class Document
         return $this->$name;
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         if (in_array($name, $this->jsonEncodedFields)) {
             $this->$name = json_encode($value);
         } elseif ($name === 'content') {
@@ -75,13 +79,13 @@ class Document
         $this->$name = $value;
     }
 
-	/**
-	 * @param string $orderBy
-	 * @param string $order
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
+    /**
+     * @param string $orderBy
+     * @param string $order
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getContent($orderBy = 'title', $order = 'ASC')
     {
         if (empty($this->content)) {
@@ -89,16 +93,16 @@ class Document
             $this->content = $docs;
         }
 
-    	return $this->content;
+        return $this->content;
     }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'Document:' . $this->title;
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'Document:' . $this->title;
+    }
 
 
 }

@@ -8,14 +8,25 @@
 namespace CloudControl\Cms\components;
 
 
-use storage\Storage;
+use CloudControl\Cms\storage\Storage;
 
 class NotFoundComponent extends BaseComponent
 {
+    protected $template = '404';
+
     public function run(Storage $storage)
     {
         parent::run($storage);
+    }
+
+    protected function set404Header()
+    {
         header("HTTP/1.0 404 Not Found");
+    }
+
+    protected function set404Template($template = '404')
+    {
+        $this->template = $template;
     }
 
 }

@@ -11,15 +11,15 @@ namespace CloudControl\Cms\search;
 
 interface Filter
 {
-	/**
-	 * Filter constructor.
-	 *
-	 * @param array $tokens
-	 */
-	public function __construct($tokens);
+    /**
+     * Filter constructor.
+     *
+     * @param array $tokens
+     */
+    public function __construct($tokens);
 
-	/**
-	 * @return array
-	 */
-	public function getFilterResults();
+    /**
+     * @return array
+     */
+    public function getFilterResults();
 }

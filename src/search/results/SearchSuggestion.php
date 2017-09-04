@@ -10,7 +10,7 @@ namespace CloudControl\Cms\search\results;
 
 class SearchSuggestion
 {
-	public $original;
-	public $term;
-	public $editDistance;
+    public $original;
+    public $term;
+    public $editDistance;
 }
