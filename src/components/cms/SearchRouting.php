@@ -23,7 +23,7 @@ class SearchRouting implements CmsRouting
      * @param                                  $relativeCmsUri
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         switch ($relativeCmsUri) {
             case '/search': $this->overviewRoute($cmsComponent); break;

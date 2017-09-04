@@ -21,7 +21,7 @@ class BricksRouting implements CmsRouting
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/configuration/bricks') {
             $this->overviewRoute($cmsComponent);

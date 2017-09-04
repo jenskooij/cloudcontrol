@@ -22,7 +22,7 @@ class DocumentTypeRouting implements CmsRouting
      * @param String $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/configuration/document-types') {
             $this->overviewRoute($cmsComponent);

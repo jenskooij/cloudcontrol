@@ -9,6 +9,7 @@
 namespace CloudControl\Cms\components\cms;
 
 
+use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 
 class SitemapRouting implements CmsRouting
@@ -20,7 +21,7 @@ class SitemapRouting implements CmsRouting
      * @param mixed|string $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/sitemap') {
             $this->overviewRoute($request, $cmsComponent);

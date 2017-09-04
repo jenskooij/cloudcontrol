@@ -19,7 +19,7 @@ class FilesRouting implements CmsRouting
      * @param $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/files') {
             $this->overviewRoute($cmsComponent);

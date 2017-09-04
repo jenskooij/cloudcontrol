@@ -9,6 +9,8 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\components\cms\document\FolderRouting;
+use CloudControl\Cms\components\cms\document\ValuelistRouting;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\Document;
@@ -21,14 +23,14 @@ class DocumentRouting implements CmsRouting
      * @param $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/documents') {
             $this->overviewRouting($cmsComponent, $request);
         }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
-        $this->folderRouting($request, $relativeCmsUri, $cmsComponent);
-        $this->valuelistsRouting($request, $relativeCmsUri, $cmsComponent);
+        new FolderRouting($request, $relativeCmsUri, $cmsComponent);
+        new ValuelistRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
 
@@ -50,35 +52,6 @@ class DocumentRouting implements CmsRouting
                 case '/documents/publish-document': $this->publishDocumentRoute($request, $cmsComponent); break;
                 case '/documents/unpublish-document': $this->unpublishDocumentRoute($request, $cmsComponent); break;
             }
-        }
-    }
-
-    /**
-     * @param $request
-     * @param $relativeCmsUri
-     * @param CmsComponent $cmsComponent
-     */
-    private function folderRouting($request, $relativeCmsUri, $cmsComponent)
-    {
-        if ($relativeCmsUri == '/documents/new-folder' && isset($request::$get[CmsComponent::GET_PARAMETER_PATH])) {
-            $this->newFolderRoute($request, $cmsComponent);
-        } else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->editFolderRoute($request, $cmsComponent);
-        } else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->deleteFolderRoute($request, $cmsComponent);
-        }
-    }
-
-    private function valuelistsRouting($request, $relativeCmsUri, $cmsComponent)
-    {
-        if ($relativeCmsUri == '/documents/valuelists') {
-            $this->valuelistsRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/documents/valuelists/new') {
-            $this->newValuelistRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/documents/valuelists/edit' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->editValuelistRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/documents/valuelists/delete' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->deleteValuelistRoute($request, $cmsComponent);
         }
     }
 
@@ -184,61 +157,6 @@ class DocumentRouting implements CmsRouting
      * @param $request
      * @param CmsComponent $cmsComponent
      */
-    private function newFolderRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'documents/folder-form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post[CmsComponent::GET_PARAMETER_PATH])) {
-            $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
-            $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'plus');
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
-            exit;
-        }
-    }
-
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     */
-    private function editFolderRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'documents/folder-form';
-        $folder = $cmsComponent->storage->getDocuments()->getDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-
-        $path = $request::$get[CmsComponent::GET_PARAMETER_SLUG];
-        $path = explode('/', $path);
-        array_pop($path);
-        $path = implode('/', $path);
-
-        $request::$get[CmsComponent::GET_PARAMETER_PATH] = '/' . $path;
-
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post['content'])) {
-            $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
-            $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsComponent::GET_PARAMETER_PATH], 'pencil');
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents');
-            exit;
-        }
-
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_FOLDER, $folder);
-    }
-
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     */
-    private function deleteFolderRoute($request, $cmsComponent)
-    {
-        $cmsComponent->storage->getDocuments()->deleteDocumentFolderBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?folder-delete');
-        exit;
-    }
-
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     */
     private function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
@@ -260,55 +178,6 @@ class DocumentRouting implements CmsRouting
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsComponent::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' . htmlentities($request::$get[CmsComponent::GET_PARAMETER_SLUG]));
-        exit;
-    }
-
-    private function valuelistsRoute($cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'documents/valuelists';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_VALUELISTS, $cmsComponent->storage->getValuelists()->getValuelists());
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-    }
-
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     */
-    private function newValuelistRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'documents/valuelist-form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE])) {
-            $slug = $cmsComponent->storage->getValuelists()->addValuelist($request::$post);
-            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists/edit?slug=' . $slug;
-            $cmsComponent->storage->getActivityLog()->add('created valuelist <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a>', 'plus');
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
-            exit;
-        }
-    }
-
-    private function editValuelistRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'documents/valuelist-form';
-        $folder = $cmsComponent->storage->getValuelists()->getValuelistBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
-            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists/edit?slug=' . $request::$get[CmsComponent::GET_PARAMETER_SLUG];
-            $cmsComponent->storage->getActivityLog()->add('edited valuelist <a href="' . $docLink . '">' . $request::$post[CmsComponent::POST_PARAMETER_TITLE] . '</a>', 'pencil');
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
-            exit;
-        }
-
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_DOCUMENTS);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_VALUELIST, $folder);
-    }
-
-    private function deleteValuelistRoute($request, $cmsComponent)
-    {
-        $cmsComponent->storage->getValuelists()->deleteValuelistBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        $cmsComponent->storage->getActivityLog()->add('deleted valuelist ' . $request::$get[CmsComponent::GET_PARAMETER_SLUG], 'trash');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/documents/valuelists');
         exit;
     }
 

@@ -8,6 +8,7 @@
 namespace CloudControl\Cms\components\cms;
 
 
+use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 
 class ImagesRouting implements CmsRouting
@@ -19,7 +20,7 @@ class ImagesRouting implements CmsRouting
      * @param mixed|string $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct($request, $relativeCmsUri, $cmsComponent)
+    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
         if ($relativeCmsUri == '/images') {
             $this->overviewRoute($cmsComponent);
