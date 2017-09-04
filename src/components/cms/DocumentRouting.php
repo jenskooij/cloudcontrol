@@ -10,7 +10,6 @@ namespace CloudControl\Cms\components\cms;
 
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\cms\document\FolderRouting;
-use CloudControl\Cms\components\cms\document\ValuelistRouting;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\Document;
