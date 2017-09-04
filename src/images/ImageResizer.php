@@ -127,7 +127,7 @@ namespace CloudControl\Cms\images {
 
         private function applyMethod($method, $imagePath, $width, $height, $modifier)
         {
-            $method = 'CloudControl\Cms\\images\\methods\\' . $method;
+            $method = 'CloudControl\\Cms\\images\\methods\\' . $method;
             $destination = $this->modifyName($imagePath, $modifier);
             if (file_exists($imagePath)) {
                 $image = new Image();
