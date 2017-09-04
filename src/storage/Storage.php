@@ -2,7 +2,6 @@
 
 namespace CloudControl\Cms\storage {
 
-    use CloudControl\Cms\storage\factories\DocumentFolderFactory;
     use CloudControl\Cms\storage\storage\ActivityLogStorage;
     use CloudControl\Cms\storage\storage\ApplicationComponentsStorage;
     use CloudControl\Cms\storage\storage\BricksStorage;
