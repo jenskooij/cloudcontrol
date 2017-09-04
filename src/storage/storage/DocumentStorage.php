@@ -24,12 +24,12 @@ class DocumentStorage extends AbstractStorage
         if (!in_array($state, Document::$DOCUMENT_STATES)) {
             throw new \Exception('Unsupported document state: ' . $state);
         }
-        return $this->repository->getDocuments($state);
+        return $this->repository->getContentRepository()->getDocumentsByPath($this->repository, '/', $state);
     }
 
     public function getDocumentsWithState($folderPath = '/')
     {
-        return $this->repository->getDocumentsWithState($folderPath);
+        return $this->repository->getContentRepository()->getDocumentsWithState($this->repository, $folderPath);
     }
 
     /**
@@ -37,7 +37,7 @@ class DocumentStorage extends AbstractStorage
      */
     public function getTotalDocumentCount()
     {
-        return $this->repository->getTotalDocumentCount();
+        return $this->repository->getContentRepository()->getTotalDocumentCount();
     }
 
     /**
@@ -55,7 +55,7 @@ class DocumentStorage extends AbstractStorage
         }
         $path = '/' . $slug;
 
-        return $this->repository->getDocumentByPath($path, $state);
+        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path, $state);
     }
 
     /**
@@ -80,7 +80,7 @@ class DocumentStorage extends AbstractStorage
             $newPath = $container->path . '/' . $documentObject->slug;
         }
         $documentObject->path = $newPath;
-        $this->repository->saveDocument($documentObject, $state);
+        $this->repository->getContentRepository()->saveDocument($documentObject, $state);
         return $newPath;
     }
 
@@ -99,7 +99,7 @@ class DocumentStorage extends AbstractStorage
         }
 
         $documentObject->path = $path;
-        $this->repository->saveDocument($documentObject, $state);
+        $this->repository->getContentRepository()->saveDocument($documentObject, $state);
         return $path;
     }
 
@@ -109,7 +109,7 @@ class DocumentStorage extends AbstractStorage
     public function deleteDocumentBySlug($slug)
     {
         $path = '/' . $slug;
-        $this->repository->deleteDocumentByPath($path);
+        $this->repository->getContentRepository()->deleteDocumentByPath($this->repository, $path);
     }
 
     /**
@@ -122,17 +122,17 @@ class DocumentStorage extends AbstractStorage
      */
     private function getDocumentContainerByPath($path)
     {
-        return $this->repository->getDocumentContainerByPath($path);
+        return $this->repository->getContentRepository()->getDocumentContainerByPath($this->repository, $path);
     }
 
     public function getPublishedDocumentsNoFolders()
     {
-        return $this->repository->getPublishedDocumentsNoFolders();
+        return $this->repository->getContentRepository()->getPublishedDocumentsNoFolders();
     }
 
     public function cleanPublishedDeletedDocuments()
     {
-        $this->repository->cleanPublishedDeletedDocuments();
+        $this->repository->getContentRepository()->cleanPublishedDeletedDocuments();
     }
 
     /**
@@ -150,8 +150,8 @@ class DocumentStorage extends AbstractStorage
         } else {
             $documentFolderObject->path = $postValues['path'] . '/' . $documentFolderObject->slug;
         }
-        $this->repository->saveDocument($documentFolderObject, 'published');
-        $this->repository->saveDocument($documentFolderObject, 'unpublished');
+        $this->repository->getContentRepository()->saveDocument($documentFolderObject, 'published');
+        $this->repository->getContentRepository()->saveDocument($documentFolderObject, 'unpublished');
     }
 
     /**
@@ -164,8 +164,8 @@ class DocumentStorage extends AbstractStorage
     public function deleteDocumentFolderBySlug($slug)
     {
         $path = '/' . $slug;
-        $this->repository->deleteDocumentByPath($path);
-        $this->repository->cleanPublishedDeletedDocuments();
+        $this->repository->getContentRepository()->deleteDocumentByPath($this->repository, $path);
+        $this->repository->getContentRepository()->cleanPublishedDeletedDocuments();
     }
 
     /**
@@ -174,7 +174,7 @@ class DocumentStorage extends AbstractStorage
     public function publishDocumentBySlug($slug)
     {
         $path = '/' . $slug;
-        $this->repository->publishDocumentByPath($path);
+        $this->repository->getContentRepository()->publishDocumentByPath($path);
     }
 
     /**
@@ -183,7 +183,7 @@ class DocumentStorage extends AbstractStorage
     public function unpublishDocumentBySlug($slug)
     {
         $path = '/' . $slug;
-        $this->repository->unpublishDocumentByPath($path);
+        $this->repository->getContentRepository()->unpublishDocumentByPath($path);
     }
 
     /**
@@ -198,7 +198,7 @@ class DocumentStorage extends AbstractStorage
     {
         $path = '/' . $slug;
 
-        return $this->repository->getDocumentByPath($path);
+        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path);
     }
 
 }

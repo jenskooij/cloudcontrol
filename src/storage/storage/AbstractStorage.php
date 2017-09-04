@@ -16,7 +16,7 @@ abstract class AbstractStorage
      */
     protected $repository;
 
-    public function __construct($repository)
+    public function __construct(Repository $repository)
     {
         $this->repository = $repository;
     }
