@@ -31,8 +31,6 @@ class SitemapRouting implements CmsRouting
             $this->editRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
             $this->deleteRoute($request, $cmsComponent);
-        } else {
-            $this->redirectRoutes($relativeCmsUri, $request, $cmsComponent);
         }
     }
 
@@ -90,57 +88,6 @@ class SitemapRouting implements CmsRouting
     {
         $cmsComponent->storage->getSitemap()->deleteSitemapItemBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/sitemap');
-        exit;
-    }
-
-    private function redirectRoutes($relativeCmsUri, $request, $cmsComponent)
-    {
-        if ($relativeCmsUri == '/sitemap/redirects') {
-            $this->redirectsOverviewRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/redirects/new') {
-            $this->redirectsNewRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/redirects/edit' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->redirectEditRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/redirects/delete' && isset($request::$get[CmsComponent::GET_PARAMETER_SLUG])) {
-            $this->redirectDeleteRoute($request, $cmsComponent);
-        }
-    }
-
-    private function redirectsOverviewRoute($cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'sitemap/redirects';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SITEMAP);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_REDIRECTS, $cmsComponent->storage->getRedirects()->getRedirects());
-    }
-
-    private function redirectsNewRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'sitemap/redirects-form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SITEMAP);
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post[CmsComponent::POST_PARAMETER_FROM_URL], $request::$post[CmsComponent::POST_PARAMETER_TO_URL])) {
-            $cmsComponent->storage->getRedirects()->addRedirect($request::$post);
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/sitemap/redirects');
-            exit;
-        }
-    }
-
-    private function redirectEditRoute($request, $cmsComponent)
-    {
-        $cmsComponent->subTemplate = 'sitemap/redirects-form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_SITEMAP);
-        $redirect = $cmsComponent->storage->getRedirects()->getRedirectBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        if (isset($request::$post[CmsComponent::POST_PARAMETER_TITLE], $request::$post[CmsComponent::POST_PARAMETER_FROM_URL], $request::$post[CmsComponent::POST_PARAMETER_TO_URL])) {
-            $cmsComponent->storage->getRedirects()->saveRedirect($request::$get[CmsComponent::GET_PARAMETER_SLUG], $request::$post);
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/sitemap/redirects');
-            exit;
-        }
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_REDIRECT, $redirect);
-    }
-
-    private function redirectDeleteRoute($request, $cmsComponent)
-    {
-        $cmsComponent->storage->getRedirects()->deleteRedirectBySlug($request::$get[CmsComponent::GET_PARAMETER_SLUG]);
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/sitemap/redirects');
         exit;
     }
 }

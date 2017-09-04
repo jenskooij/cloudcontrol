@@ -46,6 +46,14 @@
                     </a>
                   </li>
                 <? endif ?>
+                <? if (in_array('redirects', $userRights)) : ?>
+                  <li class="tile grid-box-4">
+                    <a class="btn redirects" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects">
+                      <i class="fa fa-random"></i>
+                      Redirects
+                    </a>
+                  </li>
+                <? endif ?>
                 <? if (in_array('images', $userRights)) : ?>
                   <li class="tile grid-box-4">
                     <a class="btn images" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images">

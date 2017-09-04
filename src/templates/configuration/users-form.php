@@ -25,6 +25,7 @@
         <option value="documents"<?= isset($user) && in_array('documents', $user->rights) ? ' selected="selected"' : '' ?>>Documents</option>
         <option value="valuelists"<?= isset($user) && in_array('valuelists', $user->rights) ? ' selected="selected"' : '' ?>>Valuelists</option>
         <option value="sitemap"<?= isset($user) && in_array('sitemap', $user->rights) ? ' selected="selected"' : '' ?>>Sitemap</option>
+        <option value="redirects"<?= isset($user) && in_array('redirects', $user->rights) ? ' selected="selected"' : '' ?>>Redirects</option>
         <option value="images"<?= isset($user) && in_array('images', $user->rights) ? ' selected="selected"' : '' ?>>Images</option>
         <option value="files"<?= isset($user) && in_array('files', $user->rights) ? ' selected="selected"' : '' ?>>Files</option>
         <option value="configuration"<?= isset($user) && in_array('configuration', $user->rights) ? ' selected="selected"' : '' ?>>Configuration</option>

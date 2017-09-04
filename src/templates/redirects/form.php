@@ -1,10 +1,9 @@
-<section class="sitemap">
-  <h2><i class="fa fa-map-signs"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap">Sitemap</a> &raquo; Redirects</h2>
+<section class="redirects">
+  <h2><i class="fa fa-random"></i> Redirects</h2>
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/redirects">Back</a>
+        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects">Back</a>
       </li>
     </ul>
   </nav>

@@ -6,6 +6,7 @@ namespace CloudControl\Cms\components {
     use CloudControl\Cms\components\cms\DocumentRouting;
     use CloudControl\Cms\components\cms\FilesRouting;
     use CloudControl\Cms\components\cms\ImagesRouting;
+    use CloudControl\Cms\components\cms\RedirectRouting;
     use CloudControl\Cms\components\cms\SearchRouting;
     use CloudControl\Cms\components\cms\SitemapRouting;
     use CloudControl\Cms\components\cms\ValuelistRouting;
@@ -156,6 +157,7 @@ namespace CloudControl\Cms\components {
             $this->documentRouting($userRights, $relativeCmsUri);
             $this->valuelistsRouting($userRights, $relativeCmsUri);
             $this->sitemapRouting($userRights, $relativeCmsUri);
+            $this->redirectRouting($userRights, $relativeCmsUri);
             $this->imageRouting($userRights, $relativeCmsUri);
             $this->filesRouting($userRights, $relativeCmsUri);
             $this->configurationRouting($userRights, $relativeCmsUri);
@@ -393,6 +395,13 @@ namespace CloudControl\Cms\components {
         protected function getTemplateDir($template, $application = null)
         {
             return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.php';
+        }
+
+        private function redirectRouting($userRights, $relativeCmsUri)
+        {
+            if (in_array(self::PARAMETER_SITEMAP, $userRights)) {
+                new RedirectRouting($this->request, $relativeCmsUri, $this);
+            }
         }
     }
 }
