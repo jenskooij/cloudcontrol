@@ -63,11 +63,11 @@ class Repository
     protected $activityLog;
     protected $activityLogChanges = false;
 
+    protected $contentDbHandle;
+
     /**
      * @var ContentRepository
      */
-    protected $contentDbHandle;
-
     protected $contentRepository;
 
 

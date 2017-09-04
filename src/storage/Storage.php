@@ -197,7 +197,7 @@ namespace CloudControl\Cms\storage {
          */
         public function getContentDbHandle()
         {
-            return $this->repository->getContentDbHandle();
+            return $this->repository->getContentRepository()->getContentDbHandle();
         }
 
         /**
