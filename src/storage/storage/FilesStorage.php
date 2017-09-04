@@ -31,6 +31,7 @@ class FilesStorage extends AbstractStorage
     /**
      * @param $postValues
      *
+     * @return \stdClass
      * @throws \Exception
      */
     public function addFile($postValues)
@@ -57,6 +58,7 @@ class FilesStorage extends AbstractStorage
         } else {
             throw new \Exception('Error moving uploaded file');
         }
+        return $file;
     }
 
     /**

@@ -187,7 +187,7 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function getDocumentContainerByPath(Repository $repository, $path)
         {
-            $document = $this->getDocumentByPath($path, 'unpublished');
+            $document = $this->getDocumentByPath($repository, $path, 'unpublished');
             if ($document === false) {
                 return false;
             }

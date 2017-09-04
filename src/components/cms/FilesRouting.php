@@ -25,6 +25,8 @@ class FilesRouting implements CmsRouting
             $this->overviewRoute($cmsComponent);
         } elseif ($relativeCmsUri == '/files/new') {
             $this->newRoute($request, $cmsComponent);
+        } elseif ($relativeCmsUri == '/files/new-ajax') {
+            $this->newAjaxRoute($cmsComponent);
         } elseif ($relativeCmsUri == '/files/get' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
             $this->downloadRoute($request::$get[CmsComponent::FILES_PARAMETER_FILE], $cmsComponent);
         } elseif ($relativeCmsUri == '/files/delete' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
@@ -80,6 +82,19 @@ class FilesRouting implements CmsRouting
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/files');
             exit;
         }
+    }
+
+    /**
+     * @param CmsComponent $cmsComponent
+     */
+    private function newAjaxRoute($cmsComponent)
+    {
+        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
+            $file = $cmsComponent->storage->getFiles()->addFile($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+            header('Content-type: application/json');
+            die(json_encode($file));
+        }
+        die('error occured');
     }
 
     /**
