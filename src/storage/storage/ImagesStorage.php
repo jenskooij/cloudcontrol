@@ -38,6 +38,7 @@ class ImagesStorage extends AbstractStorage
     /**
      * @param $postValues
      *
+     * @return \stdClass
      * @throws \Exception
      */
     public function addImage($postValues)
@@ -62,6 +63,8 @@ class ImagesStorage extends AbstractStorage
             $this->repository->images = $images;
 
             $this->save();
+
+            return $imageObject;
         } else {
             throw new \Exception('Error moving uploaded file');
         }

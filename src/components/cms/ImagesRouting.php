@@ -28,6 +28,8 @@ class ImagesRouting implements CmsRouting
             $this->jsonRoute($cmsComponent);
         } elseif ($relativeCmsUri == '/images/new') {
             $this->newRoute($request, $cmsComponent);
+        } elseif ($relativeCmsUri == '/images/new-ajax') {
+            $this->newAjaxRoute($cmsComponent);
         } elseif ($relativeCmsUri == '/images/delete' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
             $this->deleteRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/images/show' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
@@ -68,6 +70,20 @@ class ImagesRouting implements CmsRouting
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/images');
             exit;
         }
+    }
+
+    /**
+     * @param $request
+     * @param CmsComponent $cmsComponent
+     */
+    private function newAjaxRoute($cmsComponent)
+    {
+        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
+            $image = $cmsComponent->storage->getImages()->addImage($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+            header('Content-type: application/json');
+            die(json_encode($image));
+        }
+        die('error occured');
     }
 
     /**
