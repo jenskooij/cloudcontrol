@@ -10,6 +10,10 @@ class FilesStorage extends AbstractStorage
 {
     protected $filesDir;
 
+    /**
+     * @param \CloudControl\Cms\storage\Repository $repository
+     * @param string $filesDir
+     */
     public function __construct($repository, $filesDir)
     {
         parent::__construct($repository);
@@ -64,7 +68,7 @@ class FilesStorage extends AbstractStorage
     /**
      * @param $filename
      *
-     * @return null
+     * @return \stdClass|null
      */
     public function getFileByName($filename)
     {
@@ -104,7 +108,7 @@ class FilesStorage extends AbstractStorage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getFilesDir()
     {

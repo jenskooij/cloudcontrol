@@ -30,9 +30,9 @@ class ImagesRouting implements CmsRouting
             $this->newRoute($request, $cmsComponent);
         } elseif ($relativeCmsUri == '/images/new-ajax') {
             $this->newAjaxRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/images/delete' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
+        } elseif ($relativeCmsUri == '/images/delete' && isset($request::$get[CmsConstants::FILES_PARAMETER_FILE])) {
             $this->deleteRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/images/show' && isset($request::$get[CmsComponent::FILES_PARAMETER_FILE])) {
+        } elseif ($relativeCmsUri == '/images/show' && isset($request::$get[CmsConstants::FILES_PARAMETER_FILE])) {
             $this->showRoute($request, $cmsComponent);
         }
     }
@@ -43,9 +43,9 @@ class ImagesRouting implements CmsRouting
     private function overviewRoute($cmsComponent)
     {
         $cmsComponent->subTemplate = 'images';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGES, $cmsComponent->storage->getImages()->getImages());
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_IMAGES);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_IMAGES, $cmsComponent->storage->getImages()->getImages());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
     }
 
     /**
@@ -53,21 +53,21 @@ class ImagesRouting implements CmsRouting
      */
     private function jsonRoute($cmsComponent)
     {
-        header(CmsComponent::CONTENT_TYPE_APPLICATION_JSON);
+        header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
         die(json_encode($cmsComponent->storage->getImages()));
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'images/form';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
-        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-            $cmsComponent->storage->getImages()->addImage($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/images');
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_IMAGES);
+        if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
+            $cmsComponent->storage->getImages()->addImage($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/images');
             exit;
         }
     }
@@ -78,8 +78,8 @@ class ImagesRouting implements CmsRouting
      */
     private function newAjaxRoute($cmsComponent)
     {
-        if (isset($_FILES[CmsComponent::FILES_PARAMETER_FILE])) {
-            $image = $cmsComponent->storage->getImages()->addImage($_FILES[CmsComponent::FILES_PARAMETER_FILE]);
+        if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
+            $image = $cmsComponent->storage->getImages()->addImage($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
             header('Content-type: application/json');
             die(json_encode($image));
         }
@@ -87,24 +87,24 @@ class ImagesRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function deleteRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->getImages()->deleteImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]);
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsComponent::PARAMETER_CMS_PREFIX) . '/images');
+        $cmsComponent->storage->getImages()->deleteImageByName($request::$get[CmsConstants::FILES_PARAMETER_FILE]);
+        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/images');
         exit;
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function showRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'images/show';
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_MAIN_NAV_CLASS, CmsComponent::PARAMETER_IMAGES);
-        $cmsComponent->setParameter(CmsComponent::PARAMETER_IMAGE, $cmsComponent->storage->getImages()->getImageByName($request::$get[CmsComponent::FILES_PARAMETER_FILE]));
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_IMAGES);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_IMAGE, $cmsComponent->storage->getImages()->getImageByName($request::$get[CmsConstants::FILES_PARAMETER_FILE]));
     }
 }

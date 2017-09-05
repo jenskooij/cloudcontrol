@@ -13,6 +13,10 @@ class ImagesStorage extends AbstractStorage
 {
     protected $imagesDir;
 
+    /**
+     * @param \CloudControl\Cms\storage\Repository $repository
+     * @param string $imagesDir
+     */
     public function __construct($repository, $imagesDir)
     {
         parent::__construct($repository);

@@ -76,7 +76,7 @@ namespace CloudControl\Cms\images {
          * @param string $imagePath
          * @param bool $getExtension
          *
-         * @return bool|int|string
+         * @return integer
          */
         public function getImageMimeType($imagePath, $getExtension = false)
         {
@@ -149,7 +149,7 @@ namespace CloudControl\Cms\images {
         }
 
         /**
-         * @param $pathToBitmapFile
+         * @param string $pathToBitmapFile
          *
          * @return string
          */
@@ -165,7 +165,7 @@ namespace CloudControl\Cms\images {
         }
 
         /**
-         * @param $header
+         * @param string $header
          *
          * @return array
          */
@@ -195,14 +195,14 @@ namespace CloudControl\Cms\images {
          * Loop through the data in the body of the bitmap
          * file and calculate each individual pixel based on the
          * bytes
-         * @param $bodySize
-         * @param $x
+         * @param integer $bodySize
+         * @param integer $x
          * @param $width
-         * @param $usePadding
-         * @param $y
+         * @param boolean $usePadding
+         * @param integer $y
          * @param $height
-         * @param $body
-         * @param $image
+         * @param string $body
+         * @param resource $image
          */
         private function loopThroughBodyAndCalculatePixels($bodySize, $x, $width, $usePadding, $y, $height, $body, $image)
         {
