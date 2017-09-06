@@ -10,6 +10,14 @@ namespace CloudControl\Cms\cc {
     class Application
     {
         /**
+         * @var string
+         */
+        protected $rootDir;
+        /**
+         * @var string
+         */
+        protected $configPath;
+        /**
          * @var \stdClass
          */
         private $config;
@@ -35,9 +43,14 @@ namespace CloudControl\Cms\cc {
 
         /**
          * Application constructor.
+         * @param string $rootDir
+         * @param string $configPath
          */
-        public function __construct()
+        public function __construct($rootDir, $configPath)
         {
+            $this->rootDir = $rootDir;
+            $this->configPath = $configPath;
+
             $this->config();
             $this->storage();
 
@@ -66,10 +79,10 @@ namespace CloudControl\Cms\cc {
          */
         private function config()
         {
-            $configPath = __DIR__ . '/../../config.json';
-            if (realpath($configPath) !== false) {
-                $json = file_get_contents($configPath);
+            if (realpath($this->configPath) !== false) {
+                $json = file_get_contents($this->configPath);
                 $this->config = json_decode($json);
+                $this->config->rootDir = $this->rootDir;
             } else {
                 throw new \Exception('Framework not initialized yet. Consider running composer install');
             }
@@ -85,6 +98,7 @@ namespace CloudControl\Cms\cc {
 
         /**
          * @param Request $request
+         * @throws \Exception
          */
         private function redirectMatching($request)
         {

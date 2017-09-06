@@ -18,11 +18,11 @@ setlocale(LC_ALL, 'nl_NL');
 date_default_timezone_set('Europe/Amsterdam');
 
 ob_start("sanitize_output");
-//ob_start();
 session_start();
 
-//new \library\cc\Application();
-\CloudControl\Cms\CloudControl::run();
+$rootDir = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
+$configPath = realpath($rootDir . DIRECTORY_SEPARATOR . 'config.json');
+\CloudControl\Cms\CloudControl::run($rootDir, $configPath);
 
 if (php_sapi_name() != "cli") {
     ob_end_flush();

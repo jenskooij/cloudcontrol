@@ -11,9 +11,13 @@ use Composer\Script\Event;
 
 class CloudControl
 {
-    public static function run()
+    /**
+     * @param string $rootDir
+     * @param string $configPath
+     */
+    public static function run($rootDir, $configPath)
     {
-        new Application();
+        new Application($rootDir, $configPath);
     }
 
     public static function postInstall(Event $event)
@@ -46,7 +50,6 @@ class CloudControl
         $configObject = self::getConfig($event, $baseConfigTargetPath);
 
         $configObject->{'vendorDir'} = realpath($vendorDir);
-        $configObject->{'rootDir'} = $rootDir;
         $configObject->{'templateDir'} = self::createDir($event, $rootDir, 'templates');
         $configObject->{'storageDir'} = self::createDir($event, $rootDir, $configObject->{'storageDir'});
         $configObject->{'publicDir'} = self::createDir($event, $rootDir, 'public');
@@ -61,7 +64,7 @@ class CloudControl
         self::createStorage($configObject->{'storageDir'}, $baseStorageDefaultPath, $baseStorageSqlPath);
         self::saveConfig($event, $baseConfigTargetPath, $configObject);
         self::copyInstallFile($event, 'public.htaccess', $configObject->{'publicDir'}, '.htaccess');
-        self::copyInstallFile($event, 'root.htaccess', $configObject->{'rootDir'}, '.htaccess');
+        self::copyInstallFile($event, 'root.htaccess', $rootDir, '.htaccess');
         self::copyInstallFile($event, 'base.php', $configObject->{'templateDir'});
         self::copyInstallFile($event, 'cms.css', $configObject->{'cssDir'});
         self::copyInstallFile($event, 'cms.js', $configObject->{'jsDir'});
@@ -76,13 +79,6 @@ class CloudControl
      * @param Event $event
      * @param $baseConfigTargetPath
      * @param $configObject
-     * @internal param $rootDir
-     * @internal param $vendorDir
-     * @internal param $templateDir
-     * @internal param $storageDir
-     * @internal param $baseConfigDefaultPath
-     * @internal param $baseConfigTargetPath
-     * @internal param $storageDir
      */
     private static function saveConfig(Event $event, $baseConfigTargetPath, $configObject)
     {
