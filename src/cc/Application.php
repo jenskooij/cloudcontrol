@@ -56,20 +56,13 @@ namespace CloudControl\Cms\cc {
 
             $this->request = new Request();
 
-            $whoops = new Run;
-            $whoops->pushHandler(new PrettyPageHandler);
-            $whoops->register();
-
-            $this->redirectMatching($this->request);
-            $this->sitemapMatching($this->request);
+            $this->setExceptionHandler();
+            $this->urlMatching();
 
             $this->getApplicationComponents();
 
-            $this->runApplicationComponents();
-            $this->runSitemapComponents();
-
-            $this->renderApplicationComponents();
-            $this->renderSitemapComponents();
+            $this->run();
+            $this->render();
         }
 
         /**
@@ -277,6 +270,9 @@ namespace CloudControl\Cms\cc {
             return $this->config->templateDir;
         }
 
+        /**
+         * @return string
+         */
         public function getStorageDir()
         {
             return $this->config->storageDir;
@@ -287,9 +283,37 @@ namespace CloudControl\Cms\cc {
             $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
         }
 
+        /**
+         * @return string
+         */
         public function getRootDir()
         {
             return $this->config->rootDir;
+        }
+
+        private function setExceptionHandler()
+        {
+            $whoops = new Run;
+            $whoops->pushHandler(new PrettyPageHandler);
+            $whoops->register();
+        }
+
+        private function urlMatching()
+        {
+            $this->redirectMatching($this->request);
+            $this->sitemapMatching($this->request);
+        }
+
+        private function run()
+        {
+            $this->runApplicationComponents();
+            $this->runSitemapComponents();
+        }
+
+        private function render()
+        {
+            $this->renderApplicationComponents();
+            $this->renderSitemapComponents();
         }
     }
 }
