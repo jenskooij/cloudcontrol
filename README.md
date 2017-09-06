@@ -10,7 +10,7 @@ easy management of the content and structure of your website. Cloud Control and
 Cloud Control CMS are distributed under the MIT [license](LICENSE), so feel free to
 use it for whatever project you see fit.
 
-##Usage
+## Usage
 It is highly recommended to use the skeleton project to create a new project using Cloud Control.
 You can do this by using composer to create the project for you. It's as simple as typing:
 ```
