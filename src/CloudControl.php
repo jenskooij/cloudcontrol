@@ -49,7 +49,6 @@ class CloudControl
         $baseConfigTargetPath = $rootDir . DIRECTORY_SEPARATOR . 'config.json';
         $configObject = self::getConfig($event, $baseConfigTargetPath);
 
-        $configObject->{'vendorDir'} = realpath($vendorDir);
         $configObject->{'templateDir'} = self::createDir($event, $rootDir, 'templates');
         $configObject->{'storageDir'} = self::createDir($event, $rootDir, $configObject->{'storageDir'});
         $configObject->{'publicDir'} = self::createDir($event, $rootDir, 'public');
