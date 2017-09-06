@@ -50,6 +50,7 @@ namespace CloudControl\Cms\cc {
 
             self::$subfolders = '/' . str_replace('//', '/', str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), "", $rootPath));
             self::$subfolders = str_replace('//', '/', self::$subfolders);
+            self::$subfolders = str_replace('vendor/getcloudcontrol/cloudcontrol/', '', self::$subfolders);
             if (PHP_SAPI === 'cli') {
                 global $argv;
                 array_shift($argv);
