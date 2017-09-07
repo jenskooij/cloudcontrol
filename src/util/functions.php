@@ -16,7 +16,8 @@ function dump()
             var_dump($data);
         }
     } else {
-        ob_clean();
+        ob_end_clean();
+        ob_start();
         echo <<<END
 <!DOCTYPE html>
 <html>
