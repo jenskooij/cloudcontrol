@@ -195,9 +195,9 @@ namespace CloudControl\Cms\cc {
             $libraryComponentName = '\\CloudControl\Cms\\components\\' . $class;
             $userComponentName = '\\components\\' . $class;
 
-            if (!class_exists($libraryComponentName, false)) {
+            if (class_exists($libraryComponentName)) {
                 $component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-            } elseif (!class_exists($userComponentName, false)) {
+            } elseif (class_exists($userComponentName)) {
                 $component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
             } else {
                 throw new \Exception('Could not load component ' . $class);
