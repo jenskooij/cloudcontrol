@@ -56,6 +56,7 @@ class CloudControl
         $configObject->{'cssDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'css');
         $configObject->{'imagesDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'images');
         $configObject->{'filesDir'} = self::createDir($event, $rootDir, $configObject->{'publicDir'} . 'files');
+        $componentsDir = self::createDir($event, $rootDir, 'components');
 
         $baseStorageDefaultPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.json';
         $baseStorageSqlPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.sql';
@@ -68,6 +69,7 @@ class CloudControl
         self::copyInstallFile($event, 'cms.css', $configObject->{'cssDir'});
         self::copyInstallFile($event, 'cms.js', $configObject->{'jsDir'});
         self::copyInstallFile($event, 'index.php', $configObject->{'publicDir'});
+        self::copyInstallFile($event, 'CustomComponent.php', $componentsDir);
 
         $event->getIO()->write("");
         $event->getIO()->write("[SUCCESS] Installation is complete");

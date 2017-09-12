@@ -70,7 +70,7 @@ class ValuelistRouting implements CmsRouting
 
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
             $cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
-            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/valuelists/edit?slug=' . $request::$get[CmsConstants::GET_PARAMETER_SLUG];
+            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists/edit?slug=' . $request::$get[CmsConstants::GET_PARAMETER_SLUG];
             $cmsComponent->storage->getActivityLog()->add('edited valuelist <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a>', 'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists');
             exit;

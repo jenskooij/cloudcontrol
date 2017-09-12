@@ -4,9 +4,6 @@
     <ul>
       <li>
         <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/new" title="New">+</a>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/redirects" title="Redirects">
-          <i class="fa fa-random"></i>
-        </a>
       </li>
     </ul>
   </nav>
