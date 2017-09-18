@@ -9,7 +9,9 @@
   <h2><i class="fa fa-file-text-o"></i> Documents</h2>
     <? if (isset($infoMessage)) : ?>
       <div class="infoMessage <?= isset($infoMessageClass) ? $infoMessageClass : '' ?>">
+        <div class="content">
           <?= $infoMessage ?>
+        </div>
       </div>
     <? endif ?>
   <div class="search">
