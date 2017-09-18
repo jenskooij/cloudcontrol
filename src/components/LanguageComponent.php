@@ -83,7 +83,7 @@ class LanguageComponent implements Component
      * if an action is to be taken.
      *
      * @param $lang
-     * @param $request
+     * @param Request $request
      */
     private function detectLanguage($lang, $request)
     {
@@ -102,7 +102,11 @@ class LanguageComponent implements Component
         if ($this->forceRedirect === true) {
             if (substr($request::$relativeUri, 0, 2) !== $lang) {
                 if ($lang !== $this->defaultLanguage) {
-                    header('Location: ' . $request::$subfolders . $lang . '/' . $request::$relativeUri);
+                    $redirectUrl = $request::$subfolders . $lang . '/' . $request::$relativeUri;
+                    if (!empty($request::$queryString)) {
+                        $redirectUrl .= '?' . $request::$queryString;
+                    }
+                    header('Location: ' . $redirectUrl);
                     exit;
                 }
             }
