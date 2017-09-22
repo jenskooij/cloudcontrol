@@ -106,21 +106,7 @@ namespace CloudControl\Cms\components {
                 if ($obClean) {
                     ob_clean();
                 }
-                $this->parameters['request'] = $this->request;
-                if ($application !== null) {
-                    $acParameters = $application->getAllApplicationComponentParameters();
-                    foreach ($acParameters as $parameters) {
-                        extract($parameters);
-                    }
-                }
-                extract($this->parameters);
-                if ($obClean) {
-                    include($templatePath);
-                    return ob_get_contents();
-                } else {
-                    return include($templatePath);
-                }
-
+                return $this->extractParametersAndIncludeTemplateFile($templatePath, $application, $obClean);
             } else {
                 if ($template !== null) { // If template is null, its a application component, which doesnt have a template
                     throw new \Exception('Couldnt find template ' . $templatePath);
@@ -201,6 +187,40 @@ namespace CloudControl\Cms\components {
                 $templatePath = $templateDir;
             }
             return $templatePath;
+        }
+
+        /**
+         * @param $templatePath
+         * @param $obClean
+         * @return mixed|string
+         */
+        private function includeTemplateFile($templatePath, $obClean)
+        {
+            if ($obClean) {
+                include($templatePath);
+                return ob_get_contents();
+            } else {
+                return include($templatePath);
+            }
+        }
+
+        /**
+         * @param $templatePath
+         * @param $application
+         * @param $obClean
+         * @return mixed|string
+         */
+        private function extractParametersAndIncludeTemplateFile($templatePath, $application, $obClean)
+        {
+            $this->parameters['request'] = $this->request;
+            if ($application !== null) {
+                $acParameters = $application->getAllApplicationComponentParameters();
+                foreach ($acParameters as $parameters) {
+                    extract($parameters);
+                }
+            }
+            extract($this->parameters);
+            return $this->includeTemplateFile($templatePath, $obClean);
         }
     }
 }
