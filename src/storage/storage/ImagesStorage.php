@@ -97,7 +97,7 @@ class ImagesStorage extends AbstractStorage
                 unset($images[$key]);
             }
         }
-
+        $images = array_values($images);
         $this->repository->images = $images;
         $this->save();
     }
