@@ -190,21 +190,6 @@ namespace CloudControl\Cms\components {
         }
 
         /**
-         * @param $templatePath
-         * @param $obClean
-         * @return mixed|string
-         */
-        private function includeTemplateFile($templatePath, $obClean)
-        {
-            if ($obClean) {
-                include($templatePath);
-                return ob_get_contents();
-            } else {
-                return include($templatePath);
-            }
-        }
-
-        /**
          * @param string $templatePath
          * @param Application $application
          * @param bool $obClean
@@ -220,7 +205,12 @@ namespace CloudControl\Cms\components {
                 }
             }
             extract($this->parameters);
-            return $this->includeTemplateFile($templatePath, $obClean);
+            if ($obClean) {
+                include($templatePath);
+                return ob_get_contents();
+            } else {
+                return include($templatePath);
+            }
         }
     }
 }
