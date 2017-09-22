@@ -91,7 +91,7 @@ class ImagesStorage extends AbstractStorage
                     if (file_exists($destination)) {
                         unlink($destination);
                     } else {
-                        dump($destination);
+                        // file doesnt exist, no need to delete
                     }
                 }
                 unset($images[$key]);
