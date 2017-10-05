@@ -83,30 +83,15 @@ class LanguageComponent implements Component
      * if an action is to be taken.
      *
      * @param $lang
-     * @param $request
+     * @param Request $request
      */
     private function detectLanguage($lang, $request)
     {
-        $_SESSION['LanguageComponent'][$this->languageParameterName] = $this->defaultLanguage;
-
-        if ($this->acceptedLanguages === null) {
-            $_SESSION['LanguageComponent'][$this->languageParameterName] = $lang;
-        } else if (in_array($lang, $this->acceptedLanguages)) {
-            $_SESSION['LanguageComponent'][$this->languageParameterName] = $lang;
-        } else {
-            $lang = $this->defaultLanguage;
-        }
+        $lang = $this->setLanguagInSession($lang);
 
         $this->sessionValues = $_SESSION['LanguageComponent'];
 
-        if ($this->forceRedirect === true) {
-            if (substr($request::$relativeUri, 0, 2) !== $lang) {
-                if ($lang !== $this->defaultLanguage) {
-                    header('Location: ' . $request::$subfolders . $lang . '/' . $request::$relativeUri);
-                    exit;
-                }
-            }
-        }
+        $this->checkForceRedirect($lang, $request);
     }
 
     /**
@@ -136,5 +121,43 @@ class LanguageComponent implements Component
     function run(Storage $storage)
     {
         // To be implemented
+    }
+
+    /**
+     * @param $lang
+     * @param $request
+     */
+    private function checkForceRedirect($lang, $request)
+    {
+        if ($this->forceRedirect === true) {
+            if (substr($request::$relativeUri, 0, 2) !== $lang) {
+                if ($lang !== $this->defaultLanguage) {
+                    $redirectUrl = $request::$subfolders . $lang . '/' . $request::$relativeUri;
+                    if (!empty($request::$queryString)) {
+                        $redirectUrl .= '?' . $request::$queryString;
+                    }
+                    header('Location: ' . $redirectUrl);
+                    exit;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $lang
+     * @return string
+     */
+    private function setLanguagInSession($lang)
+    {
+        $_SESSION['LanguageComponent'][$this->languageParameterName] = $this->defaultLanguage;
+
+        if ($this->acceptedLanguages === null) {
+            $_SESSION['LanguageComponent'][$this->languageParameterName] = $lang;
+        } else if (in_array($lang, $this->acceptedLanguages)) {
+            $_SESSION['LanguageComponent'][$this->languageParameterName] = $lang;
+        } else {
+            $lang = $this->defaultLanguage;
+        }
+        return $lang;
     }
 }

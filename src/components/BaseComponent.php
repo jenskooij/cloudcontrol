@@ -34,6 +34,11 @@ namespace CloudControl\Cms\components {
         protected $matchedSitemapItem;
 
         /**
+         * @var Application
+         */
+        protected $application = null;
+
+        /**
          * BaseComponent constructor.
          *
          * @param string $template
@@ -68,6 +73,7 @@ namespace CloudControl\Cms\components {
          */
         public function render($application = null)
         {
+            $this->application = $application;
             $this->renderedContent = $this->renderTemplate($this->template, true, $application);
         }
 
@@ -100,16 +106,7 @@ namespace CloudControl\Cms\components {
                 if ($obClean) {
                     ob_clean();
                 }
-                $this->parameters['request'] = $this->request;
-                if ($application !== null) {
-                    $acParameters = $application->getAllApplicationComponentParameters();
-                    foreach ($acParameters as $parameters) {
-                        extract($parameters);
-                    }
-                }
-                extract($this->parameters);
-                include($templatePath);
-                return ob_get_contents();
+                return $this->extractParametersAndIncludeTemplateFile($templatePath, $application, $obClean);
             } else {
                 if ($template !== null) { // If template is null, its a application component, which doesnt have a template
                     throw new \Exception('Couldnt find template ' . $templatePath);
@@ -159,23 +156,61 @@ namespace CloudControl\Cms\components {
 
         /**
          * @param string $template
-         * @param $application
+         * @param Application $application
          * @return string
          */
-        private function getTemplatePath($template, $application)
+        private function getTemplatePath($template, $application = null)
         {
             $templateDir = $this->getTemplateDir($template, $application);
             if ($application !== null) {
-                $rootDir = $application->getRootDir();
-                if (strpos($templateDir, $rootDir) === false) {
-                    $templatePath = $rootDir . DIRECTORY_SEPARATOR . $templateDir;
-                } else {
-                    $templatePath = $templateDir;
-                }
+                $templatePath = $this->getTemplatePathFromApplication($application, $templateDir);
+            } elseif ($this->application !== null) {
+                $templatePath = $this->getTemplatePathFromApplication($this->application, $templateDir);
             } else {
                 $templatePath = $templateDir;
             }
             return $templatePath;
+        }
+
+        /**
+         * @param Application $application
+         * @param string $templateDir
+         * @return string
+         */
+        private function getTemplatePathFromApplication($application, $templateDir)
+        {
+            $rootDir = $application->getRootDir();
+
+            if (strpos($templateDir, $rootDir) === false) {
+                $templatePath = $rootDir . DIRECTORY_SEPARATOR . $templateDir;
+            } else {
+                $templatePath = $templateDir;
+            }
+            return $templatePath;
+        }
+
+        /**
+         * @param string $templatePath
+         * @param Application $application
+         * @param bool $obClean
+         * @return mixed|string
+         */
+        private function extractParametersAndIncludeTemplateFile($templatePath, $application = null, $obClean = true)
+        {
+            $this->parameters['request'] = $this->request;
+            if ($application !== null) {
+                $acParameters = $application->getAllApplicationComponentParameters();
+                foreach ($acParameters as $parameters) {
+                    extract($parameters);
+                }
+            }
+            extract($this->parameters);
+            if ($obClean) {
+                include($templatePath);
+                return ob_get_contents();
+            } else {
+                return include($templatePath);
+            }
         }
     }
 }

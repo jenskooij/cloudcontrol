@@ -28,4 +28,4 @@ using the framework.
 
 ## Contributing to this project
 If you feel like contributing to the Cloud Control Framework itself, feel free
-to do so, but please follow our [contributing guide](CONTRIBUTING.MD).
+to do so, but please follow our [contributing guide](CONTRIBUTING.md).
