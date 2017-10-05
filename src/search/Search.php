@@ -6,8 +6,7 @@
  */
 
 namespace CloudControl\Cms\search;
-
-use search\results\SearchResult;
+use CloudControl\Cms\search\results\SearchResult;
 
 /**
  * Class Search
