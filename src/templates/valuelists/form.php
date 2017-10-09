@@ -20,8 +20,8 @@
           <? if (isset($valuelist)) : ?>
               <? foreach ($valuelist->pairs as $key => $value) : ?>
               <li class="form-element parameters">
-                <input type="text" required="required" name="keys[]" placeholder="Key" value="<?= $key ?>"/>&nbsp;
-                <input type="text" required="required" name="values[]" placeholder="Value" value="<?= $value ?>"/>
+                <input type="text" required="required" name="keys[]" placeholder="Key" value="<?= htmlentities($key) ?>"/>&nbsp;
+                <input type="text" required="required" name="values[]" placeholder="Value" value="<?= htmlentities($value) ?>"/>
                 <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
               </li>
               <? endforeach ?>
