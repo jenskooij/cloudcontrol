@@ -49,7 +49,7 @@ class LanguageComponent implements Component
     /**
      * Checks to see if any parameters are given from the configuration in the CMS
      */
-    private function checkParameters()
+    protected function checkParameters()
     {
         if (isset($this->parameters['defaultLanguage'])) {
             $this->defaultLanguage = $this->parameters['defaultLanguage'];
@@ -85,7 +85,7 @@ class LanguageComponent implements Component
      * @param $lang
      * @param Request $request
      */
-    private function detectLanguage($lang, $request)
+    protected function detectLanguage($lang, $request)
     {
         $lang = $this->setLanguagInSession($lang);
 
@@ -99,7 +99,7 @@ class LanguageComponent implements Component
      *
      * @param Request $request
      */
-    private function checkLanguageSwitch($request)
+    protected function checkLanguageSwitch($request)
     {
         if (isset($request::$get['langSwitch'])) {
             $this->forceRedirect = true;
@@ -127,7 +127,7 @@ class LanguageComponent implements Component
      * @param $lang
      * @param $request
      */
-    private function checkForceRedirect($lang, $request)
+    protected function checkForceRedirect($lang, $request)
     {
         if ($this->forceRedirect === true) {
             if (substr($request::$relativeUri, 0, 2) !== $lang) {
@@ -147,7 +147,7 @@ class LanguageComponent implements Component
      * @param $lang
      * @return string
      */
-    private function setLanguagInSession($lang)
+    protected function setLanguagInSession($lang)
     {
         $_SESSION['LanguageComponent'][$this->languageParameterName] = $this->defaultLanguage;
 

@@ -90,14 +90,12 @@ class ImagesStorage extends AbstractStorage
                     $destination = $destinationPath . '/' . $imageSetFilename;
                     if (file_exists($destination)) {
                         unlink($destination);
-                    } else {
-                        dump($destination);
                     }
                 }
                 unset($images[$key]);
             }
         }
-
+        $images = array_values($images);
         $this->repository->images = $images;
         $this->save();
     }

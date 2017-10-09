@@ -35,7 +35,7 @@ class DocumentFolderComponent extends BaseComponent
     /**
      * Checks to see if any parameters were defined in the cms and acts according
      */
-    private function checkParameters()
+    protected function checkParameters()
     {
         if (isset($this->parameters[self::PARAMETER_DOCUMENT_FOLDER_PATH])) {
             $this->documentFolderPath = $this->parameters[self::PARAMETER_DOCUMENT_FOLDER_PATH];

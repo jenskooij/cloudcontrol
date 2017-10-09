@@ -94,7 +94,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function checkWhiteList($remoteAddress)
+        protected function checkWhiteList($remoteAddress)
         {
             if (isset($this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS])) {
                 $whitelistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS]);
@@ -110,7 +110,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function checkBlackList($remoteAddress)
+        protected function checkBlackList($remoteAddress)
         {
             if (isset($this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS])) {
                 $blacklistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS]);
@@ -126,7 +126,7 @@ namespace CloudControl\Cms\components {
          *
          * @return mixed|string
          */
-        private function getRelativeCmsUri($request)
+        protected function getRelativeCmsUri($request)
         {
             // TODO Use regex match parameter instead of calculating relative uri
             $pos = strpos($request::$relativeUri, $this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]);
