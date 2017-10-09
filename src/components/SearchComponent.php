@@ -40,7 +40,7 @@ class SearchComponent extends BaseComponent
     /**
      * Checks to see if any parameters were defined in the cms and acts according
      */
-    private function checkParameters()
+    protected function checkParameters()
     {
         if (isset($this->parameters['searchParameterName'])) {
             $this->searchParameterName = $this->parameters['searchParameterName'];
