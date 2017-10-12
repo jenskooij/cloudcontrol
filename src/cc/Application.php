@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\cc {
 
+    use CloudControl\Cms\cc\application\ApplicationRunner;
     use CloudControl\Cms\cc\application\UrlMatcher;
     use CloudControl\Cms\components\Component;
     use CloudControl\Cms\services\FileService;
@@ -94,68 +95,6 @@ namespace CloudControl\Cms\cc {
         private function storage()
         {
             $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
-        }
-
-        /**
-         * Loop through all application components and run them
-         *
-         * @throws \Exception
-         */
-        private function runApplicationComponents()
-        {
-            foreach ($this->applicationComponents as $key => $applicationComponent) {
-                $class = $applicationComponent->component;
-                $parameters = $applicationComponent->parameters;
-                $this->applicationComponents[$key]->{'object'} = $this->getComponentObject($class, null, $parameters, null);
-                $this->applicationComponents[$key]->{'object'}->run($this->storage);
-            }
-        }
-
-        /**
-         * Loop through all (matched) sitemap components and run them
-         *
-         * @throws \Exception
-         */
-        private function runSitemapComponents()
-        {
-            foreach ($this->matchedSitemapItems as $key => $sitemapItem) {
-                $class = $sitemapItem->component;
-                $template = $sitemapItem->template;
-                $parameters = $sitemapItem->parameters;
-
-                $this->matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
-
-                $this->matchedSitemapItems[$key]->object->run($this->storage);
-            }
-        }
-
-        /**
-         * @param string $class
-         * @param string $template
-         * @param array $parameters
-         * @param \stdClass|null $matchedSitemapItem
-         *
-         * @return Component
-         * @throws \Exception
-         */
-        private function getComponentObject($class = '', $template = '', $parameters = array(), $matchedSitemapItem)
-        {
-            $libraryComponentName = '\\CloudControl\Cms\\components\\' . $class;
-            $userComponentName = '\\components\\' . $class;
-
-            if (class_exists($libraryComponentName)) {
-                $component = new $libraryComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-            } elseif (class_exists($userComponentName)) {
-                $component = new $userComponentName($template, $this->request, $parameters, $matchedSitemapItem);
-            } else {
-                throw new \Exception('Could not load component ' . $class);
-            }
-
-            if (!$component instanceof Component) {
-                throw new \Exception('Component not of type Component. Must inherit \CloudControl\Cms\components\Component');
-            }
-
-            return $component;
         }
 
         /**
@@ -255,8 +194,9 @@ namespace CloudControl\Cms\cc {
 
         private function run()
         {
-            $this->runApplicationComponents();
-            $this->runSitemapComponents();
+            $applicationRunner = new ApplicationRunner($this->storage, $this->request);
+            $applicationRunner->runApplicationComponents($this->applicationComponents);
+            $applicationRunner->runSitemapComponents($this->matchedSitemapItems);
         }
 
         private function render()
