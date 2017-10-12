@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\cc {
 
+    use CloudControl\Cms\cc\application\UrlMatcher;
     use CloudControl\Cms\components\Component;
     use CloudControl\Cms\services\FileService;
     use CloudControl\Cms\services\ImageService;
@@ -93,65 +94,6 @@ namespace CloudControl\Cms\cc {
         private function storage()
         {
             $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
-        }
-
-        /**
-         * @param Request $request
-         * @throws \Exception
-         */
-        private function redirectMatching($request)
-        {
-            $redirects = $this->storage->getRedirects()->getRedirects();
-            $relativeUri = '/' . $request::$relativeUri;
-
-            foreach ($redirects as $redirect) {
-                if (preg_match_all($redirect->fromUrl, $relativeUri, $matches)) {
-                    $toUrl = preg_replace($redirect->fromUrl, $redirect->toUrl, $relativeUri);
-                    if (substr($toUrl, 0, 1) == '/') {
-                        $toUrl = substr($toUrl, 1);
-                    }
-                    if ($redirect->type == '301') {
-                        header('HTTP/1.1 301 Moved Permanently');
-                        header('Location: ' . $request::$subfolders . $toUrl);
-                        exit;
-                    } elseif ($redirect->type == '302') {
-                        header('Location: ' . $request::$subfolders . $toUrl, true, 302);
-                        exit;
-                    } else {
-                        throw new \Exception('Invalid redirect type.');
-                    }
-                }
-            }
-        }
-
-        /**
-         * Loop through sitemap items and see if one matches the requestUri.
-         * If it does, add it tot the matchedSitemapItems array
-         *
-         * @param Request $request
-         */
-        private function sitemapMatching($request)
-        {
-            $sitemap = $this->storage->getSitemap()->getSitemap();
-            $relativeUri = '/' . $request::$relativeUri;
-
-            foreach ($sitemap as $sitemapItem) {
-                if ($sitemapItem->regex) {
-                    $matches = array();
-                    if (preg_match_all($sitemapItem->url, $relativeUri, $matches)) {
-                        // Make a clone, so it doesnt add the matches to the original
-                        $matchedClone = clone $sitemapItem;
-                        $matchedClone->matches = $matches;
-                        $this->matchedSitemapItems[] = $matchedClone;
-                        return;
-                    }
-                } else {
-                    if ($sitemapItem->url == $relativeUri) {
-                        $this->matchedSitemapItems[] = $sitemapItem;
-                        return;
-                    }
-                }
-            }
         }
 
         /**
@@ -306,8 +248,9 @@ namespace CloudControl\Cms\cc {
 
         private function urlMatching()
         {
-            $this->redirectMatching($this->request);
-            $this->sitemapMatching($this->request);
+            $urlMatcher = new UrlMatcher($this, $this->storage);
+            $urlMatcher->redirectMatching($this->request);
+            $urlMatcher->sitemapMatching($this->request);
         }
 
         private function run()
@@ -327,6 +270,11 @@ namespace CloudControl\Cms\cc {
             FileService::getInstance()->init($this->storage);
             ImageService::getInstance()->init($this->storage);
             ValuelistService::getInstance()->init($this->storage);
+        }
+
+        public function addMatchedSitemapItem($matchedClone)
+        {
+            $this->matchedSitemapItems[] = $matchedClone;
         }
     }
 }
