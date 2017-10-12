@@ -4,16 +4,17 @@
  */
 
 namespace CloudControl\Cms\services;
-use CloudControl\Cms\services\fileservice\File;
+
+
+use CloudControl\Cms\services\imageservice\Image;
 use CloudControl\Cms\storage\Storage;
 
 /**
- * Class FileService
+ * Class ImageService
  * Singleton
- *
  * @package CloudControl\Cms\services
  */
-class FileService
+class ImageService
 {
     private static $instance;
     /**
@@ -22,30 +23,30 @@ class FileService
     protected $storage;
 
     /**
-     * FileService constructor.
+     * ImageService constructor.
      */
     protected function __construct()
     {}
 
     /**
-     * @return FileService
+     * @return ImageService
      */
     public static function getInstance()
     {
-        if (!self::$instance instanceof FileService) {
-            self::$instance = new FileService();
+        if (!self::$instance instanceof ImageService) {
+            self::$instance = new ImageService();
         }
         return self::$instance;
     }
 
     /**
-     * @param $filePath
-     * @return File
+     * @param $imagePath
+     * @return Image
      */
-    public static function get($filePath)
+    public static function get($imagePath)
     {
         $instance = self::getInstance();
-        return $instance->getFileByPath($filePath);
+        return $instance->getImageByPath($imagePath);
     }
 
     /**
@@ -57,13 +58,13 @@ class FileService
     }
 
     /**
-     * @param $filePath
-     * @return File
+     * @param $imagePath
+     * @return Image
      */
-    protected function getFileByPath($filePath)
+    protected function getImageByPath($imagePath)
     {
-        $file = $this->storage->getFiles()->getFileByName($filePath);
-        return new File($file);
+        $image = $this->storage->getImages()->getImageByName($imagePath);
+        return new Image($image);
     }
 
     /**
@@ -73,6 +74,4 @@ class FileService
     {
         $this->storage = $storage;
     }
-
-
 }

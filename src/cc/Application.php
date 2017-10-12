@@ -4,6 +4,7 @@ namespace CloudControl\Cms\cc {
 
     use CloudControl\Cms\components\Component;
     use CloudControl\Cms\services\FileService;
+    use CloudControl\Cms\services\ImageService;
     use CloudControl\Cms\storage\Storage;
     use Whoops\Handler\PrettyPageHandler;
     use Whoops\Run;
@@ -323,6 +324,7 @@ namespace CloudControl\Cms\cc {
         private function startServices()
         {
             FileService::getInstance()->init($this->storage);
+            ImageService::getInstance()->init($this->storage);
         }
     }
 }
