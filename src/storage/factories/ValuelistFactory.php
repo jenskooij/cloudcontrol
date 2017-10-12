@@ -9,6 +9,7 @@ namespace CloudControl\Cms\storage\factories;
 
 
 use CloudControl\Cms\cc\StringUtil;
+use CloudControl\Cms\storage\entities\Valuelist;
 
 class ValuelistFactory
 {
@@ -17,7 +18,7 @@ class ValuelistFactory
      *
      * @param $postValues
      *
-     * @return \stdClass
+     * @return Valuelist
      * @throws \Exception
      */
     public static function createValuelistFromPostValues($postValues)
@@ -36,7 +37,7 @@ class ValuelistFactory
             ksort($object_vars);
             $valuelistObject->pairs = (object)$object_vars;
 
-            return $valuelistObject;
+            return new Valuelist($valuelistObject);
         } else {
             throw new \Exception('Trying to create valuelist with invalid data.');
         }
