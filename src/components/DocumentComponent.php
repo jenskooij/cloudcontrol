@@ -41,7 +41,7 @@ namespace CloudControl\Cms\components {
         /**
          * Checks to see if any parameters were defined in the cms and acts according
          */
-        private function checkParameters()
+        protected function checkParameters()
         {
             if (isset($this->parameters['documentParameterName'])) {
                 $this->documentParameterName = $this->parameters['documentParameterName'];
@@ -53,7 +53,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function runLikeApplicationComponent()
+        protected function runLikeApplicationComponent()
         {
             if (isset($this->parameters['document'])) {
                 $this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
@@ -68,7 +68,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function runLikeRegularComponent()
+        protected function runLikeRegularComponent()
         {
             if ($this->matchedSitemapItem->regex == false || isset($this->parameters['document'])) {
                 $this->runWithoutRegex();
@@ -82,7 +82,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function runWithoutRegex()
+        protected function runWithoutRegex()
         {
             if (isset($this->parameters['document'])) {
                 $this->runByDocumentParameter();
@@ -96,7 +96,7 @@ namespace CloudControl\Cms\components {
          *
          * @throws \Exception
          */
-        private function runWithRegex()
+        protected function runWithRegex()
         {
             $relativeDocumentUri = $this->checkForSpecificFolder();
 
@@ -113,7 +113,7 @@ namespace CloudControl\Cms\components {
         /**
          * Run using the given `document` parameter
          */
-        private function runByDocumentParameter()
+        protected function runByDocumentParameter()
         {
             $document = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
             if ($document instanceof Document) {
@@ -127,7 +127,7 @@ namespace CloudControl\Cms\components {
         /**
          * @return mixed|string
          */
-        private function checkForSpecificFolder()
+        protected function checkForSpecificFolder()
         {
             $relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
             if (isset($this->parameters['folder'])) {

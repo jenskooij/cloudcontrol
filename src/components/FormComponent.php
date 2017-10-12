@@ -54,16 +54,16 @@ class FormComponent Extends BaseComponent
     /**
      * @var string
      */
-    private $formId;
+    protected $formId;
     /**
      * @var null|string
      */
-    private $getPathBackup = null;
+    protected $getPathBackup = null;
 
     /**
      * @var null|\stdClass
      */
-    private $userSessionBackup = null;
+    protected $userSessionBackup = null;
 
     /**
      * @param Storage $storage
@@ -100,7 +100,7 @@ class FormComponent Extends BaseComponent
      * Checks if parameters were given in the CMS configuration and
      * sets them to their respective fields
      */
-    private function checkParameters()
+    protected function checkParameters()
     {
         $this->checkDocumentTypeParameter();
         $this->checkResponseFolderParameter();
@@ -115,7 +115,7 @@ class FormComponent Extends BaseComponent
      *
      * @param Storage $storage
      */
-    private function initialize($storage)
+    protected function initialize($storage)
     {
         $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $storage->getImageSet()->getSmallestImageSet();
         $this->parameters[self::PARAMETER_CMS_PREFIX] = '';
@@ -132,7 +132,7 @@ class FormComponent Extends BaseComponent
      *
      * @param Storage $storage
      */
-    private function checkSubmit($storage)
+    protected function checkSubmit($storage)
     {
         if ($this->isFormSubmitted($this->request) && $this->isSubmitAllowed()) {
             $postValues = $this->getPostValues($this->request);
@@ -159,7 +159,7 @@ class FormComponent Extends BaseComponent
      * Sets a unique id for this particular form, so it can recognize
      * it when a submit occurs
      */
-    private function setFormId()
+    protected function setFormId()
     {
         if (isset($_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID])) {
             $this->formId = $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID];
@@ -177,7 +177,7 @@ class FormComponent Extends BaseComponent
      *
      * @return bool
      */
-    private function isFormSubmitted($request)
+    protected function isFormSubmitted($request)
     {
         return !empty($request::$post) && isset($request::$post[self::PARAMETER_FORM_ID]) && $request::$post[self::PARAMETER_FORM_ID] === $this->formId && isset($_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID]) && $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID] === $this->formId;
     }
@@ -186,7 +186,7 @@ class FormComponent Extends BaseComponent
      * @param Request $request
      * @return array
      */
-    private function getPostValues($request)
+    protected function getPostValues($request)
     {
         $postValues = $request::$post;
         $postValues[self::PARAMETER_DOCUMENT_TYPE] = $this->documentType;
@@ -200,7 +200,7 @@ class FormComponent Extends BaseComponent
      * Temporarily stores the current user session in a backup variable
      * and sets a fake user instead
      */
-    private function setUserSessionBackup()
+    protected function setUserSessionBackup()
     {
         $this->userSessionBackup = isset($_SESSION[self::SESSION_PARAMETER_CLOUDCONTROL]) ? $_SESSION[self::SESSION_PARAMETER_CLOUDCONTROL] : null;
         $fakeUser = new \stdClass();
@@ -212,7 +212,7 @@ class FormComponent Extends BaseComponent
      * Removes the fake user and restores the existing user
      * session if it was there
      */
-    private function restoreUserSessionBackup()
+    protected function restoreUserSessionBackup()
     {
         if ($this->userSessionBackup === null) {
             unset($_SESSION[self::SESSION_PARAMETER_CLOUDCONTROL]);
@@ -221,12 +221,12 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function setSubmitToSession()
+    protected function setSubmitToSession()
     {
         $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName]['submitted'] = true;
     }
 
-    private function isSubmitAllowed()
+    protected function isSubmitAllowed()
     {
         if ($this->submitOncePerSession === true && $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName]['submitted'] === true) {
             return false;
@@ -235,7 +235,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkDocumentTypeParameter()
+    protected function checkDocumentTypeParameter()
     {
         if (isset($this->parameters[self::PARAMETER_DOCUMENT_TYPE])) {
             $this->documentType = $this->parameters[self::PARAMETER_DOCUMENT_TYPE];
@@ -243,7 +243,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkResponseFolderParameter()
+    protected function checkResponseFolderParameter()
     {
         if (isset($this->parameters[self::PARAMETER_RESPONSE_FOLDER])) {
             $this->responseFolder = $this->parameters[self::PARAMETER_RESPONSE_FOLDER];
@@ -251,7 +251,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkSubTemplateParameter()
+    protected function checkSubTemplateParameter()
     {
         if (isset($this->parameters[self::PARAMETER_SUB_TEMPLATE])) {
             $this->subTemplate = $this->parameters[self::PARAMETER_SUB_TEMPLATE];
@@ -259,7 +259,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkFormParameterNameParameter()
+    protected function checkFormParameterNameParameter()
     {
         if (isset($this->parameters[self::PARAMETER_FORM_PARAMETER_NAME])) {
             $this->formParameterName = $this->parameters[self::PARAMETER_FORM_PARAMETER_NAME];
@@ -267,7 +267,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkThankYouMessageParameter()
+    protected function checkThankYouMessageParameter()
     {
         if (isset($this->parameters[self::PARAMETER_THANK_YOU_MESSAGE])) {
             $this->thankYouMessage = $this->parameters[self::PARAMETER_THANK_YOU_MESSAGE];
@@ -275,7 +275,7 @@ class FormComponent Extends BaseComponent
         }
     }
 
-    private function checkSubmitOncePerSessionParameter()
+    protected function checkSubmitOncePerSessionParameter()
     {
         if (isset($this->parameters[self::PARAMETER_SUBMIT_ONCE_PER_SESSION])) {
             $this->submitOncePerSession = $this->parameters[self::PARAMETER_SUBMIT_ONCE_PER_SESSION] === 'true';
@@ -286,7 +286,7 @@ class FormComponent Extends BaseComponent
     /**
      * @throws \Exception
      */
-    private function checkRequiredParameters()
+    protected function checkRequiredParameters()
     {
         if ($this->documentType === null || $this->responseFolder === null) {
             throw new \Exception('Parameters `documentType` and `responseFolder` are required for usage with this form');
@@ -296,7 +296,7 @@ class FormComponent Extends BaseComponent
     /**
      * @return Request
      */
-    private function setPathBackup()
+    protected function setPathBackup()
     {
         $request = $this->request;
         if (isset($request::$get[self::GET_PARAMETER_PATH])) {
@@ -310,7 +310,7 @@ class FormComponent Extends BaseComponent
     /**
      * @param Request $request
      */
-    private function resetPathBackup($request)
+    protected function resetPathBackup($request)
     {
         if ($this->getPathBackup !== null) {
             $request::$get[self::GET_PARAMETER_PATH] = $this->getPathBackup;
@@ -322,7 +322,7 @@ class FormComponent Extends BaseComponent
     /**
      * @param string|null $form
      */
-    private function setFormParameter($form)
+    protected function setFormParameter($form)
     {
         if ($this->isFormSubmitted($this->request) || $this->isSubmitAllowed() === false) {
             $this->parameters[$this->formParameterName] = '<a name="' . $this->formId . '"></a>' . $this->thankYouMessage;

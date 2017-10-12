@@ -159,7 +159,7 @@ namespace CloudControl\Cms\components {
          * @param Application $application
          * @return string
          */
-        private function getTemplatePath($template, $application = null)
+        protected function getTemplatePath($template, $application = null)
         {
             $templateDir = $this->getTemplateDir($template, $application);
             if ($application !== null) {
@@ -177,7 +177,7 @@ namespace CloudControl\Cms\components {
          * @param string $templateDir
          * @return string
          */
-        private function getTemplatePathFromApplication($application, $templateDir)
+        protected function getTemplatePathFromApplication($application, $templateDir)
         {
             $rootDir = $application->getRootDir();
 
@@ -195,7 +195,7 @@ namespace CloudControl\Cms\components {
          * @param bool $obClean
          * @return mixed|string
          */
-        private function extractParametersAndIncludeTemplateFile($templatePath, $application = null, $obClean = true)
+        protected function extractParametersAndIncludeTemplateFile($templatePath, $application = null, $obClean = true)
         {
             $this->parameters['request'] = $this->request;
             if ($application !== null) {
