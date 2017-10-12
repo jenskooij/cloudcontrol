@@ -3,6 +3,7 @@
 namespace CloudControl\Cms\cc {
 
     use CloudControl\Cms\components\Component;
+    use CloudControl\Cms\services\FileService;
     use CloudControl\Cms\storage\Storage;
     use Whoops\Handler\PrettyPageHandler;
     use Whoops\Run;
@@ -57,6 +58,9 @@ namespace CloudControl\Cms\cc {
             $this->request = new Request();
 
             $this->setExceptionHandler();
+
+            $this->startServices();
+
             $this->urlMatching();
 
             $this->getApplicationComponents();
@@ -314,6 +318,11 @@ namespace CloudControl\Cms\cc {
         {
             $this->renderApplicationComponents();
             $this->renderSitemapComponents();
+        }
+
+        private function startServices()
+        {
+            FileService::getInstance()->init($this->storage);
         }
     }
 }
