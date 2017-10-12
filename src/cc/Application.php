@@ -98,14 +98,6 @@ class Application
         $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
     }
 
-    /**
-     * Loop through all (matched) sitemap components and render them
-     */
-    private function renderSitemapComponents()
-    {
-
-    }
-
     public function getAllApplicationComponentParameters()
     {
         $allParameters = array();
@@ -179,8 +171,6 @@ class Application
         $applicationRenderer = new ApplicationRenderer($this, $this->storage, $this->request);
         $applicationRenderer->renderApplicationComponents($this->applicationComponents);
         $applicationRenderer->renderSitemapComponents($this->matchedSitemapItems);
-
-        $this->renderSitemapComponents();
     }
 
     private function startServices()
