@@ -6,7 +6,7 @@
 namespace CloudControl\Cms\services;
 
 
-use CloudControl\Cms\services\imageservice\Image;
+use CloudControl\Cms\storage\entities\Image;
 use CloudControl\Cms\storage\Storage;
 
 /**

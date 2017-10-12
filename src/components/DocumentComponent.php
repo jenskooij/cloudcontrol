@@ -2,7 +2,7 @@
 
 namespace CloudControl\Cms\components {
 
-    use CloudControl\Cms\storage\Document;
+    use CloudControl\Cms\storage\entities\Document;
     use CloudControl\Cms\storage\Storage;
 
     /**

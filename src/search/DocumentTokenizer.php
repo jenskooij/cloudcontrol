@@ -8,7 +8,7 @@
 namespace CloudControl\Cms\search;
 
 
-use CloudControl\Cms\storage\Document;
+use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\Storage;
 
 class DocumentTokenizer
@@ -27,7 +27,7 @@ class DocumentTokenizer
     /**
      * Tokenizer constructor.
      *
-     * @param \CloudControl\Cms\storage\Document $document
+     * @param \CloudControl\Cms\storage\entities\Document $document
      * @param Storage $storage
      */
     public function __construct(Document $document, Storage $storage)

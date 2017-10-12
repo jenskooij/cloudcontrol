@@ -9,7 +9,7 @@ namespace CloudControl\Cms\storage\factories;
 
 
 use CloudControl\Cms\cc\StringUtil;
-use CloudControl\Cms\storage\Document;
+use CloudControl\Cms\storage\entities\Document;
 
 class DocumentFolderFactory
 {

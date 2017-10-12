@@ -8,7 +8,7 @@
 namespace CloudControl\Cms\storage\factories;
 
 use CloudControl\Cms\cc\StringUtil;
-use CloudControl\Cms\storage\Document;
+use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\storage\DocumentTypesStorage;
 
 class DocumentFactory
@@ -17,7 +17,7 @@ class DocumentFactory
      * @param array $postValues
      * @param DocumentTypesStorage $documentTypesStorage
      *
-     * @return \CloudControl\Cms\storage\Document
+     * @return \CloudControl\Cms\storage\entities\Document
      */
     public static function createDocumentFromPostValues($postValues, DocumentTypesStorage $documentTypesStorage)
     {

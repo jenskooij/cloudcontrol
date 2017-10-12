@@ -2,7 +2,7 @@
 
 namespace CloudControl\Cms\storage\repository {
 
-    use CloudControl\Cms\storage\Document;
+    use CloudControl\Cms\storage\entities\Document;
     use CloudControl\Cms\storage\Repository;
     use CloudControl\Cms\storage\storage\DocumentStorage;
 
@@ -103,7 +103,7 @@ namespace CloudControl\Cms\storage\repository {
             $stmt = $this->getDbStatement($sql);
 
 
-            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
+            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
             foreach ($documents as $key => $document) {
                 $documents = $this->setAssetsToDocumentFolders($repository, $document, $db, $documents, $key);
             }
@@ -136,7 +136,7 @@ namespace CloudControl\Cms\storage\repository {
           ORDER BY `type` DESC, `path` ASC';
             $stmt = $this->getDbStatement($sql);
 
-            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
+            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
             foreach ($documents as $key => $document) {
                 $documents = $this->setAssetsToDocumentFolders($repository, $document, $db, $documents, $key);
             }
@@ -177,7 +177,7 @@ namespace CloudControl\Cms\storage\repository {
         protected function fetchDocument($sql)
         {
             $stmt = $this->getDbStatement($sql);
-            return $stmt->fetchObject('\CloudControl\Cms\storage\Document');
+            return $stmt->fetchObject('\CloudControl\Cms\storage\entities\Document');
         }
 
         /**
@@ -254,7 +254,7 @@ namespace CloudControl\Cms\storage\repository {
 			 WHERE `type` != "folder"
 		';
             $stmt = $db->query($sql);
-            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\Document');
+            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
             if ($stmt === false || !$stmt->execute()) {
                 $errorInfo = $db->errorInfo();
                 $errorMsg = $errorInfo[2];
