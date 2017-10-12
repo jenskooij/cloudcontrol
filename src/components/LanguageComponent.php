@@ -23,7 +23,7 @@ class LanguageComponent implements Component
     protected $parameters;
 
     public static $DEFAULT_LANGUAGE = 'en';
-    protected $acceptedLanguages = null;
+    protected $acceptedLanguages;
     protected $languageParameterName = self::SESSION_PARAMETER_LANGUAGE;
     protected $forceRedirect = false;
     protected $sessionValues;
@@ -130,7 +130,7 @@ class LanguageComponent implements Component
     /**
      * @param Storage $storage
      */
-    function run(Storage $storage)
+    public function run(Storage $storage)
     {
         // To be implemented
     }

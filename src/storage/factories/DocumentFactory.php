@@ -53,7 +53,7 @@ class DocumentFactory
         $documentObj->documentTypeSlug = $documentType->slug;
         $documentObj->state = isset($postValues['state']) ? 'published' : 'unpublished';
         $documentObj->lastModificationDate = time();
-        $documentObj->creationDate = isset($postValues['creationDate']) ? intval($postValues['creationDate']) : time();
+        $documentObj->creationDate = isset($postValues['creationDate']) ? (int)$postValues['creationDate'] : time();
         $documentObj->lastModifiedBy = $_SESSION['cloudcontrol']->username;
 
         return $documentObj;

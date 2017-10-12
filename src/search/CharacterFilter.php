@@ -10,12 +10,15 @@ namespace CloudControl\Cms\search;
 class CharacterFilter
 {
     protected $originalString;
+    /**
+     * @var string
+     */
     protected $filteredString = '';
 
     /**
      * CharacterFilter constructor.
      *
-     * @param $string
+     * @param string $string
      */
     public function __construct($string)
     {
@@ -28,11 +31,11 @@ class CharacterFilter
 
     /**
      * Returns the filtered string
-     * @return string|void
+     * @return string
      */
     public function __toString()
     {
-        return $this->filteredString;
+        return (string) $this->filteredString;
     }
 
     /**

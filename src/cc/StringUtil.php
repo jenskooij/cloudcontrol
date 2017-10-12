@@ -92,6 +92,7 @@ class StringUtil
      * @param $ptime
      *
      * @return string
+     *
      */
     public static function timeElapsedString($ptime)
     {
@@ -101,6 +102,7 @@ class StringUtil
             return '0 seconds';
         }
 
+        /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
         $a = array(365 * 24 * 60 * 60 => 'year',
             30 * 24 * 60 * 60 => 'month',
             24 * 60 * 60 => 'day',

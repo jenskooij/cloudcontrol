@@ -57,7 +57,7 @@ class TermFieldLengthNorm
         $values = array();
         $i = 0;
         foreach ($uniqueFieldsPerDocument as $fieldRow) {
-            $values[] = 'UPDATE term_frequency SET termNorm = 1/sqrt(' . intval($fieldRow->termCount) . ') WHERE documentPath = ' . $db->quote($fieldRow->documentPath) . ' AND field = ' . $db->quote($fieldRow->field) . ';';
+            $values[] = 'UPDATE term_frequency SET termNorm = 1/sqrt(' . (int)$fieldRow->termCount . ') WHERE documentPath = ' . $db->quote($fieldRow->documentPath) . ' AND field = ' . $db->quote($fieldRow->field) . ';';
             $i += 1;
             if ($i >= Indexer::SQLITE_MAX_COMPOUND_SELECT) {
                 $this->executeUpdateTermNorm($values, $db);

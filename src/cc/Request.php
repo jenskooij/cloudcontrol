@@ -39,7 +39,7 @@ namespace CloudControl\Cms\cc {
         /**
          * @var array
          */
-        private $statics = array();
+        private $statics;
 
         /**
          * Request constructor.

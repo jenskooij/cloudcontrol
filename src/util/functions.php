@@ -1,6 +1,4 @@
 <?php
-/** @noinspection PhpDocSignatureInspection */
-
 /**
  * Dumps a var_dump of the passed arguments with <pre> tags surrounding it.
  * Dies afterwards

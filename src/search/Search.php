@@ -87,7 +87,7 @@ class Search extends SearchDbConnected
             $errorMsg = $errorInfo[2];
             throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
         }
-        return intval($result);
+        return (int)$result;
     }
 
     /**
@@ -163,7 +163,7 @@ class Search extends SearchDbConnected
         if (!$stmt->execute()) {
             throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
-        return $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\search\results\SearchResult');
+        return $stmt->fetchAll(\PDO::FETCH_CLASS, SearchResult::class);
     }
 
     /**
@@ -183,7 +183,7 @@ class Search extends SearchDbConnected
                     $resultObj = new SearchResult();
                     $resultObj->documentPath = $result->documentPath;
                     $resultObj->matchingTokens = array($token);
-                    $resultObj->score = floatval($result->score);
+                    $resultObj->score = (float)$result->score;
                     $resultObj->setStorage($this->storage);
                     $finalResults[$result->documentPath] = $resultObj;
                 }
@@ -280,7 +280,7 @@ class Search extends SearchDbConnected
             if (($stmt === false) | (!$stmt->execute())) {
                 throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
             }
-            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\search\results\SearchSuggestion');
+            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, results\SearchSuggestion::class);
             $allResults = array_merge($result, $allResults);
         }
         return $allResults;

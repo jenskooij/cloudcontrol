@@ -54,7 +54,7 @@ class ImageService
      */
     public function __toString()
     {
-        return print_r(self::$instance, true);
+        return (string) print_r(self::$instance, true);
     }
 
     /**

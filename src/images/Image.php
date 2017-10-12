@@ -45,14 +45,14 @@ namespace CloudControl\Cms\images {
          * @param string $path
          * @param int $mimeTypeConstantValue
          * @param int $quality
-         * @param null $imageResource If no resource is given, uses $this->_imageResource
+         * @param resource $imageResource If no resource is given, uses $this->_imageResource
          *
          * @return bool
          * @throws \Exception
          */
         public function saveImage($path, $mimeTypeConstantValue, $quality = 100, $imageResource = null)
         {
-            if ($imageResource == null) {
+            if ($imageResource === null) {
                 $imageResource = $this->getImageResource();
             }
 
@@ -61,7 +61,7 @@ namespace CloudControl\Cms\images {
             } elseif ($mimeTypeConstantValue == IMAGETYPE_JPEG) {
                 return imagejpeg($imageResource, $path, $quality);
             } elseif ($mimeTypeConstantValue == IMAGETYPE_PNG) {
-                return imagepng($imageResource, $path, (intval($quality / 10) - 1));
+                return imagepng($imageResource, $path, ((int)($quality / 10) - 1));
             } else {
                 throw new \Exception('Not a valid mimetypeconstant given see function documentation');
             }
@@ -144,7 +144,7 @@ namespace CloudControl\Cms\images {
             if (is_resource($this->_imageResource) && get_resource_type($this->_imageResource) === 'gd') {
                 return $this->_imageResource;
             } else {
-                throw new \Exception('Image resource is not set. Use $this->LoadImage to load an image into the resource');
+                throw new \RuntimeException('Image resource is not set. Use $this->LoadImage to load an image into the resource');
             }
         }
 
