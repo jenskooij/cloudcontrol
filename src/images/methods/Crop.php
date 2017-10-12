@@ -27,7 +27,7 @@ namespace CloudControl\Cms\images\methods {
         /**
          * @var null|array
          */
-        protected $_backgroundColor = null;
+        protected $_backgroundColor;
 
         public function init()
         {
@@ -41,8 +41,8 @@ namespace CloudControl\Cms\images\methods {
          */
         public function SetWidth($width)
         {
-            $this->_width = intval($width);
-            $this->_destWidth = intval($width);
+            $this->_width = (int)$width;
+            $this->_destWidth = (int)$width;
             return $this;
         }
 
@@ -54,8 +54,8 @@ namespace CloudControl\Cms\images\methods {
          */
         public function SetHeight($height)
         {
-            $this->_height = intval($height);
-            $this->_destHeight = intval($height);
+            $this->_height = (int)$height;
+            $this->_destHeight = (int)$height;
             return $this;
         }
 
@@ -95,7 +95,7 @@ namespace CloudControl\Cms\images\methods {
          */
         public function FillBackground($r, $g, $b)
         {
-            $this->_backgroundColor = array(intval($r), intval($g), intval($b));
+            $this->_backgroundColor = array((int)$r, (int)$g, (int)$b);
             return $this;
         }
 

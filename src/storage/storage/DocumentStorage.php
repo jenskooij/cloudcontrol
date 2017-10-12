@@ -5,7 +5,7 @@
 
 namespace CloudControl\Cms\storage\storage;
 
-use CloudControl\Cms\storage\Document;
+use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\factories\DocumentFactory;
 use CloudControl\Cms\storage\factories\DocumentFolderFactory;
 
@@ -117,7 +117,7 @@ class DocumentStorage extends AbstractStorage
      *
      * @param $path
      *
-     * @return bool|\CloudControl\Cms\storage\Document
+     * @return bool|\CloudControl\Cms\storage\entities\Document
      * @throws \Exception
      */
     private function getDocumentContainerByPath($path)

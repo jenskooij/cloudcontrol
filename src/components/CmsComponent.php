@@ -14,7 +14,7 @@ namespace CloudControl\Cms\components {
          */
         public $storage;
 
-        public $subTemplate = null;
+        public $subTemplate;
 
 
         /**

@@ -5,7 +5,7 @@
  * Time: 13:00
  */
 
-namespace CloudControl\Cms\storage;
+namespace CloudControl\Cms\storage\entities;
 
 use CloudControl\Cms\storage\storage\DocumentStorage;
 

@@ -19,26 +19,26 @@ namespace CloudControl\Cms\components {
          * @param                     $parameters
          * @param                     $matchedSitemapItem
          */
-        function __construct($template, Request $request, $parameters, $matchedSitemapItem);
+        public function __construct($template, Request $request, $parameters, $matchedSitemapItem);
 
         /**
          * @param Storage $storage
          */
-        function run(Storage $storage);
+        public function run(Storage $storage);
 
         /**
          * @return void
          */
-        function render();
+        public function render();
 
         /**
          * @return mixed
          */
-        function get();
+        public function get();
 
         /**
          * @return \stdClass
          */
-        function getParameters();
+        public function getParameters();
     }
 }

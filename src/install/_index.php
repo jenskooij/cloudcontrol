@@ -24,6 +24,6 @@ $rootDir = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
 $configPath = realpath($rootDir . DIRECTORY_SEPARATOR . 'config.json');
 \CloudControl\Cms\CloudControl::run($rootDir, $configPath);
 
-if (php_sapi_name() != "cli") {
+if (PHP_SAPI != "cli") {
     ob_end_flush();
 }

@@ -27,7 +27,7 @@ class Indexer extends SearchDbConnected
         'DutchStopWords',
         'EnglishStopWords'
     );
-    protected $storageDir;
+
     /**
      * @var double
      */
