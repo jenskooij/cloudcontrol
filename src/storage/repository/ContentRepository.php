@@ -47,7 +47,7 @@ namespace CloudControl\Cms\storage\repository {
             if ($stmt === false) {
                 $errorInfo = $db->errorInfo();
                 $errorMsg = $errorInfo[2];
-                throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+                throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
             }
             return $stmt;
         }
@@ -75,6 +75,7 @@ namespace CloudControl\Cms\storage\repository {
          * @param Repository $repository
          * @param string $folderPath
          * @return array
+         * @throws \Exception
          */
         public function getDocumentsWithState(Repository $repository, $folderPath = '/')
         {
@@ -82,7 +83,7 @@ namespace CloudControl\Cms\storage\repository {
             $folderPathWithWildcard = $folderPath . '%';
 
             $ifRootIndex = 1;
-            if ($folderPath == '/') {
+            if ($folderPath === '/') {
                 $ifRootIndex = 0;
             }
 
@@ -103,7 +104,7 @@ namespace CloudControl\Cms\storage\repository {
             $stmt = $this->getDbStatement($sql);
 
 
-            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
+            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, Document::class);
             foreach ($documents as $key => $document) {
                 $documents = $this->setAssetsToDocumentFolders($repository, $document, $db, $documents, $key);
             }
@@ -122,8 +123,8 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function getDocumentsByPath(Repository $repository, $folderPath, $state = 'published')
         {
-            if (!in_array($state, Document::$DOCUMENT_STATES)) {
-                throw new \Exception('Unsupported document state: ' . $state);
+            if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+                throw new \RuntimeException('Unsupported document state: ' . $state);
             }
             $db = $this->getContentDbHandle();
             $folderPathWithWildcard = $folderPath . '%';
@@ -136,7 +137,7 @@ namespace CloudControl\Cms\storage\repository {
           ORDER BY `type` DESC, `path` ASC';
             $stmt = $this->getDbStatement($sql);
 
-            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
+            $documents = $stmt->fetchAll(\PDO::FETCH_CLASS, Document::class);
             foreach ($documents as $key => $document) {
                 $documents = $this->setAssetsToDocumentFolders($repository, $document, $db, $documents, $key);
             }
@@ -152,8 +153,8 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function getDocumentByPath(Repository $repository, $path, $state = 'published')
         {
-            if (!in_array($state, Document::$DOCUMENT_STATES)) {
-                throw new \Exception('Unsupported document state: ' . $state);
+            if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+                throw new \RuntimeException('Unsupported document state: ' . $state);
             }
             $db = $this->getContentDbHandle();
             $document = $this->fetchDocument('
@@ -177,13 +178,14 @@ namespace CloudControl\Cms\storage\repository {
         protected function fetchDocument($sql)
         {
             $stmt = $this->getDbStatement($sql);
-            return $stmt->fetchObject('\CloudControl\Cms\storage\entities\Document');
+            return $stmt->fetchObject(Document::class);
         }
 
         /**
          * @param Repository $repository
          * @param $path
          * @return bool|Document
+         * @throws \Exception
          */
         public function getDocumentContainerByPath(Repository $repository, $path)
         {
@@ -225,8 +227,8 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function getTotalDocumentCount($state = 'published')
         {
-            if (!in_array($state, Document::$DOCUMENT_STATES)) {
-                throw new \Exception('Unsupported document state: ' . $state);
+            if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+                throw new \RuntimeException('Unsupported document state: ' . $state);
             }
             $db = $this->getContentDbHandle();
             $stmt = $db->query('
@@ -238,7 +240,7 @@ namespace CloudControl\Cms\storage\repository {
             if (!is_array($result)) {
                 return 0;
             }
-            return intval(current($result));
+            return (int)current($result);
         }
 
         /**
@@ -254,17 +256,18 @@ namespace CloudControl\Cms\storage\repository {
 			 WHERE `type` != "folder"
 		';
             $stmt = $db->query($sql);
-            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, '\CloudControl\Cms\storage\entities\Document');
+            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, Document::class);
             if ($stmt === false || !$stmt->execute()) {
                 $errorInfo = $db->errorInfo();
                 $errorMsg = $errorInfo[2];
-                throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+                throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
             }
             return $result;
         }
 
         /**
          * @param $path
+         * @throws \Exception
          */
         public function publishDocumentByPath($path)
         {
@@ -273,6 +276,7 @@ namespace CloudControl\Cms\storage\repository {
 
         /**
          * @param $path
+         * @throws \Exception
          */
         public function unpublishDocumentByPath($path)
         {
@@ -286,6 +290,8 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function publishOrUnpublishDocumentByPath($path, $publish = true)
         {
+            $sql = 'DELETE FROM documents_published
+					  WHERE `path` = :path';
             if ($publish) {
                 $sql = '
 				INSERT OR REPLACE INTO documents_published 
@@ -294,16 +300,13 @@ namespace CloudControl\Cms\storage\repository {
 				  FROM documents_unpublished
 				 WHERE `path` = :path
 			';
-            } else {
-                $sql = 'DELETE FROM documents_published
-					  WHERE `path` = :path';
             }
             $db = $this->getContentDbHandle();
             $stmt = $db->prepare($sql);
             if ($stmt === false) {
                 $errorInfo = $db->errorInfo();
                 $errorMsg = $errorInfo[2];
-                throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+                throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
             }
             $stmt->bindValue(':path', $path);
             $stmt->execute();
@@ -334,8 +337,8 @@ namespace CloudControl\Cms\storage\repository {
          */
         public function saveDocument($documentObject, $state = 'published')
         {
-            if (!in_array($state, Document::$DOCUMENT_STATES)) {
-                throw new \Exception('Unsupported document state: ' . $state);
+            if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+                throw new \RuntimeException('Unsupported document state: ' . $state);
             }
             $db = $this->getContentDbHandle();
             $stmt = $this->getDbStatement('
@@ -356,8 +359,7 @@ namespace CloudControl\Cms\storage\repository {
               ' . $db->quote(json_encode($documentObject->dynamicBricks)) . '
             )
         ');
-            $result = $stmt->execute();
-            return $result;
+            return $stmt->execute();
         }
 
         /**
@@ -366,19 +368,20 @@ namespace CloudControl\Cms\storage\repository {
          *
          * @param Repository $repository
          * @param        $path
+         * @throws \Exception
          */
         public function deleteDocumentByPath(Repository $repository, $path)
         {
             $db = $this->getContentDbHandle();
             $documentToDelete = $this->getDocumentByPath($repository, $path, 'unpublished');
             if ($documentToDelete instanceof Document) {
-                if ($documentToDelete->type == 'document') {
+                if ($documentToDelete->type === 'document') {
                     $stmt = $this->getDbStatement('
                     DELETE FROM documents_unpublished
                           WHERE path = ' . $db->quote($path) . '
                 ');
                     $stmt->execute();
-                } elseif ($documentToDelete->type == 'folder') {
+                } elseif ($documentToDelete->type === 'folder') {
                     $folderPathWithWildcard = $path . '%';
                     $stmt = $this->getDbStatement('
                     DELETE FROM documents_unpublished
