@@ -36,7 +36,7 @@ namespace CloudControl\Cms\components {
         /**
          * @var Application
          */
-        protected $application = null;
+        protected $application;
 
         /**
          * BaseComponent constructor.
@@ -96,7 +96,7 @@ namespace CloudControl\Cms\components {
          * @param null | Application $application
          * @param Application $application
          *
-         * @return string
+         * @return mixed|string
          * @throws \Exception
          */
         public function renderTemplate($template = '', $obClean = true, $application = null)
@@ -107,11 +107,12 @@ namespace CloudControl\Cms\components {
                     ob_clean();
                 }
                 return $this->extractParametersAndIncludeTemplateFile($templatePath, $application, $obClean);
-            } else {
-                if ($template !== null) { // If template is null, its a application component, which doesnt have a template
-                    throw new \Exception('Couldnt find template ' . $templatePath);
-                }
             }
+
+            if ($template !== null) { // If template is null, its a application component, which doesnt have a template
+                throw new \RuntimeException('Couldnt find template ' . $templatePath);
+            }
+            return '';
         }
 
         /**
@@ -124,7 +125,7 @@ namespace CloudControl\Cms\components {
          * @return string
          * @throws \Exception
          */
-        public function includeTemplate($template = '', $parameters = array())
+        public function includeTemplate($template = '', array $parameters = array())
         {
             if (is_array($parameters)) {
                 foreach ($parameters as $name => $value) {
@@ -162,12 +163,11 @@ namespace CloudControl\Cms\components {
         protected function getTemplatePath($template, $application = null)
         {
             $templateDir = $this->getTemplateDir($template, $application);
+            $templatePath = $templateDir;
             if ($application !== null) {
                 $templatePath = $this->getTemplatePathFromApplication($application, $templateDir);
             } elseif ($this->application !== null) {
                 $templatePath = $this->getTemplatePathFromApplication($this->application, $templateDir);
-            } else {
-                $templatePath = $templateDir;
             }
             return $templatePath;
         }
@@ -181,10 +181,9 @@ namespace CloudControl\Cms\components {
         {
             $rootDir = $application->getRootDir();
 
+            $templatePath = $templateDir;
             if (strpos($templateDir, $rootDir) === false) {
                 $templatePath = $rootDir . DIRECTORY_SEPARATOR . $templateDir;
-            } else {
-                $templatePath = $templateDir;
             }
             return $templatePath;
         }
@@ -201,16 +200,15 @@ namespace CloudControl\Cms\components {
             if ($application !== null) {
                 $acParameters = $application->getAllApplicationComponentParameters();
                 foreach ($acParameters as $parameters) {
-                    extract($parameters);
+                    extract($parameters, EXTR_OVERWRITE);
                 }
             }
-            extract($this->parameters);
+            extract($this->parameters, EXTR_OVERWRITE);
             if ($obClean) {
                 include($templatePath);
                 return ob_get_contents();
-            } else {
-                return include($templatePath);
             }
+            return include($templatePath);
         }
     }
 }

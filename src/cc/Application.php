@@ -1,220 +1,197 @@
 <?php
 
-namespace CloudControl\Cms\cc {
+namespace CloudControl\Cms\cc;
 
-    use CloudControl\Cms\cc\application\ApplicationRunner;
-    use CloudControl\Cms\cc\application\UrlMatcher;
-    use CloudControl\Cms\components\Component;
-    use CloudControl\Cms\services\FileService;
-    use CloudControl\Cms\services\ImageService;
-    use CloudControl\Cms\services\ValuelistService;
-    use CloudControl\Cms\storage\Storage;
-    use Whoops\Handler\PrettyPageHandler;
-    use Whoops\Run;
+use CloudControl\Cms\cc\application\ApplicationRenderer;
+use CloudControl\Cms\cc\application\ApplicationRunner;
+use CloudControl\Cms\cc\application\UrlMatcher;
+use CloudControl\Cms\services\FileService;
+use CloudControl\Cms\services\ImageService;
+use CloudControl\Cms\services\ValuelistService;
+use CloudControl\Cms\storage\Storage;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
-    class Application
+class Application
+{
+    /**
+     * @var string
+     */
+    protected $rootDir;
+    /**
+     * @var string
+     */
+    protected $configPath;
+    /**
+     * @var \stdClass
+     */
+    private $config;
+    /**
+     * @var \CloudControl\Cms\storage\Storage
+     */
+    private $storage;
+
+    /**
+     * @var \CloudControl\Cms\cc\Request
+     */
+    private $request;
+
+    /**
+     * @var array
+     */
+    private $matchedSitemapItems = array();
+
+    /**
+     * @var array
+     */
+    private $applicationComponents = array();
+
+    /**
+     * Application constructor.
+     * @param string $rootDir
+     * @param string $configPath
+     * @throws \Exception
+     */
+    public function __construct($rootDir, $configPath)
     {
-        /**
-         * @var string
-         */
-        protected $rootDir;
-        /**
-         * @var string
-         */
-        protected $configPath;
-        /**
-         * @var \stdClass
-         */
-        private $config;
-        /**
-         * @var \CloudControl\Cms\storage\Storage
-         */
-        private $storage;
+        $this->rootDir = $rootDir;
+        $this->configPath = $configPath;
 
-        /**
-         * @var \CloudControl\Cms\cc\Request
-         */
-        private $request;
+        $this->config();
+        $this->storage();
 
-        /**
-         * @var array
-         */
-        private $matchedSitemapItems = array();
+        $this->request = new Request();
 
-        /**
-         * @var array
-         */
-        private $applicationComponents = array();
+        $this->setExceptionHandler();
 
-        /**
-         * Application constructor.
-         * @param string $rootDir
-         * @param string $configPath
-         */
-        public function __construct($rootDir, $configPath)
-        {
-            $this->rootDir = $rootDir;
-            $this->configPath = $configPath;
+        $this->startServices();
 
-            $this->config();
-            $this->storage();
+        $this->urlMatching();
 
-            $this->request = new Request();
+        $this->getApplicationComponents();
 
-            $this->setExceptionHandler();
+        $this->run();
+        $this->render();
+    }
 
-            $this->startServices();
-
-            $this->urlMatching();
-
-            $this->getApplicationComponents();
-
-            $this->run();
-            $this->render();
+    /**
+     * Initialize the config
+     *
+     * @throws \Exception
+     */
+    private function config()
+    {
+        if (realpath($this->configPath) !== false) {
+            $json = file_get_contents($this->configPath);
+            $this->config = json_decode($json);
+            $this->config->rootDir = $this->rootDir;
+        } else {
+            throw new \RuntimeException('Framework not initialized yet. Consider running composer install');
         }
+    }
 
-        /**
-         * Initialize the config
-         *
-         * @throws \Exception
-         */
-        private function config()
-        {
-            if (realpath($this->configPath) !== false) {
-                $json = file_get_contents($this->configPath);
-                $this->config = json_decode($json);
-                $this->config->rootDir = $this->rootDir;
-            } else {
-                throw new \Exception('Framework not initialized yet. Consider running composer install');
-            }
-        }
+    /**
+     * Initialize the storage
+     */
+    private function storage()
+    {
+        $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
+    }
 
-        /**
-         * Initialize the storage
-         */
-        private function storage()
-        {
-            $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
-        }
+    /**
+     * Loop through all (matched) sitemap components and render them
+     */
+    private function renderSitemapComponents()
+    {
 
-        /**
-         * Loop through all application components and render them
-         */
-        private function renderApplicationComponents()
-        {
-            foreach ($this->applicationComponents as $applicationComponent) {
-                $applicationComponent->{'object'}->render();
-            }
-        }
+    }
 
-        /**
-         * Loop through all (matched) sitemap components and render them
-         */
-        private function renderSitemapComponents()
-        {
-            foreach ($this->matchedSitemapItems as $sitemapItem) {
-                $this->setCachingHeaders();
-                $sitemapItem->object->render($this);
-                ob_clean();
-                echo $sitemapItem->object->get();
-                ob_end_flush();
-                exit;
-            }
+    public function getAllApplicationComponentParameters()
+    {
+        $allParameters = array();
+        foreach ($this->applicationComponents as $applicationComponent) {
+            $parameters = $applicationComponent->{'object'}->getParameters();
+            $allParameters[] = $parameters;
         }
+        return $allParameters;
+    }
 
-        public function getAllApplicationComponentParameters()
-        {
-            $allParameters = array();
-            foreach ($this->applicationComponents as $applicationComponent) {
-                $parameters = $applicationComponent->{'object'}->getParameters();
-                $allParameters[] = $parameters;
-            }
-            return $allParameters;
+    public function unlockApplicationComponentParameters()
+    {
+        foreach ($this->applicationComponents as $applicationComponent) {
+            $parameters = $applicationComponent->{'object'}->getParameters();
+            extract($parameters, EXTR_OVERWRITE);
         }
+    }
 
-        public function unlockApplicationComponentParameters()
-        {
-            foreach ($this->applicationComponents as $applicationComponent) {
-                $parameters = $applicationComponent->{'object'}->getParameters();
-                extract($parameters);
-            }
-        }
+    /**
+     * @return string
+     */
+    public function getTemplateDir()
+    {
+        return $this->config->templateDir;
+    }
 
-        /**
-         * Set the default caching of pages to 2 days
-         */
-        public function setCachingHeaders()
-        {
-            header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60 * 24 * 2))); // 2 days
-            header("Cache-Control: max-age=" . (60 * 60 * 24 * 2));
-        }
+    /**
+     * @return string
+     */
+    public function getStorageDir()
+    {
+        return $this->config->storageDir;
+    }
 
-        /**
-         * @return string
-         */
-        public function getTemplateDir()
-        {
-            return $this->config->templateDir;
-        }
+    public function getApplicationComponents()
+    {
+        $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
+    }
 
-        /**
-         * @return string
-         */
-        public function getStorageDir()
-        {
-            return $this->config->storageDir;
-        }
+    /**
+     * @return string
+     */
+    public function getRootDir()
+    {
+        return $this->config->rootDir;
+    }
 
-        public function getApplicationComponents()
-        {
-            $this->applicationComponents = $this->storage->getApplicationComponents()->getApplicationComponents();
-        }
+    private function setExceptionHandler()
+    {
+        $whoops = new Run;
+        $whoops->pushHandler(new PrettyPageHandler);
+        $whoops->register();
+    }
 
-        /**
-         * @return string
-         */
-        public function getRootDir()
-        {
-            return $this->config->rootDir;
-        }
+    private function urlMatching()
+    {
+        $urlMatcher = new UrlMatcher($this, $this->storage);
+        $urlMatcher->redirectMatching($this->request);
+        $urlMatcher->sitemapMatching($this->request);
+    }
 
-        private function setExceptionHandler()
-        {
-            $whoops = new Run;
-            $whoops->pushHandler(new PrettyPageHandler);
-            $whoops->register();
-        }
+    private function run()
+    {
+        $applicationRunner = new ApplicationRunner($this->storage, $this->request);
+        $applicationRunner->runApplicationComponents($this->applicationComponents);
+        $applicationRunner->runSitemapComponents($this->matchedSitemapItems);
+    }
 
-        private function urlMatching()
-        {
-            $urlMatcher = new UrlMatcher($this, $this->storage);
-            $urlMatcher->redirectMatching($this->request);
-            $urlMatcher->sitemapMatching($this->request);
-        }
+    private function render()
+    {
+        $applicationRenderer = new ApplicationRenderer($this, $this->storage, $this->request);
+        $applicationRenderer->renderApplicationComponents($this->applicationComponents);
+        $applicationRenderer->renderSitemapComponents($this->matchedSitemapItems);
 
-        private function run()
-        {
-            $applicationRunner = new ApplicationRunner($this->storage, $this->request);
-            $applicationRunner->runApplicationComponents($this->applicationComponents);
-            $applicationRunner->runSitemapComponents($this->matchedSitemapItems);
-        }
+        $this->renderSitemapComponents();
+    }
 
-        private function render()
-        {
-            $this->renderApplicationComponents();
-            $this->renderSitemapComponents();
-        }
+    private function startServices()
+    {
+        FileService::getInstance()->init($this->storage);
+        ImageService::getInstance()->init($this->storage);
+        ValuelistService::getInstance()->init($this->storage);
+    }
 
-        private function startServices()
-        {
-            FileService::getInstance()->init($this->storage);
-            ImageService::getInstance()->init($this->storage);
-            ValuelistService::getInstance()->init($this->storage);
-        }
-
-        public function addMatchedSitemapItem($matchedClone)
-        {
-            $this->matchedSitemapItems[] = $matchedClone;
-        }
+    public function addMatchedSitemapItem($matchedClone)
+    {
+        $this->matchedSitemapItems[] = $matchedClone;
     }
 }
