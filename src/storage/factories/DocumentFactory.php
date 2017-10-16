@@ -98,19 +98,12 @@ class DocumentFactory
     private static function createDynamicBrickArrayForDocument($postValues, $documentObj)
     {
         $documentObj->dynamicBricks = array();
-        $purifier = self::getPurifier();
         if (isset($postValues['dynamicBricks'])) {
             foreach ($postValues['dynamicBricks'] as $brickTypeSlug => $brick) {
                 foreach ($brick as $brickContent) {
                     $brickObj = new \stdClass();
                     $brickObj->type = $brickTypeSlug;
-                    foreach ($brickContent as $fieldKey => $fieldValues) {
-                        foreach ($fieldValues as $valueKey => $value) {
-                            $fieldValues[$valueKey] = $purifier->purify($value);
-                        }
-                        $brickContent[$fieldKey] = $fieldValues;
-                    }
-                    $brickObj->fields = $brickContent;
+                    $brickObj->fields = self::sanitizeBrickContent($brickContent);
                     $dynamicBricks = $documentObj->dynamicBricks;
                     $dynamicBricks[] = $brickObj;
                     $documentObj->dynamicBricks = $dynamicBricks;
@@ -246,6 +239,7 @@ class DocumentFactory
      */
     private static function sanitizeFields($postValues, $documentType)
     {
+        $fields = array();
         if (isset($postValues['fields'])) {
             $purifier = self::getPurifier();
             foreach ($postValues['fields'] as $key => $field) {
@@ -259,9 +253,23 @@ class DocumentFactory
 
             }
             $fields = $postValues['fields'];
-        } else {
-            $fields = array();
         }
         return $fields;
+    }
+
+    /**
+     * @param $brickContent
+     * @return mixed
+     */
+    private static function sanitizeBrickContent($brickContent)
+    {
+        $purifier = self::getPurifier();
+        foreach ($brickContent as $fieldKey => $fieldValues) {
+            foreach ($fieldValues as $valueKey => $value) {
+                $fieldValues[$valueKey] = $purifier->purify($value);
+            }
+            $brickContent[$fieldKey] = $fieldValues;
+        }
+        return $brickContent;
     }
 }
