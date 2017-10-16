@@ -124,7 +124,9 @@ class CloudControl
     {
         $dir = $rootDir . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR;
         if (!is_dir($dir)) {
-            mkdir($dir);
+            if (!mkdir($dir) && !is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            }
             $event->getIO()->write("[INSTALL] Created dir: " . $dir);
         } else {
             $event->getIO()->write("[INFO] Dir already exists: " . $dir);

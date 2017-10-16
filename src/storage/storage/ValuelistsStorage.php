@@ -63,7 +63,7 @@ class ValuelistsStorage extends AbstractStorage
      *
      * @param $slug
      *
-     * @return mixed
+     * @return \stdClass
      */
     public function getValuelistBySlug($slug)
     {

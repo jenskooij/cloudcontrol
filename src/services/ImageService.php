@@ -6,7 +6,7 @@
 namespace CloudControl\Cms\services;
 
 
-use CloudControl\Cms\services\imageservice\Image;
+use CloudControl\Cms\storage\entities\Image;
 use CloudControl\Cms\storage\Storage;
 
 /**
@@ -54,7 +54,7 @@ class ImageService
      */
     public function __toString()
     {
-        return print_r(self::$instance, true);
+        return (string) print_r(self::$instance, true);
     }
 
     /**

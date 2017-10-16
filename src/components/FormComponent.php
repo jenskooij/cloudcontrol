@@ -28,11 +28,11 @@ class FormComponent Extends BaseComponent
     /**
      * @var null|string
      */
-    protected $documentType = null;
+    protected $documentType;
     /**
      * @var null|string
      */
-    protected $responseFolder = null;
+    protected $responseFolder;
     /**
      * @var string
      */
@@ -58,12 +58,12 @@ class FormComponent Extends BaseComponent
     /**
      * @var null|string
      */
-    protected $getPathBackup = null;
+    protected $getPathBackup;
 
     /**
      * @var null|\stdClass
      */
-    protected $userSessionBackup = null;
+    protected $userSessionBackup;
 
     /**
      * @param Storage $storage
@@ -315,7 +315,9 @@ class FormComponent Extends BaseComponent
         if ($this->getPathBackup !== null) {
             $request::$get[self::GET_PARAMETER_PATH] = $this->getPathBackup;
         } else {
-            unset($request::$get[self::GET_PARAMETER_PATH]);
+            $get = $request::$get;
+            unset($get[self::GET_PARAMETER_PATH]);
+            $request::$get = $get;
         }
     }
 

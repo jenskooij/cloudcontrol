@@ -17,7 +17,8 @@ class LinkService
      * LinkService constructor.
      */
     protected function __construct()
-    {}
+    {
+    }
 
     /**
      * @return LinkService
@@ -30,10 +31,21 @@ class LinkService
         return self::$instance;
     }
 
+    /**
+     * Get the (language aware) link to a relative path
+     *
+     * @param $relativePath
+     * @return string
+     */
     public static function get($relativePath)
     {
         if (isset($_SESSION[LanguageComponent::SESSION_PARAMETER_LANGUAGE_COMPONENT][LanguageComponent::SESSION_PARAMETER_LANGUAGE])) {
-            dump('language logic');
+            $language = $_SESSION[LanguageComponent::SESSION_PARAMETER_LANGUAGE_COMPONENT][LanguageComponent::SESSION_PARAMETER_LANGUAGE];
+            if ($language == LanguageComponent::$DEFAULT_LANGUAGE) {
+                return Request::$subfolders . $relativePath;
+            } else {
+                return Request::$subfolders . $language . '/' . $relativePath;
+            }
         } else {
             return Request::$subfolders . $relativePath;
         }

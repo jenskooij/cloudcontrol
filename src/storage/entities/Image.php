@@ -3,7 +3,7 @@
  * Created by jensk on 12-10-2017.
  */
 
-namespace CloudControl\Cms\services\imageservice;
+namespace CloudControl\Cms\storage\entities;
 
 
 use CloudControl\Cms\cc\Request;

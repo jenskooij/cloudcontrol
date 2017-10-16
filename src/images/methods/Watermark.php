@@ -37,7 +37,7 @@ namespace CloudControl\Cms\images\methods {
          */
         public function SetTransparency($transparency)
         {
-            $this->_transparency = intval($transparency);
+            $this->_transparency = (int)$transparency;
             return $this;
         }
 
@@ -63,7 +63,7 @@ namespace CloudControl\Cms\images\methods {
          */
         protected function calculateX($imageResource)
         {
-            if (intval($this->_x) === $this->_x) return $this->_x;
+            if ((int)$this->_x === $this->_x) return $this->_x;
 
             $x = strtolower($this->_x);
 
@@ -77,7 +77,7 @@ namespace CloudControl\Cms\images\methods {
             } elseif ($x == 'right') {
                 $x = $imageWidth - $watermarkWidth;
             }
-            return intval($x);
+            return (int)$x;
         }
 
         /**
@@ -88,7 +88,7 @@ namespace CloudControl\Cms\images\methods {
          */
         public function calculateY($imageResource)
         {
-            if (intval($this->_y) === $this->_y) return $this->_y;
+            if ((int)$this->_y === $this->_y) return $this->_y;
 
             $y = strtolower($this->_y);
 
@@ -102,7 +102,7 @@ namespace CloudControl\Cms\images\methods {
             } elseif ($y == 'bottom') {
                 $y = $imageHeight - $watermarkHeight;
             }
-            return intval($y);
+            return (int)$y;
         }
 
         /**

@@ -26,7 +26,7 @@ namespace CloudControl\Cms\images\methods {
          */
         public function SetWidth($width)
         {
-            $this->_width = intval($width);
+            $this->_width = (int)$width;
             return $this;
         }
 
@@ -38,7 +38,7 @@ namespace CloudControl\Cms\images\methods {
          */
         public function SetHeight($height)
         {
-            $this->_height = intval($height);
+            $this->_height = (int)$height;
             return $this;
         }
 

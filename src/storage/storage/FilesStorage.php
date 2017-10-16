@@ -6,6 +6,8 @@
 namespace CloudControl\Cms\storage\storage;
 
 
+use CloudControl\Cms\storage\factories\FileFactory;
+
 class FilesStorage extends AbstractStorage
 {
     protected $filesDir;
@@ -35,7 +37,7 @@ class FilesStorage extends AbstractStorage
     /**
      * @param $postValues
      *
-     * @return \stdClass
+     * @return \CloudControl\Cms\storage\entities\File
      * @throws \Exception
      */
     public function addFile($postValues)
@@ -50,10 +52,7 @@ class FilesStorage extends AbstractStorage
         }
 
         if (move_uploaded_file($postValues['tmp_name'], $destination)) {
-            $file = new \stdClass();
-            $file->file = $filename;
-            $file->type = $postValues['type'];
-            $file->size = $postValues['size'];
+            $file = FileFactory::createFileFromPostValues($postValues, $filename);
 
             $files = $this->repository->files;
             $files[] = $file;

@@ -1,6 +1,6 @@
 <?
 /**
- * @param CloudControl\Cms\storage\Document $document
+ * @param \CloudControl\Cms\storage\entities\Document $document
  * @param string $cmsPrefix
  * @param string $slugPrefix
  * @param \CloudControl\Cms\cc\Request $request

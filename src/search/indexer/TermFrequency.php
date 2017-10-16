@@ -54,7 +54,7 @@ class TermFrequency
             $values = array();
             $i = 0;
             foreach ($termsForDocumentField as $term) {
-                $frequency = intval($term->count) / $documentField->totalTermCount;
+                $frequency = (int)$term->count / $documentField->totalTermCount;
                 $values[] = $quotedDocumentPath . ',' . $quotedField . ', ' . $db->quote($term->term) . ', ' . $db->quote($frequency);
                 $i += 1;
                 if ($i >= Indexer::SQLITE_MAX_COMPOUND_SELECT) {

@@ -6,6 +6,8 @@
 namespace CloudControl\Cms\storage\factories;
 
 
+use CloudControl\Cms\storage\entities\Image;
+
 class ImageFactory
 {
     /**
@@ -13,7 +15,7 @@ class ImageFactory
      * @param $filename
      * @param $fileNames
      *
-     * @return \stdClass
+     * @return Image
      */
     public static function createImageFromPostValues($postValues, $filename, $fileNames)
     {
@@ -23,6 +25,6 @@ class ImageFactory
         $imageObject->size = $postValues['size'];
         $imageObject->set = $fileNames;
 
-        return $imageObject;
+        return new Image($imageObject);
     }
 }

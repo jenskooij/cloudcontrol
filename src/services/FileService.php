@@ -4,7 +4,7 @@
  */
 
 namespace CloudControl\Cms\services;
-use CloudControl\Cms\services\fileservice\File;
+use CloudControl\Cms\storage\entities\File;
 use CloudControl\Cms\storage\Storage;
 
 /**

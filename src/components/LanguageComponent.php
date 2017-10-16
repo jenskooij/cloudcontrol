@@ -22,8 +22,8 @@ class LanguageComponent implements Component
     protected $request;
     protected $parameters;
 
-    protected $defaultLanguage = 'en';
-    protected $acceptedLanguages = null;
+    public static $DEFAULT_LANGUAGE = 'en';
+    protected $acceptedLanguages;
     protected $languageParameterName = self::SESSION_PARAMETER_LANGUAGE;
     protected $forceRedirect = false;
     protected $sessionValues;
@@ -42,7 +42,7 @@ class LanguageComponent implements Component
         $this->parameters = (array)$parameters;
         $this->checkParameters();
 
-        $lang = substr(isset($_SERVER[self::HTTP_ACCEPT_LANGUAGE]) ? $_SERVER[self::HTTP_ACCEPT_LANGUAGE] : $this->defaultLanguage, 0, 2);
+        $lang = substr(isset($_SERVER[self::HTTP_ACCEPT_LANGUAGE]) ? $_SERVER[self::HTTP_ACCEPT_LANGUAGE] : self::$DEFAULT_LANGUAGE, 0, 2);
         $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_DETECTED_LANGUAGE] = $lang;
 
         $this->checkLanguageSwitch($request);
@@ -64,7 +64,7 @@ class LanguageComponent implements Component
     protected function checkParameters()
     {
         if (isset($this->parameters[self::PARAMETER_DEFAULT_LANGUAGE])) {
-            $this->defaultLanguage = $this->parameters[self::PARAMETER_DEFAULT_LANGUAGE];
+            self::$DEFAULT_LANGUAGE = $this->parameters[self::PARAMETER_DEFAULT_LANGUAGE];
             unset($this->parameters[self::PARAMETER_DEFAULT_LANGUAGE]);
         }
         if (isset($this->parameters[self::PARAMETER_ACCEPTED_LANGUAGES])) {
@@ -130,7 +130,7 @@ class LanguageComponent implements Component
     /**
      * @param Storage $storage
      */
-    function run(Storage $storage)
+    public function run(Storage $storage)
     {
         // To be implemented
     }
@@ -143,7 +143,7 @@ class LanguageComponent implements Component
     {
         if ($this->forceRedirect === true) {
             if (substr($request::$relativeUri, 0, 2) !== $lang) {
-                if ($lang !== $this->defaultLanguage) {
+                if ($lang !== self::$DEFAULT_LANGUAGE) {
                     $redirectUrl = $request::$subfolders . $lang . '/' . $request::$relativeUri;
                     if (!empty($request::$queryString)) {
                         $redirectUrl .= '?' . $request::$queryString;
@@ -161,14 +161,14 @@ class LanguageComponent implements Component
      */
     protected function setLanguagInSession($lang)
     {
-        $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = $this->defaultLanguage;
+        $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = self::$DEFAULT_LANGUAGE;
 
         if ($this->acceptedLanguages === null) {
             $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = $lang;
         } else if (in_array($lang, $this->acceptedLanguages)) {
             $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = $lang;
         } else {
-            $lang = $this->defaultLanguage;
+            $lang = self::$DEFAULT_LANGUAGE;
         }
         return $lang;
     }
