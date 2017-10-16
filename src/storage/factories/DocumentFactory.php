@@ -10,9 +10,13 @@ namespace CloudControl\Cms\storage\factories;
 use CloudControl\Cms\cc\StringUtil;
 use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\storage\DocumentTypesStorage;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 
 class DocumentFactory
 {
+    private static $purifier;
+
     /**
      * @param array $postValues
      * @param DocumentTypesStorage $documentTypesStorage
@@ -28,7 +32,9 @@ class DocumentFactory
 
         $documentObj = self::createInitialDocumentObject($postValues, $documentType);
 
-        $documentObj->fields = isset($postValues['fields']) ? $postValues['fields'] : array();
+        $fields = self::sanitizeFields($postValues, $documentType);
+
+        $documentObj->fields = $fields;
         $documentObj->bricks = array();
 
         $documentObj = self::createBrickArrayForDocument($postValues, $documentObj, $staticBricks);
@@ -97,7 +103,7 @@ class DocumentFactory
                 foreach ($brick as $brickContent) {
                     $brickObj = new \stdClass();
                     $brickObj->type = $brickTypeSlug;
-                    $brickObj->fields = $brickContent;
+                    $brickObj->fields = self::sanitizeBrickContent($brickContent);
                     $dynamicBricks = $documentObj->dynamicBricks;
                     $dynamicBricks[] = $brickObj;
                     $documentObj->dynamicBricks = $dynamicBricks;
@@ -140,6 +146,10 @@ class DocumentFactory
         $brickObj->type = $staticBrick->brickSlug;
 
         foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
+            $purifier = self::getPurifier();
+            foreach ($fieldValues as $fieldKey => $value) {
+                $fieldValues[$fieldKey] = $purifier->purify($value);
+            }
             $brickObj->fields->$fieldName = $fieldValues;
         }
 
@@ -179,8 +189,87 @@ class DocumentFactory
     private static function addSingleBrick($documentObj, $brick, $brickSlug)
     {
         $bricks = $documentObj->bricks;
+
+        $purifier = self::getPurifier();
+        foreach ($brick['fields'] as $fieldKey => $values) {
+            foreach ($values as $valueKey => $value) {
+                $values[$valueKey] = $purifier->purify($value);
+            }
+            $brick['fields'][$fieldKey] = $values;
+        }
         $bricks[$brickSlug] = $brick;
+
         $documentObj->bricks = $bricks;
         return $documentObj;
+    }
+
+    /**
+     * @return HTMLPurifier
+     */
+    private static function getPurifier()
+    {
+        if (self::$purifier instanceof HTMLPurifier) {
+            return self::$purifier;
+        }
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('URI.DisableExternalResources', false);
+        $config->set('URI.DisableResources', false);
+        $config->set('HTML.Allowed', 'u,p,b,i,a,p,strong,em,li,ul,ol,div[align],br,img,table,tr,td,th,tbody,thead,strike,sub,sup');
+        $config->set('Attr.AllowedFrameTargets', array('_blank'));
+        $config->set('HTML.AllowedAttributes', 'src, alt, href, target');
+        $config->set('URI.AllowedSchemes', array('data' => true, 'http' => true, 'https' => true));
+        self::$purifier = new HTMLPurifier($config);
+        return self::$purifier;
+    }
+
+    private static function isRichTextField($key, $documentType)
+    {
+        foreach ($documentType->fields as $fieldObj) {
+            if ($fieldObj->slug === $key && $fieldObj->type === 'Rich Text') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $postValues
+     * @param $documentType
+     * @return array
+     */
+    private static function sanitizeFields($postValues, $documentType)
+    {
+        $fields = array();
+        if (isset($postValues['fields'])) {
+            $purifier = self::getPurifier();
+            foreach ($postValues['fields'] as $key => $field) {
+                if (self::isRichTextField($key, $documentType)) {
+                    foreach ($field as $fieldKey => $value) {
+                        $newValue = $purifier->purify($value);
+                        $field[$fieldKey] = $newValue;
+                    }
+                    $postValues['fields'][$key] = $field;
+                }
+
+            }
+            $fields = $postValues['fields'];
+        }
+        return $fields;
+    }
+
+    /**
+     * @param $brickContent
+     * @return mixed
+     */
+    private static function sanitizeBrickContent($brickContent)
+    {
+        $purifier = self::getPurifier();
+        foreach ($brickContent as $fieldKey => $fieldValues) {
+            foreach ($fieldValues as $valueKey => $value) {
+                $fieldValues[$valueKey] = $purifier->purify($value);
+            }
+            $brickContent[$fieldKey] = $fieldValues;
+        }
+        return $brickContent;
     }
 }
