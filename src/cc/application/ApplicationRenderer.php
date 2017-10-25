@@ -50,27 +50,12 @@ class ApplicationRenderer
      */
     public function renderSitemapComponents($matchedSitemapItems)
     {
-        foreach ($matchedSitemapItems as $sitemapItem) {
-            if (($sitemapItem->object instanceof CachableBaseComponent
-                && !$sitemapItem->object->isCachable()) | !$sitemapItem->object instanceof CachableBaseComponent) {
-                $sitemapItem->object->render($this->application);
-                ob_clean();
-                $this->setNotCachingHeaders();
-                echo $sitemapItem->object->get();
-                ob_end_flush();
-                exit;
-            } elseif ($sitemapItem->object instanceof CachableBaseComponent
-                && $sitemapItem->object->isCachable()) {
-                if (!$sitemapItem->object->isCacheValid()) {
-                    $sitemapItem->object->render($this->application);
-                }
-                ob_clean();
-                $this->setCachingHeaders($sitemapItem->object->getMaxAge());
-                echo $sitemapItem->object->get();
-                ob_end_flush();
-                exit;
-            }
+        if (count($matchedSitemapItems) < 1) {
+            return;
         }
+
+        $sitemapItem = current($matchedSitemapItems);
+        $this->renderSitemapComponent($sitemapItem);
     }
 
     /**
@@ -99,5 +84,29 @@ class ApplicationRenderer
         header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
+    }
+
+    /**
+     * @param $sitemapItem
+     */
+    private function renderSitemapComponent($sitemapItem)
+    {
+        $isCachable = $sitemapItem->object instanceof CachableBaseComponent;
+
+        if (($isCachable && !$sitemapItem->object->isCachable()) | $isCachable === false) {
+            $sitemapItem->object->render($this->application);
+            ob_clean();
+            $this->setNotCachingHeaders();
+        } elseif ($isCachable && $sitemapItem->object->isCachable()) {
+            if (!$sitemapItem->object->isCacheValid()) {
+                $sitemapItem->object->render($this->application);
+            }
+            ob_clean();
+            $this->setCachingHeaders($sitemapItem->object->getMaxAge());
+        }
+
+        echo $sitemapItem->object->get();
+        ob_end_flush();
+        exit;
     }
 }
