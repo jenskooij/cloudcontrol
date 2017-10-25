@@ -8,6 +8,7 @@ namespace CloudControl\Cms\cc\application;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\components\CachableBaseComponent;
 use CloudControl\Cms\components\Component;
 use CloudControl\Cms\storage\Storage;
 
@@ -79,6 +80,12 @@ class ApplicationRunner
             $parameters = $sitemapItem->parameters;
 
             $matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
+
+            if ($matchedSitemapItems[$key]->object instanceof CachableBaseComponent
+                && $matchedSitemapItems[$key]->object->isCachable()
+                && $matchedSitemapItems[$key]->object->isCacheValid()) {
+                continue;
+            }
 
             $matchedSitemapItems[$key]->object->run($this->storage);
         }

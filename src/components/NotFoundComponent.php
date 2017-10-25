@@ -10,7 +10,7 @@ namespace CloudControl\Cms\components;
 
 use CloudControl\Cms\storage\Storage;
 
-class NotFoundComponent extends BaseComponent
+class NotFoundComponent extends CachableBaseComponent
 {
     protected $template = '404';
 
