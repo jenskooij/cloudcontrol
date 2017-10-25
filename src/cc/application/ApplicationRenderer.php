@@ -9,6 +9,7 @@ namespace CloudControl\Cms\cc\application;
 
 use CloudControl\Cms\cc\Application;
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\components\CachableBaseComponent;
 use CloudControl\Cms\storage\Storage;
 
 class ApplicationRenderer
@@ -16,6 +17,7 @@ class ApplicationRenderer
     protected $storage;
     protected $request;
     protected $application;
+    const HEADER_POWERED_BY = 'Cloud Control - https://getcloudcontrol.org';
 
     /**
      * ApplicationRenderer constructor.
@@ -48,30 +50,63 @@ class ApplicationRenderer
      */
     public function renderSitemapComponents($matchedSitemapItems)
     {
-        if (!empty($matchedSitemapItems)) {
-            $this->setCachingHeaders();
+        if (count($matchedSitemapItems) < 1) {
+            return;
         }
-        foreach ($matchedSitemapItems as $sitemapItem) {
-            $sitemapItem->object->render($this->application);
-            ob_clean();
-            echo $sitemapItem->object->get();
-            ob_end_flush();
-            exit;
-        }
+
+        $sitemapItem = current($matchedSitemapItems);
+        $this->renderSitemapComponent($sitemapItem);
     }
 
     /**
-     * Set the default caching of pages to 2 days
-     * @throws \Exception
+     * Set the default caching of pages
+     * @param string $intervalString
      */
-    public function setCachingHeaders()
+    public function setCachingHeaders($intervalString = CachableBaseComponent::DEFAULT_MAXAGE)
     {
         $expires = new \DateTime();
-        $interval = new \DateInterval('P2D'); // 2 days
+        $interval = new \DateInterval($intervalString);
         $maxAge = date_create('@0')->add($interval)->getTimestamp();
         $expires = $expires->add($interval);
-
+        header('X-Powered-By: ' . self::HEADER_POWERED_BY);
         header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', $expires->getTimestamp()));
         header('Cache-Control: max-age=' . $maxAge);
+        header('Pragma: cache');
+    }
+
+    /**
+     * Set non caching
+     * @throws \Exception
+     */
+    public function setNotCachingHeaders()
+    {
+        header('X-Powered-By: ' . self::HEADER_POWERED_BY);
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+    }
+
+    /**
+     * @param $sitemapItem
+     */
+    private function renderSitemapComponent($sitemapItem)
+    {
+        $isCachable = $sitemapItem->object instanceof CachableBaseComponent;
+
+        if (($isCachable && !$sitemapItem->object->isCachable()) | $isCachable === false) {
+            $sitemapItem->object->render($this->application);
+            ob_clean();
+            $this->setNotCachingHeaders();
+        } elseif ($isCachable && $sitemapItem->object->isCachable()) {
+            if (!$sitemapItem->object->isCacheValid()) {
+                $sitemapItem->object->render($this->application);
+            }
+            ob_clean();
+            $this->setCachingHeaders($sitemapItem->object->getMaxAge());
+        }
+
+        echo $sitemapItem->object->get();
+        ob_end_flush();
+        exit;
     }
 }

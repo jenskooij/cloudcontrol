@@ -8,7 +8,7 @@ namespace CloudControl\Cms\components;
 
 use CloudControl\Cms\storage\Storage;
 
-class DocumentFolderComponent extends BaseComponent
+class DocumentFolderComponent extends CachableBaseComponent
 {
     const PARAMETER_DOCUMENT_FOLDER_PATH = 'documentFolderPath';
     const PARAMETER_DOCUMENT_FOLDER_PARAMETER_NAME = 'documentFolderParameter';

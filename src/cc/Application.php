@@ -8,6 +8,7 @@ use CloudControl\Cms\cc\application\UrlMatcher;
 use CloudControl\Cms\services\FileService;
 use CloudControl\Cms\services\ImageService;
 use CloudControl\Cms\services\ValuelistService;
+use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\Storage;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -59,6 +60,8 @@ class Application
 
         $this->config();
         $this->storage();
+
+        Cache::getInstance()->setStoragePath($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir);
 
         $this->request = new Request();
 

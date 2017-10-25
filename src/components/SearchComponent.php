@@ -12,7 +12,7 @@ use CloudControl\Cms\search\Search;
 use CloudControl\Cms\search\Tokenizer;
 use CloudControl\Cms\storage\Storage;
 
-class SearchComponent extends BaseComponent
+class SearchComponent extends CachableBaseComponent
 {
     protected $searchParameterName = 'q';
     protected $searchResultsParameterName = 'searchResults';

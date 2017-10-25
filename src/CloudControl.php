@@ -6,6 +6,7 @@
 namespace CloudControl\Cms;
 
 use CloudControl\Cms\cc\Application;
+use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\Repository;
 use Composer\Script\Event;
 
@@ -60,8 +61,10 @@ class CloudControl
 
         $baseStorageDefaultPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.json';
         $baseStorageSqlPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_storage.sql';
+        $baseCacheSqlPath = __DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_cache.sql';
 
         self::createStorage($configObject->{'storageDir'}, $baseStorageDefaultPath, $baseStorageSqlPath);
+        self::createCacheStorage($rootDir . DIRECTORY_SEPARATOR . $configObject->{'storageDir'}, $baseCacheSqlPath);
         self::saveConfig($event, $baseConfigTargetPath, $configObject);
         self::copyInstallFile($event, 'public.htaccess', $configObject->{'publicDir'}, '.htaccess');
         self::copyInstallFile($event, 'root.htaccess', $rootDir, '.htaccess');
@@ -217,6 +220,12 @@ class CloudControl
             }
         }
         return $relPath;
+    }
+
+    private static function createCacheStorage($storageDir, $baseCacheSqlPath)
+    {
+        Cache::getInstance()->setStoragePath($storageDir);
+        Cache::getInstance()->init($baseCacheSqlPath);
     }
 
 }
