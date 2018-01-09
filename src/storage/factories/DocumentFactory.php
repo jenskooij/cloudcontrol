@@ -214,9 +214,11 @@ class DocumentFactory
         $config = HTMLPurifier_Config::createDefault();
         $config->set('URI.DisableExternalResources', false);
         $config->set('URI.DisableResources', false);
-        $config->set('HTML.Allowed', 'u,p,b,i,a,p,strong,em,li,ul,ol,div[align],br,img,table,tr,td,th,tbody,thead,strike,sub,sup');
+        $config->set('HTML.Allowed', 'u,p,b,i,a,p,strong,em,li,ul,ol,div[align],br,img,table,tr,td,th,tbody,thead,strike,sub,sup,iframe');
+        $config->set('HTML.SafeIframe', true);
+        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%'); //allow YouTube and Vimeo
         $config->set('Attr.AllowedFrameTargets', array('_blank'));
-        $config->set('HTML.AllowedAttributes', 'src, alt, href, target');
+        $config->set('HTML.AllowedAttributes', 'src, alt, href, target, frameborder');
         $config->set('URI.AllowedSchemes', array('data' => true, 'http' => true, 'https' => true));
         self::$purifier = new HTMLPurifier($config);
         return self::$purifier;

@@ -18,7 +18,7 @@ if (isset($summernoteInstances)) {
         ['style', ['bold', 'italic', 'underline', 'clear', 'style']],
         ['font', ['strikethrough', 'superscript', 'subscript']],
         ['para', ['ul', 'ol']],
-        ['insert', ['table', 'link', 'picture']],
+        ['insert', ['table', 'link', 'picture', 'video']],
         ['misc', ['codeview']]
       ]
     });
