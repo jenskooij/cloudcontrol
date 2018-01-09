@@ -9,7 +9,7 @@
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents" title="Back">
+        <a id="backButton" class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents" title="Back">
           Back
         </a>
       </li>
