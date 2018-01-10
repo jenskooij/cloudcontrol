@@ -80,13 +80,9 @@ class Document
     }
 
     /**
-     * @param string $orderBy
-     * @param string $order
-     *
      * @return array
-     * @throws \Exception
      */
-    public function getContent($orderBy = 'title', $order = 'ASC')
+    public function getContent()
     {
         if (empty($this->content)) {
             $docs = $this->documentStorage->getDocumentsWithState($this->path);

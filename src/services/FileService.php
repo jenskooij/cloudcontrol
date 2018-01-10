@@ -63,7 +63,7 @@ class FileService
     protected function getFileByPath($filePath)
     {
         $file = $this->storage->getFiles()->getFileByName($filePath);
-        return new File($file);
+        return $file === null ? null : new File($file);
     }
 
     /**

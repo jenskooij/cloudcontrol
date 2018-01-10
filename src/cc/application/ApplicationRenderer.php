@@ -95,7 +95,21 @@ class ApplicationRenderer
     {
         $isCachable = ($sitemapItem->object instanceof CachableBaseComponent) && !CmsComponent::isCmsLoggedIn();
 
-        if (($isCachable && !$sitemapItem->object->isCachable()) | $isCachable === false) {
+        $this->handleSitemapComponentCaching($sitemapItem, $isCachable);
+
+        echo $sitemapItem->object->get();
+        ob_end_flush();
+        exit;
+    }
+
+    /**
+     * @param $sitemapItem
+     * @param $isCachable
+     * @throws \Exception
+     */
+    private function handleSitemapComponentCaching($sitemapItem, $isCachable)
+    {
+        if (($isCachable && !$sitemapItem->object->isCachable()) || $isCachable === false) {
             $sitemapItem->object->render($this->application);
             ob_clean();
             $this->setNotCachingHeaders();
@@ -106,9 +120,5 @@ class ApplicationRenderer
             ob_clean();
             $this->setCachingHeaders($sitemapItem->object->getMaxAge());
         }
-
-        echo $sitemapItem->object->get();
-        ob_end_flush();
-        exit;
     }
 }

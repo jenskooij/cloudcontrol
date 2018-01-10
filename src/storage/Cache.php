@@ -6,6 +6,8 @@
 namespace CloudControl\Cms\storage;
 
 
+use CloudControl\Cms\components\CmsComponent;
+
 class Cache
 {
     /**

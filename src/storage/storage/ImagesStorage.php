@@ -103,7 +103,7 @@ class ImagesStorage extends AbstractStorage
     /**
      * @param $filename
      *
-     * @return null
+     * @return \stdClass|null
      */
     public function getImageByName($filename)
     {

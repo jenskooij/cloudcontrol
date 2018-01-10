@@ -109,9 +109,15 @@ class CachableBaseComponent extends BaseComponent
         return $this->cacheValidity;
     }
 
+    /**
+     * Sets the new cache, unless a cms user is logged in
+     * @param $renderedContent
+     */
     private function createCache($renderedContent)
     {
-        Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent);
+        if (!CmsComponent::isCmsLoggedIn()) {
+            Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent);
+        }
     }
 
 }

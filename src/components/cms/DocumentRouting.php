@@ -166,16 +166,8 @@ class DocumentRouting implements CmsRouting
     private function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        Cache::getInstance()->clearCache();
-        $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
-        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-        $cmsComponent->storage->getActivityLog()->add('published document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', 'check-circle-o');
-        if ($cmsComponent->autoUpdateSearchIndex) {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?published=' .  urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
-        } else {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?published=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
-        }
-        exit;
+        $this->clearCacheAndLogActivity($request, $cmsComponent);
+        $this->doAfterPublishRedirect($request, $cmsComponent);
     }
 
     /**
@@ -185,16 +177,8 @@ class DocumentRouting implements CmsRouting
     private function unpublishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        Cache::getInstance()->clearCache();
-        $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
-        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-        $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
-        if ($cmsComponent->autoUpdateSearchIndex) {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' .  urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
-        } else {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' . htmlentities($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
-        }
-        exit;
+        $this->clearCacheAndLogActivity($request, $cmsComponent, 'times-circle-o', 'unpublished');
+        $this->doAfterPublishRedirect($request, $cmsComponent, 'unpublished');
     }
 
     /**
@@ -237,5 +221,34 @@ class DocumentRouting implements CmsRouting
             $documentTypesLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/document-types/new';
             $cmsComponent->setParameter('infoMessage', '<i class="fa fa-exclamation-circle"></i> No document types defined yet. Please do so first, <a href="' . $documentTypesLink . '">here</a>.');
         }
+    }
+
+    /**
+     * @param $request
+     * @param $cmsComponent
+     * @param string $param
+     */
+    private function doAfterPublishRedirect($request, $cmsComponent, $param = 'published')
+    {
+        if ($cmsComponent->autoUpdateSearchIndex) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        }
+        exit;
+    }
+
+    /**
+     * @param $request
+     * @param $cmsComponent
+     * @param string $icon
+     * @param string $activity
+     */
+    private function clearCacheAndLogActivity($request, $cmsComponent, $icon = 'check-circle-o', $activity = 'published')
+    {
+        Cache::getInstance()->clearCache();
+        $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add($activity. ' document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', $icon);
     }
 }
