@@ -6,6 +6,8 @@
 namespace CloudControl\Cms\storage;
 
 
+use CloudControl\Cms\components\CmsComponent;
+
 class Cache
 {
     /**
@@ -119,6 +121,10 @@ class Cache
      */
     public function setCacheForPath($requestUri, $renderedContent)
     {
+        // Dont cache if youre logged in, or you might cache the frontend editor buttons
+        if (CmsComponent::isCmsLoggedIn()) {
+            return;
+        }
         $dbInstace = $this->getDbInstance();
         $sql = '
             INSERT OR REPLACE INTO `cache` (path, creationStamp, contents)
