@@ -59,12 +59,12 @@ class ImageService
 
     /**
      * @param $imagePath
-     * @return Image
+     * @return Image|null
      */
     protected function getImageByPath($imagePath)
     {
         $image = $this->storage->getImages()->getImageByName($imagePath);
-        return new Image($image);
+        return $image === null ? null : new Image($image);
     }
 
     /**

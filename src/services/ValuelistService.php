@@ -37,13 +37,13 @@ class ValuelistService
 
     /**
      * @param $slug
-     * @return Valuelist
+     * @return null|Valuelist
      */
     public static function get($slug)
     {
         $instance = self::getInstance();
         $valuelist = $instance->storage->getValuelists()->getValuelistBySlug($slug);
-        return new Valuelist($valuelist);
+        return $valuelist === null ? null : new Valuelist($valuelist);
 
     }
 

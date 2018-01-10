@@ -151,7 +151,7 @@ class FormComponent Extends BaseComponent
      * @param $postValues
      * @param Storage $storage
      */
-    protected function postSubmit($postValues, $storage)
+    protected function postSubmit(/** @scrutinizer ignore-unused */$postValues, /** @scrutinizer ignore-unused */$storage)
     {
     }
 
