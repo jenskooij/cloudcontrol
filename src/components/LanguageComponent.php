@@ -141,7 +141,7 @@ class LanguageComponent implements Component
      */
     protected function checkForceRedirect($lang, $request)
     {
-        if ($this->forceRedirect === true) {
+        if ($this->forceRedirect === true && !CmsComponent::isCmsLoggedIn()) {
             if (substr($request::$relativeUri, 0, 2) !== $lang) {
                 if ($lang !== self::$DEFAULT_LANGUAGE) {
                     $redirectUrl = $request::$subfolders . $lang . '/' . $request::$relativeUri;
