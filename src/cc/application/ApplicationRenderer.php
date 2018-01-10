@@ -95,7 +95,7 @@ class ApplicationRenderer
     {
         $isCachable = ($sitemapItem->object instanceof CachableBaseComponent) && !CmsComponent::isCmsLoggedIn();
 
-        if (($isCachable && !$sitemapItem->object->isCachable()) | $isCachable === false) {
+        if (($isCachable && !$sitemapItem->object->isCachable()) || $isCachable === false) {
             $sitemapItem->object->render($this->application);
             ob_clean();
             $this->setNotCachingHeaders();
