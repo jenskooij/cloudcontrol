@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\components {
 
+    use CloudControl\Cms\cc\Request;
     use CloudControl\Cms\components\cms\BaseRouting;
     use CloudControl\Cms\components\cms\CmsConstants;
     use CloudControl\Cms\crypt\Crypt;

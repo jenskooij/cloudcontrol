@@ -210,7 +210,7 @@ class Search extends SearchDbConnected
     private function getQueryNorm($tokens)
     {
         $db = $this->getSearchDbHandle();
-        $db->sqliteCreateFunction('sqrt', 'sqrt', 1);
+        $db->/** @scrutinizer ignore-call */sqliteCreateFunction('sqrt', 'sqrt', 1);
         foreach ($tokens as $key => $token) {
             $tokens[$key] = $db->quote($token);
         }

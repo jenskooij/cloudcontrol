@@ -120,7 +120,7 @@ namespace CloudControl\Cms\images\methods {
         /**
          * Returns the watermark.
          * Throws an Exception if it's not set or if it's not an \CloudControl\Cms\image\Image
-         * @return \images\Image
+         * @return Image
          * @throws \Exception
          */
         public function GetWatermark()

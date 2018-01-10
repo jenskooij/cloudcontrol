@@ -36,7 +36,7 @@ class InverseDocumentFrequency
     public function execute()
     {
         $db = $this->dbHandle;
-        $db->sqliteCreateFunction('log', 'log', 1);
+        $db->/** @scrutinizer ignore-call */sqliteCreateFunction('log', 'log', 1);
         $sql = '
 		INSERT INTO inverse_document_frequency (term, inverseDocumentFrequency)
 		SELECT DISTINCT term, (1+(log(:documentCount / COUNT(documentPath) + 1))) as inverseDocumentFrequency
