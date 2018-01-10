@@ -27,6 +27,9 @@ class Cache
         // Singleton, so private constructor
     }
 
+    /**
+     * @return Cache
+     */
     public static function getInstance()
     {
         if (!self::$instance instanceof Cache) {
@@ -35,6 +38,10 @@ class Cache
         return self::$instance;
     }
 
+    /**
+     * @param $path
+     * @return \stdClass
+     */
     public function getCacheForPath($path)
     {
         $dbInstace = $this->getDbInstance();
@@ -55,11 +62,37 @@ class Cache
         }
     }
 
+    /**
+     * Clears all cache
+     */
+    public function clearCache()
+    {
+        $dbInstace = $this->getDbInstance();
+        $sql = '
+            DELETE FROM `cache`;
+            VACUUM;
+        ';
+        $stmt = $dbInstace->prepare($sql);
+        if ($stmt->execute()) {
+            return;
+        } else {
+            $error = $stmt->errorInfo();
+            $errorMsg = $error[2];
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+    }
+
+    /**
+     * @param $storagePath
+     */
     public function setStoragePath($storagePath)
     {
         $this->storagePath = $storagePath;
     }
 
+    /**
+     * @return \PDO
+     */
     private function getDbInstance()
     {
         if ($this->dbHandle === null) {
@@ -68,6 +101,9 @@ class Cache
         return $this->dbHandle;
     }
 
+    /**
+     * @param $baseCacheSqlPath
+     */
     public function init($baseCacheSqlPath)
     {
         $realBaseCacheSqlPath = realpath($baseCacheSqlPath);
@@ -77,6 +113,10 @@ class Cache
         $db->exec($sql);
     }
 
+    /**
+     * @param $requestUri
+     * @param $renderedContent
+     */
     public function setCacheForPath($requestUri, $renderedContent)
     {
         $dbInstace = $this->getDbInstance();

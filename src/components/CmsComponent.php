@@ -16,11 +16,14 @@ namespace CloudControl\Cms\components {
 
         public $subTemplate;
 
+        public $autoUpdateSearchIndex = true;
+
 
         /**
          * @param Storage $storage
          *
          * @return void
+         * @throws \Exception
          */
         public function run(Storage $storage)
         {
@@ -30,6 +33,8 @@ namespace CloudControl\Cms\components {
             $remoteAddress = $_SERVER['REMOTE_ADDR'];
             $this->checkWhiteList($remoteAddress);
             $this->checkBlackList($remoteAddress);
+
+            $this->checkAutoUpdateSearchIndex();
 
             $this->checkLogin();
 
@@ -169,6 +174,7 @@ namespace CloudControl\Cms\components {
         /**
          * @param Crypt $crypt
          * @param Request $request
+         * @throws \Exception
          */
         protected function invalidCredentials($crypt, $request)
         {
@@ -181,6 +187,7 @@ namespace CloudControl\Cms\components {
          * @param $user
          * @param Crypt $crypt
          * @param Request $request
+         * @throws \Exception
          */
         protected function checkPassword($user, $crypt, $request)
         {
@@ -200,6 +207,7 @@ namespace CloudControl\Cms\components {
 
         /**
          * @param $request
+         * @throws \Exception
          */
         protected function checkLoginAttempt($request)
         {
@@ -222,6 +230,20 @@ namespace CloudControl\Cms\components {
             return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.php';
         }
 
+        private function checkAutoUpdateSearchIndex()
+        {
+            if (isset($this->parameters[CmsConstants::PARAMETER_AUTO_UPDATE_SEARCH_INDEX])) {
+                $param = $this->parameters[CmsConstants::PARAMETER_AUTO_UPDATE_SEARCH_INDEX];
+                if ($param === 'false') {
+                    $this->autoUpdateSearchIndex = false;
+                }
+            }
+        }
 
+    public static function isCmsLoggedIn()
+    {
+        return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
     }
+
+}
 }

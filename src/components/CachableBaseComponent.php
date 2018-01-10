@@ -79,7 +79,7 @@ class CachableBaseComponent extends BaseComponent
 
     private function isLoggedIn()
     {
-        return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
+        return CmsComponent::isCmsLoggedIn();
     }
 
     /**

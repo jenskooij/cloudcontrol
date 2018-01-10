@@ -12,6 +12,7 @@ use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\cms\document\FolderRouting;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
+use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\entities\Document;
 
 class DocumentRouting implements CmsRouting
@@ -21,6 +22,7 @@ class DocumentRouting implements CmsRouting
      * @param $request
      * @param $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
@@ -91,6 +93,7 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function editDocumentRoute($request, $cmsComponent)
     {
@@ -121,6 +124,7 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function getBrickRoute($request, $cmsComponent)
     {
@@ -158,10 +162,15 @@ class DocumentRouting implements CmsRouting
     private function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
+        Cache::getInstance()->clearCache();
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('published document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', 'check-circle-o');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?published=' . htmlentities($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        if ($cmsComponent->autoUpdateSearchIndex) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?published=' .  urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?published=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        }
         exit;
     }
 
@@ -172,16 +181,22 @@ class DocumentRouting implements CmsRouting
     private function unpublishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
+        Cache::getInstance()->clearCache();
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add('unpublished document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', 'times-circle-o');
-        header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' . htmlentities($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        if ($cmsComponent->autoUpdateSearchIndex) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' .  urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?unpublished=' . htmlentities($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        }
         exit;
     }
 
     /**
      * @param CmsComponent $cmsComponent
      * @param Request $request
+     * @throws \Exception
      */
     private function overviewRouting($cmsComponent, $request)
     {

@@ -10,6 +10,7 @@ namespace CloudControl\Cms\cc\application;
 use CloudControl\Cms\cc\Application;
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CachableBaseComponent;
+use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\storage\Storage;
 
 class ApplicationRenderer
@@ -92,7 +93,7 @@ class ApplicationRenderer
      */
     private function renderSitemapComponent($sitemapItem)
     {
-        $isCachable = $sitemapItem->object instanceof CachableBaseComponent;
+        $isCachable = ($sitemapItem->object instanceof CachableBaseComponent) && !CmsComponent::isCmsLoggedIn();
 
         if (($isCachable && !$sitemapItem->object->isCachable()) | $isCachable === false) {
             $sitemapItem->object->render($this->application);

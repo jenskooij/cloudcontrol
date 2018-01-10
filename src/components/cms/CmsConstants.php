@@ -22,6 +22,7 @@ interface CmsConstants
     const GET_PARAMETER_PATH = 'path';
     const GET_PARAMETER_SLUG = 'slug';
 
+    const PARAMETER_AUTO_UPDATE_SEARCH_INDEX = 'autoUpdateSearchIndex';
     const PARAMETER_APPLICATION_COMPONENT = 'applicationComponent';
     const PARAMETER_APPLICATION_COMPONENTS = 'applicationComponents';
     const PARAMETER_BLACKLIST_IPS = 'blacklistIps';
