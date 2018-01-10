@@ -73,7 +73,7 @@
 									</div>
 								</div>
 							</li>
-							<?$value='';?>
+							<?php $value='';?>
 							<?php endforeach ?>
 						<?php endif ?>
 					</ul>
@@ -93,7 +93,7 @@
 								<?php include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>
 								</div>
 							</li>
-							<?$value='';?>
+							<?php $value='';?>
 						<?php endforeach ?>
 						<?php endif ?>
 						</div>
@@ -102,7 +102,7 @@
 					<a class="btn js-addrtemultiple">+</a>
 					<?php endif ?>
 				</div>
-				<?$value='';?>
+				<?php $value='';?>
 			<?php endforeach ?>
 			<hr />
 			<?php $static_brick_nr = 0;?>
@@ -112,7 +112,7 @@
 				<?php if ($brick->multiple == 'true') : ?>
 					<input type="hidden" value="<?=$brick->brickSlug?>"/>
 					<input type="hidden" value="<?=$brick->slug?>"/>
-					<?$myBrickSlug=$brick->slug;?>
+					<?php $myBrickSlug=$brick->slug;?>
 					<ul id="newBrickDropzone_<?=$static_brick_nr?>" class="dynamicBricks sortable">
 						<?php if (isset($document)) : ?>
 							<?php foreach ($document->bricks as $currentBrickSlug => $brickArray) : ?>
@@ -125,8 +125,8 @@
 									<?php if (is_object($dynamicBrick) && isset($dynamicBrick->type) && $brick->slug === $dynamicBrick->type && $currentBrickSlug === $myBrickSlug) : ?>
 									<li class="brick form-element">
 
-										<?$static = true; ?>
-										<?include(__DIR__ . '/brick.php')?>
+										<?php $static = true; ?>
+										<?php include(__DIR__ . '/brick.php')?>
 									</li>
 									<?php endif ?>
 								<?php endforeach ?>
@@ -134,9 +134,9 @@
 						<?php endif ?>
 					</ul>
 					<a class="btn" onclick="addDynamicBrick(this, 'true', 'newBrickDropzone_<?=$static_brick_nr?>');">+</a>
-					<?$static_brick_nr += 1?>
+					<?php $static_brick_nr += 1?>
 				<?php else : ?>
-					<?$fieldPrefix='bricks[' . $brick->slug . '][fields]';?>
+					<?php $fieldPrefix='bricks[' . $brick->slug . '][fields]';?>
 					<input type="hidden" name="bricks[<?=$brick->slug?>][type]" value="<?=$brick->brickSlug?>" />
 					<?php foreach ($brick->structure->fields as $field) : ?>
 						<div class="form-element">
@@ -195,7 +195,7 @@
 										</div>
 									</div>
 								</li>
-								<?$value='';?>
+								<?php $value='';?>
 								<?php endforeach ?>
 							<?php endif ?>
 						</ul>
@@ -216,7 +216,7 @@
 									<?php include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>
 									</div>
 								</li>
-								<?$value='';?>
+								<?php $value='';?>
 							<?php endforeach ?>
 							<?php endif ?>
 							</div>
@@ -225,7 +225,7 @@
 						<a class="btn js-addrtemultiple">+</a>
 						<?php endif ?>
 					</div>
-					<?$value='';?>
+					<?php $value='';?>
 				<?php endforeach ?>
 				<?php endif ?>
 				</div>
@@ -252,8 +252,8 @@
 						endforeach ?>
 						<li class="brick form-element">
 							<label><?=$brick->title?></label>
-							<?$static = false; ?>
-							<?include(__DIR__ . '/brick.php')?>
+							<?php $static = false; ?>
+							<?php include(__DIR__ . '/brick.php')?>
 						</li>
 					<?php endforeach ?>
 				<?php endif ?>

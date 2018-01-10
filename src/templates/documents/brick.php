@@ -63,7 +63,7 @@
 								</div>
 							</div>
 						</li>
-						<?$value='';?>
+						<?php $value='';?>
 						<?php endforeach ?>
 					<?php endif ?>
 				</ul>
@@ -83,7 +83,7 @@
 							<?php include(__DIR__ . '/fieldTypes/' . str_replace(' ', '-', $field->type) . '.php') ?>
 							</div>
 						</li>
-						<?$value='';?>
+						<?php $value='';?>
 					<?php endforeach ?>
 					<?php endif ?>
 					</div>
@@ -92,5 +92,5 @@
 				<a class="btn js-addrtemultiple">+</a>
 				<?php endif ?>
 			</div>
-			<?$value='';?>
+			<?php $value='';?>
 		<?php endforeach ?>
