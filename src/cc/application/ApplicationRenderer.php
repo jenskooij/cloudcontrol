@@ -88,6 +88,7 @@ class ApplicationRenderer
 
     /**
      * @param $sitemapItem
+     * @throws \Exception
      */
     private function renderSitemapComponent($sitemapItem)
     {
