@@ -1,30 +1,30 @@
-<? include('documents/function.renderAction.php'); ?>
-<? include('documents/function.renderDocument.php'); ?>
-<? include('documents/function.renderFolder.php'); ?>
+<?php include('documents/function.renderAction.php'); ?>
+<?php include('documents/function.renderDocument.php'); ?>
+<?php include('documents/function.renderFolder.php'); ?>
 <script>window.onload = function () {
     History.init();
     History.replaceState(null, 'Cloud Control CMS', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');
   };</script>
 <section class="documents">
   <h2><i class="fa fa-file-text-o"></i> Documents</h2>
-    <? if (isset($infoMessage)) : ?>
+    <?php if (isset($infoMessage)) : ?>
       <div class="infoMessage <?= isset($infoMessageClass) ? $infoMessageClass : '' ?>">
         <div class="content">
           <?= $infoMessage ?>
         </div>
       </div>
-    <? endif ?>
+    <?php endif ?>
   <div class="search">
-      <? if ($searchNeedsUpdate) : ?>
+      <?php if ($searchNeedsUpdate) : ?>
         <div class="message warning">
           <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
           <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?= urlencode($request::$subfolders . $cmsPrefix . '/documents') ?>" title="Update Index">Update Index</a>
         </div>
-      <? else : ?>
+      <?php else : ?>
         <div class="message valid">
           <i class="fa fa-check"></i> Search index is in sync with documents.
         </div>
-      <? endif ?>
+      <?php endif ?>
   </div>
   <nav class="actions">
     <ul>
@@ -38,7 +38,7 @@
       </li>
     </ul>
   </nav>
-    <? if (isset($documents)) : ?>
+    <?php if (isset($documents)) : ?>
       <ul class="documents grid-wrapper">
         <li class="grid-container">
           <div class="grid-box-12">
@@ -46,15 +46,15 @@
             <i id="pathHolder">/</i>
           </div>
         </li>
-          <? foreach ($documents as $document) : ?>
+          <?php foreach ($documents as $document) : ?>
             <li class="grid-container">
-                <? if ($document->type == 'document') : ?>
-                    <? renderDocument($document, $cmsPrefix, '', $request); ?>
-                <? elseif ($document->type == 'folder') : ?>
-                    <? renderFolder($document, $cmsPrefix, '', true, $request); ?>
-                <? endif ?>
+                <?php if ($document->type == 'document') : ?>
+                    <?php renderDocument($document, $cmsPrefix, '', $request); ?>
+                <?php elseif ($document->type == 'folder') : ?>
+                    <?php renderFolder($document, $cmsPrefix, '', true, $request); ?>
+                <?php endif ?>
             </li>
-          <? endforeach ?>
+          <?php endforeach ?>
       </ul>
-    <? endif ?>
+    <?php endif ?>
 </section>

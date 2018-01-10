@@ -8,9 +8,9 @@
       </li>
     </ul>
   </nav>
-    <? if (isset($imageSet)) : ?>
+    <?php if (isset($imageSet)) : ?>
       <ul class="configuration grid-wrapper">
-          <? foreach ($imageSet as $currentSet) : ?>
+          <?php foreach ($imageSet as $currentSet) : ?>
             <li class="grid-container">
               <div class="grid-box-8">
                 <h3>
@@ -33,7 +33,7 @@
                 <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/image-set/delete?slug=<?= $currentSet->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </li>
-          <? endforeach ?>
+          <?php endforeach ?>
       </ul>
-    <? endif ?>
+    <?php endif ?>
 </section>

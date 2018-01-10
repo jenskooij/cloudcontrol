@@ -16,8 +16,8 @@
     <div class="form-element">
       <label for="title">Fields</label>
       <ul id="dropZone" class="sortable">
-          <? if (isset($brick)) : ?>
-              <? foreach ($brick->fields as $field) : ?>
+          <?php if (isset($brick)) : ?>
+              <?php foreach ($brick->fields as $field) : ?>
               <li class="form-element fields">
                 <input type="text" required="required" name="fieldTitles[]" placeholder="Field Title" value="<?= $field->title ?>"/>
                 <select name="fieldTypes[]">
@@ -40,8 +40,8 @@
                 <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
                 <a class="btn move"><i class="fa fa-arrows-v"></i></a>
               </li>
-              <? endforeach ?>
-          <? endif ?>
+              <?php endforeach ?>
+          <?php endif ?>
       </ul>
       <a class="btn add-parameter" id="bricks_add_field">+</a>
     </div>

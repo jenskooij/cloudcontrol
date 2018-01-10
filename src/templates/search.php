@@ -3,17 +3,17 @@
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn<? if (!$searchNeedsUpdate) : ?> reset<? endif ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index" title="Update Index">Update Index</a>
+        <a class="btn<?php if (!$searchNeedsUpdate) : ?> reset<?php endif ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index" title="Update Index">Update Index</a>
       </li>
     </ul>
   </nav>
-    <? if ($searchNeedsUpdate) : ?>
+    <?php if ($searchNeedsUpdate) : ?>
       <div class="message warning">
         <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
       </div>
-    <? else : ?>
+    <?php else : ?>
       <div class="message valid">
         <i class="fa fa-check"></i> Search index is in sync with documents.
       </div>
-    <? endif ?>
+    <?php endif ?>
 </section>

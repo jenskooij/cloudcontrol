@@ -8,9 +8,9 @@
       </li>
     </ul>
   </nav>
-    <? if (isset($documentTypes)) : ?>
+    <?php if (isset($documentTypes)) : ?>
       <ul class="configuration sortable grid-wrapper">
-          <? foreach ($documentTypes as $documentType) : ?>
+          <?php foreach ($documentTypes as $documentType) : ?>
             <li class="grid-container">
               <div class="grid-box-8">
                 <h3>
@@ -24,7 +24,7 @@
                 <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/document-types/delete?slug=<?= $documentType->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </li>
-          <? endforeach ?>
+          <?php endforeach ?>
       </ul>
-    <? endif ?>
+    <?php endif ?>
 </section>

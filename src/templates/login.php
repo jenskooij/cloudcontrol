@@ -16,11 +16,11 @@
         <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
       <section class="login-form grid-box-4">
-          <? if (isset($errorMsg)) : ?>
+          <?php if (isset($errorMsg)) : ?>
             <div class="errorMsg">
               <p><?= $errorMsg ?></p>
             </div>
-          <? endif ?>
+          <?php endif ?>
         <form method="post" onsubmit="document.getElementById('submitButton').className='btn inactive';document.getElementById('loadingSpinner').style.display='inline-block';">
           <div class="form-element">
             <label for="username">Username</label>

@@ -9,8 +9,8 @@
   </nav>
   <div class="grid-wrapper">
     <ul class="images grid-container">
-        <? if (isset($images)) : ?>
-            <? foreach ($images as $image) : ?>
+        <?php if (isset($images)) : ?>
+            <?php foreach ($images as $image) : ?>
             <li class="grid-box-2">
               <div class="grid-inner">
                 <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images/delete?file=<?= $image->file ?>" title="Delete"><i class="fa fa-trash"></i></a>
@@ -31,8 +31,8 @@
                 </small>
               </div>
             </li>
-            <? endforeach ?>
-        <? endif ?>
+            <?php endforeach ?>
+        <?php endif ?>
     </ul>
   </div>
 </section>

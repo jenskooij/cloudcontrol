@@ -8,9 +8,9 @@
       </li>
     </ul>
   </nav>
-    <? if (isset($users)) : ?>
+    <?php if (isset($users)) : ?>
       <ul class="configuration grid-wrapper">
-          <? foreach ($users as $user) : ?>
+          <?php foreach ($users as $user) : ?>
             <li class="grid-container">
               <div class="grid-box-8">
                 <h3>
@@ -24,7 +24,7 @@
                 <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/users/delete?slug=<?= $user->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </li>
-          <? endforeach ?>
+          <?php endforeach ?>
       </ul>
-    <? endif ?>
+    <?php endif ?>
 </section>

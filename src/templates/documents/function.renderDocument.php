@@ -1,5 +1,4 @@
-<?
-/**
+<?php /**
  * @param \CloudControl\Cms\storage\entities\Document $document
  * @param string $cmsPrefix
  * @param string $slugPrefix
@@ -15,9 +14,9 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
           <i class="fa <?= $document->state == 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i></small>
           <?= $document->title ?>
       </a>
-        <? if ($document->unpublishedChanges) : ?>
+        <?php if ($document->unpublishedChanges) : ?>
           <small class="small unpublished-changes">Unpublished Changes</small>
-        <? endif ?>
+        <?php endif ?>
       <small class="small documentType"><?= $document->documentType ?></small>
       <small class="small lastModified" title="<?= date('r', $document->lastModificationDate) ?>">
         <span class="label">Modified:</span>
@@ -30,25 +29,25 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
     </h3>
   </div>
   <div class="documentActions grid-box-2">
-      <? renderAction(
+      <?php renderAction(
           $document->state == 'unpublished' || $document->unpublishedChanges,
           'Publish',
           'publish',
           $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $slugPrefix . $document->slug,
           'check'); ?>
-      <? renderAction(
+      <?php renderAction(
           $document->state == 'published',
           'Unpublish',
           'unpublish',
           $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $slugPrefix . $document->slug,
           'times'); ?>
-      <? renderAction(
+      <?php renderAction(
           true,
           'Edit',
           '',
           $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $slugPrefix . $document->slug,
           'pencil'); ?>
-      <? renderAction(
+      <?php renderAction(
           $document->state == 'unpublished',
           'Delete',
           'error',
@@ -56,4 +55,4 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
           'trash',
           'return confirm(\'Are you sure you want to delete this document?\');'); ?>
   </div>
-<? } ?>
+<?php } ?>

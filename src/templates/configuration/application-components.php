@@ -9,9 +9,9 @@
       </li>
     </ul>
   </nav>
-    <? if (isset($applicationComponents)) : ?>
+    <?php if (isset($applicationComponents)) : ?>
       <ul class="configuration sortable grid-wrapper">
-          <? foreach ($applicationComponents as $applicationComponent) : ?>
+          <?php foreach ($applicationComponents as $applicationComponent) : ?>
             <li class="grid-container">
               <div class="grid-box-8">
                 <h3>
@@ -25,7 +25,7 @@
                 <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/application-components/delete?slug=<?= $applicationComponent->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </li>
-          <? endforeach ?>
+          <?php endforeach ?>
       </ul>
-    <? endif ?>
+    <?php endif ?>
 </section>

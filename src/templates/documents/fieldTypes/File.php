@@ -3,11 +3,11 @@
     <div class="grid-box-2">
       <div class="grid-inner">
         <div class="selected-file-type" id="<?= $field->slug ?>_selectedFile">
-            <? if (isset($value) && $value != '') : ?>
+            <?php if (isset($value) && $value != '') : ?>
               <i class="fa fa-file-o"></i>
-            <? else : ?>
+            <?php else : ?>
               <i class="fa fa-ellipsis-h"></i>
-            <? endif ?>
+            <?php endif ?>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
     </div>
   </div>
 </div>
-<? /*
+<?php /*
 // TODO
 Ajax upload to be implemented
 http://igstan.ro/posts/2009-01-11-ajax-file-upload-with-pure-javascript.html

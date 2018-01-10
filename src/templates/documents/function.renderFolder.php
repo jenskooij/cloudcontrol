@@ -1,5 +1,4 @@
-<?
-/**
+<?php /**
  * @param \CloudControl\Cms\storage\entities\Document $document
  * @param string $cmsPrefix
  * @param string $slugPrefix
@@ -16,13 +15,13 @@ function renderFolder($document, $cmsPrefix, $slugPrefix = '', $root = false, $r
     </h3>
   </div>
   <div class="documentActions grid-box-4">
-      <? renderAction(
+      <?php renderAction(
           true,
           'Edit',
           '',
           $request::$subfolders . $cmsPrefix . '/documents/edit-folder?slug=' . $slugPrefix . $document->slug,
           'pencil'); ?>
-      <? renderAction(
+      <?php renderAction(
           true,
           'Delete',
           'error',
@@ -31,22 +30,22 @@ function renderFolder($document, $cmsPrefix, $slugPrefix = '', $root = false, $r
           'return confirm(\'Are you sure you want to delete this document?\');'); ?>
   </div>
   <ul class="documents grid-wrapper nested<?= $root ? ' root' : '' ?>">
-      <? foreach ($document->getContent() as $subDocument) : ?>
+      <?php foreach ($document->getContent() as $subDocument) : ?>
         <li class="grid-container">
-            <? if ($subDocument->type == 'document') : ?>
-                <? renderDocument($subDocument, $cmsPrefix, $slugPrefix . $document->slug . '/', $request); ?>
-            <? elseif ($subDocument->type == 'folder') : ?>
-                <? renderFolder($subDocument, $cmsPrefix, $slugPrefix . $document->slug . '/', false, $request); ?>
-            <? endif ?>
+            <?php if ($subDocument->type == 'document') : ?>
+                <?php renderDocument($subDocument, $cmsPrefix, $slugPrefix . $document->slug . '/', $request); ?>
+            <?php elseif ($subDocument->type == 'folder') : ?>
+                <?php renderFolder($subDocument, $cmsPrefix, $slugPrefix . $document->slug . '/', false, $request); ?>
+            <?php endif ?>
         </li>
-      <? endforeach ?>
-      <? if (count($document->getContent()) == 0) : ?>
+      <?php endforeach ?>
+      <?php if (count($document->getContent()) == 0) : ?>
         <li class="grid-container">
           <div class="grid-box-12">
             <i class="fa fa-ellipsis-h empty"></i>
             <i>Empty</i>
           </div>
         </li>
-      <? endif ?>
+      <?php endif ?>
   </ul>
-<? } ?>
+<?php } ?>

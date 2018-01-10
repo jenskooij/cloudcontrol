@@ -11,8 +11,8 @@
     </ul>
   </nav>
   <ul class="valuelists grid-wrapper">
-      <? if (isset($valuelists)) : ?>
-          <? foreach ($valuelists as $valuelist) : ?>
+      <?php if (isset($valuelists)) : ?>
+          <?php foreach ($valuelists as $valuelist) : ?>
           <li class="grid-container">
             <div class="grid-box-10">
               <h3>
@@ -25,7 +25,7 @@
               <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists/delete?slug=<?= $valuelist->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
             </div>
           </li>
-          <? endforeach ?>
-      <? endif ?>
+          <?php endforeach ?>
+      <?php endif ?>
   </ul>
 </section>

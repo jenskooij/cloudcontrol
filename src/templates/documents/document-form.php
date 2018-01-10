@@ -3,7 +3,7 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 <script>var smallestImage = '<?=$smallestImage?>';</script>
-<? $copyable = '' ?>
+<?php $copyable = '' ?>
 <section class="documents">
   <h2><i class="fa fa-file-text-o"></i> Documents</h2>
   <nav class="actions">
@@ -23,7 +23,7 @@
       </div>
     </li>
   </ul>
-    <? include('document-form-form.php'); ?>
+    <?php include('document-form-form.php'); ?>
 </section>
 
 <script>
