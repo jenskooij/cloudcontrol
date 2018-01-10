@@ -7,6 +7,7 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\storage\Cache;
 
 class CachableBaseComponent extends BaseComponent
@@ -67,10 +68,18 @@ class CachableBaseComponent extends BaseComponent
      */
     public function isCacheValid()
     {
+        if ($this->isLoggedIn()) {
+            return false;
+        }
         if ($this->cacheValidity === null) {
             return $this->setCacheValidity();
         }
         return $this->cacheValidity;
+    }
+
+    private function isLoggedIn()
+    {
+        return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
     }
 
     /**

@@ -21,7 +21,7 @@ class Cms
      */
     public static function editDocument($path)
     {
-        if (self::checkLogin()) {
+        if (self::isLoggedIn()) {
             $return = self::getAssetsIfNotIncluded();
             return $return . '<a title="Edit Document" data-href="' . Request::$subfolders . 'cms/documents/edit-document?slug=' . substr($path, 1) . '&returnUrl=' . urlencode(Request::$requestUri) . '" class="ccEditDocumentButton"></a>';
         } else {
@@ -35,7 +35,7 @@ class Cms
      *
      * @throws \Exception
      */
-    private static function checkLogin()
+    private static function isLoggedIn()
     {
         return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
     }
