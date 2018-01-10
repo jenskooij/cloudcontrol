@@ -10,7 +10,7 @@
     </ul>
   </nav>
   <ul class="redirects sitemap">
-      <? foreach ($redirects as $redirect) : ?>
+      <?php foreach ($redirects as $redirect) : ?>
         <li>
           <div class="grid-box-8">
             <h3><?= $redirect->title ?> (<?= $redirect->type ?>)</h3>
@@ -22,6 +22,6 @@
             <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects/edit?slug=<?= $redirect->slug ?>" title="Edit"><i class="fa fa-pencil"></i></a>
           </div>
         </li>
-      <? endforeach ?>
+      <?php endforeach ?>
   </ul>
 </section>

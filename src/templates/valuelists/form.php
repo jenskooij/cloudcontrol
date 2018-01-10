@@ -17,15 +17,15 @@
     <div class="form-element">
       <label for="template">Key Value Pairs</label>
       <ul id="dropZone">
-          <? if (isset($valuelist)) : ?>
-              <? foreach ($valuelist->pairs as $key => $value) : ?>
+          <?php if (isset($valuelist)) : ?>
+              <?php foreach ($valuelist->pairs as $key => $value) : ?>
               <li class="form-element parameters">
                 <input type="text" required="required" name="keys[]" placeholder="Key" value="<?= htmlentities($key) ?>"/>&nbsp;
                 <input type="text" required="required" name="values[]" placeholder="Value" value="<?= htmlentities($value) ?>"/>
                 <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
               </li>
-              <? endforeach ?>
-          <? endif ?>
+              <?php endforeach ?>
+          <?php endif ?>
       </ul>
       <a class="btn add-parameter" id="sitemap_add_parameter">+</a>
     </div>

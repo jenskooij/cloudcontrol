@@ -1,5 +1,4 @@
-<?
-if (isset($summernoteInstances)) {
+<?php if (isset($summernoteInstances)) {
     $summernoteInstances += 1;
 } else {
     $summernoteInstances = 1;
@@ -24,8 +23,7 @@ if (isset($summernoteInstances)) {
     });
   });
 </script>
-<?
-if (!isset($GLOBALS['rteList'])) {
+<?php if (!isset($GLOBALS['rteList'])) {
     $GLOBALS['rteList'] = array();
 }
 $GLOBALS['rteList'][] = 'summernote_' . str_replace(']', '-', str_replace('[', '-', $fieldPrefix)) . $field->slug . '_rte_' . $summernoteInstances ?>

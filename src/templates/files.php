@@ -8,8 +8,8 @@
     </ul>
   </nav>
   <ul class="files grid-wrapper">
-      <? if (isset($files)) : ?>
-          <? foreach ($files as $file) : ?>
+      <?php if (isset($files)) : ?>
+          <?php foreach ($files as $file) : ?>
           <li class="grid-container">
             <div class="grid-box-10">
               <h3>
@@ -30,7 +30,7 @@
               <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files/delete?file=<?= $file->file ?>" title="Delete"><i class="fa fa-trash"></i></a>
             </div>
           </li>
-          <? endforeach ?>
-      <? endif ?>
+          <?php endforeach ?>
+      <?php endif ?>
   </ul>
 </section>

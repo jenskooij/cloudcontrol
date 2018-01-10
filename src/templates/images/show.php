@@ -21,13 +21,13 @@
         <?= isset($image) ? \CloudControl\Cms\cc\StringUtil::humanFileSize($image->size) : '' ?>
     </div>
     <label>Set</label>
-      <? if (isset($image)) : ?>
-          <? foreach ($image->set as $key => $set) : ?>
+      <?php if (isset($image)) : ?>
+          <?php foreach ($image->set as $key => $set) : ?>
           <div class="sets">
             <label><?= $key ?></label>
             <img src="<?= $request::$subfolders . 'images/' . $set ?>"/>
           </div>
-          <? endforeach ?>
-      <? endif ?>
+          <?php endforeach ?>
+      <?php endif ?>
   </div>
 </section>

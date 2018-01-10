@@ -16,8 +16,8 @@
     <div class="form-element">
       <label>Fields</label>
       <ul id="dropZone" class="sortable">
-          <? if (isset($documentType)) : ?>
-              <? foreach ($documentType->fields as $field) : ?>
+          <?php if (isset($documentType)) : ?>
+              <?php foreach ($documentType->fields as $field) : ?>
               <li class="form-element fields">
                 <input type="text" required="required" name="fieldTitles[]" placeholder="Field Title" value="<?= $field->title ?>"/>
                 <select name="fieldTypes[]">
@@ -40,17 +40,17 @@
                 <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
                 <a class="btn move"><i class="fa fa-arrows-v"></i></a>
               </li>
-              <? endforeach ?>
-          <? endif ?>
+              <?php endforeach ?>
+          <?php endif ?>
       </ul>
       <a class="btn add-parameter" id="documentTypes_add_field">+</a>
     </div>
-      <? if (count($bricks) > 0) : ?>
+      <?php if (count($bricks) > 0) : ?>
         <div class="form-element">
           <label>Bricks</label>
           <ul id="brickDropZone" class="sortable">
-              <? if (isset($documentType)) : ?>
-                  <? foreach ($documentType->bricks as $myBrick) : ?>
+              <?php if (isset($documentType)) : ?>
+                  <?php foreach ($documentType->bricks as $myBrick) : ?>
                   <li class="form-element bricks">
                     <input type="text" required="required" name="brickTitles[]" placeholder="Brick Title" value="<?= $myBrick->title ?>"/>
                     <select name="brickMultiples[]">
@@ -58,27 +58,27 @@
                       <option<?= $myBrick->multiple ? ' selected="selected"' : '' ?> value="true">Multiple</option>
                     </select>
                     <select name="brickBricks[]">
-                        <? foreach ($bricks as $brick) : ?>
+                        <?php foreach ($bricks as $brick) : ?>
                           <option<?= $myBrick->brickSlug == $brick->slug ? ' selected="selected"' : '' ?> value="<?= $brick->slug ?>"><?= $brick->title ?></option>
-                        <? endforeach ?>
+                        <?php endforeach ?>
                     </select>
                     <a class="btn error"><i class="fa fa-trash"></i></a>
                     <a class="btn move"><i class="fa fa-arrows-v"></i></a>
                   </li>
-                  <? endforeach ?>
-              <? endif ?>
+                  <?php endforeach ?>
+              <?php endif ?>
           </ul>
           <a class="btn add-parameter" id="documentTypes_add_brick">+</a>
         </div>
         <div class="form-element">
           <label>Dynamic Bricks</label>
           <select name="dynamicBricks[]" multiple="multiple">
-              <? foreach ($bricks as $brick) : ?>
+              <?php foreach ($bricks as $brick) : ?>
                 <option<?= isset($documentType) && in_array($brick->slug, $documentType->dynamicBricks) ? ' selected="selected"' : '' ?> value="<?= $brick->slug ?>"><?= $brick->title ?></option>
-              <? endforeach ?>
+              <?php endforeach ?>
           </select>
         </div>
-      <? endif ?>
+      <?php endif ?>
     <div class="form-element">
       <input onmousedown="window.onbeforeunload=null;" class="btn" type="submit" value="Save"/>
     </div>
@@ -109,9 +109,9 @@
 <li class="form-element bricks" id="bricksPlaceholder" style="display:none;">
   <input type="text" required="required" name="brickTitles[]" placeholder="Brick Title"/>
   <select name="brickBricks[]">
-      <? foreach ($bricks as $brick) : ?>
+      <?php foreach ($bricks as $brick) : ?>
         <option value="<?= $brick->slug ?>"><?= $brick->title ?></option>
-      <? endforeach ?>
+      <?php endforeach ?>
   </select>
   <select name="brickMultiples[]">
     <option value="false">Not Multiple</option>

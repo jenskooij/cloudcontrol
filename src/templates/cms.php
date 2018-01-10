@@ -20,70 +20,70 @@
               <span>Dashboard</span>
             </a>
           </li>
-            <? $nrOfMenuItems = 0 ?>
-            <? if (in_array('documents', $userRights)) : ?>
+            <?php $nrOfMenuItems = 0 ?>
+            <?php if (in_array('documents', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn documents grid-inner<?= $mainNavClass == 'documents' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents">
                   <i class="fa fa-file-text-o"></i>
                   <span>Documents</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('valuelists', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('valuelists', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn valuelists grid-inner<?= $mainNavClass == 'valuelists' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists">
                   <i class="fa fa-tags"></i>
                   <span>Valuelists</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('sitemap', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('sitemap', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn sitemap grid-inner<?= $mainNavClass == 'sitemap' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap">
                   <i class="fa fa-map-signs"></i>
                   <span>Sitemap</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('redirects', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('redirects', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn redirects grid-inner<?= $mainNavClass == 'redirects' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects">
                   <i class="fa fa-random"></i>
                   <span>Redirects</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('images', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('images', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn images grid-inner<?= $mainNavClass == 'images' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images">
                   <i class="fa fa-picture-o"></i>
                   <span>Images</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('files', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('files', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn files grid-inner<?= $mainNavClass == 'files' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files">
                   <i class="fa fa-files-o"></i>
                   <span>Files</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
-            <? if (in_array('configuration', $userRights)) : ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
+            <?php if (in_array('configuration', $userRights)) : ?>
               <li class="grid-box-1">
                 <a class="btn configuration grid-inner<?= $mainNavClass == 'configuration' ? ' active' : '' ?>" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">
                   <i class="fa fa-cogs"></i>
                   <span>Configuration</span>
                 </a>
               </li>
-                <? $nrOfMenuItems += 1 ?>
-            <? endif ?>
+                <?php $nrOfMenuItems += 1 ?>
+            <?php endif ?>
           <li class="grid-box-<?= 6 + (5 - $nrOfMenuItems) ?> log-off-box">
             <a class="btn log-off grid-inner" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/log-off">
               <i class="fa fa-power-off"></i>
@@ -98,13 +98,13 @@
       <span>Toggle Menu</span>
     </a>
     <main class="body">
-        <? if (isset($body)) : ?>
+        <?php if (isset($body)) : ?>
             <?= $body ?>
-        <? else : ?>
+        <?php else : ?>
           <section class="not-found">
             <h2>Page not found.</h2>
           </section>
-        <? endif ?>
+        <?php endif ?>
     </main>
     <script>
       var subfolders = '<?=$request::$subfolders?>',
