@@ -46,6 +46,7 @@ interface CmsConstants
     const PARAMETER_REDIRECT = 'redirect';
     const PARAMETER_REDIRECTS = 'redirects';
     const PARAMETER_RETURN_URL = 'returnUrl';
+    const PARAMETER_SAVE_AND_PUBLISH = 'btn_save_and_publish';
     const PARAMETER_SEARCH = 'search';
     const PARAMETER_SEARCH_LOG = "searchLog";
     const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";

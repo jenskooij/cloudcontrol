@@ -272,5 +272,7 @@
 		<? endif ?>
   <div class="form-element">
     <input class="btn" type="submit" value="Save"/>
+    &nbsp;
+    <input class="btn" type="submit" name="btn_save_and_publish" value="Save and publish"/>
   </div>
 </form>

@@ -104,7 +104,11 @@ class DocumentRouting implements CmsRouting
             $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
             $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
             $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG], 'pencil');
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+            if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
+                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
+            } else {
+                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+            }
             exit;
         }
         $document = $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG], 'unpublished');
