@@ -54,7 +54,7 @@ class Document
     {
         if (in_array($name, $this->jsonEncodedFields)) {
             if (isset($this->$name) && is_string($this->$name)) {
-                return json_decode($this->$name);
+                return $this->decodeJsonToFieldContainer($name);
             } else {
                 return $this->getPropertyIfExists($name);
             }
@@ -116,6 +116,18 @@ class Document
     private function getPropertyIfExists($name)
     {
         return isset($this->$name) ? $this->$name : array('');
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    private function decodeJsonToFieldContainer($name)
+    {
+        $stdObj = json_decode($this->$name);
+        $temp = serialize($stdObj);
+        $temp = preg_replace('@^O:8:"stdClass":@', 'O:' . strlen(FieldContainer::class) . ':"' . FieldContainer::class . '":', $temp);
+        return unserialize($temp);
     }
 
 
