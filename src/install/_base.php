@@ -42,6 +42,14 @@
           Cloud Control
         </span>
         <nav class="mdl-navigation">
+          <div class="mdl-navigation__link">
+            <form action="<?=\CloudControl\Cms\services\LinkService::get('/')?>">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="q" name="q">
+                <label class="mdl-textfield__label" for="q">Search...</label>
+              </div>
+            </form>
+          </div>
           <!-- This is where we loop through available documents and fill the navigation -->
             <?php if (isset($folder) && $folder !== false) : ?>
                 <?php foreach ($folder->getContent() as $doc) : ?>
@@ -69,8 +77,44 @@
               <?php else : ?>
                 <h1>Welcome to Cloud Control!</h1>
                 <p>This is the default home page.</p>
-                  <?= \CloudControl\Cms\util\Cms::newDocument() ?>
+
               <?php endif ?>
+              <?php if (isset($searchResults)) : ?>
+                <h2>Search Results</h2>
+                <ul>
+                    <?php foreach ($searchResults as $result) : ?>
+                        <?php if ($result instanceof \CloudControl\Cms\search\results\SearchSuggestion) : ?>
+                        <li>
+                          <p>Did you mean
+                            <a href="?q=<?= str_replace($result->original, $result->term, $_GET['q']) ?>">
+                                <?= str_replace($result->original, '<b>' . $result->term . '</b>', $_GET['q']) ?>
+                            </a>?
+                          </p>
+                        </li>
+                        <?php endif ?>
+                    <?php endforeach ?>
+                </ul>
+                <ol>
+                    <?php foreach ($searchResults as $result) : ?>
+                        <?php if ($result instanceof \CloudControl\Cms\search\results\SearchResult) : ?>
+                        <li>
+                          <h3>
+                            <a href="<?= \CloudControl\Cms\services\LinkService::get($result->getDocument()->path) ?>">
+                                <?= $result->getDocument()->title ?>
+                            </a>
+                          </h3>
+                          <p><?= $result->getDocument()->fields->intro[0] ?></p>
+                        </li>
+                        <?php endif ?>
+                    <?php endforeach ?>
+                    <?php if (count($searchResults) === 0) : ?>
+                      <li>
+                        <p>No Search results found</p>
+                      </li>
+                    <?php endif ?>
+                </ol>
+              <?php endif ?>
+              <?= \CloudControl\Cms\util\Cms::newDocument() ?>
           </div>
         </div>
       </main>

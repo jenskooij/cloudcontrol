@@ -40,6 +40,12 @@
       "parameters": {
         "documentFolderPath": "/"
       }
+    },
+    {
+      "title": "Search",
+      "slug": "search",
+      "component": "SearchComponent",
+      "parameters": {}
     }
   ],
   "documents": [],
