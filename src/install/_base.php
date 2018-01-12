@@ -45,10 +45,10 @@
           <!-- This is where we loop through available documents and fill the navigation -->
             <?php if (isset($folder) && $folder !== false) : ?>
                 <?php foreach ($folder->getContent() as $doc) : ?>
-                    <? if ($doc->state === 'published') : ?>
+                    <?php if ($doc->state === 'published') : ?>
                   <a class="mdl-navigation__link" href="<?= \CloudControl\Cms\services\LinkService::get($doc->path) ?>"><?= $doc->title ?></a>
-                    <? endif ?>
-                <? endforeach ?>
+                    <?php endif ?>
+                <?php endforeach ?>
             <?php endif ?>
           <div>
               <?= \CloudControl\Cms\util\Cms::newDocument() ?>
@@ -65,7 +65,7 @@
                     <?= \CloudControl\Cms\util\Cms::editDocument($document->path) ?>
                     <?= $document->title ?>
                 </h1>
-                <p><?= $document->fields->text[0] ?></p>
+                <p><?= $document->fields->content[0] ?></p>
               <?php else : ?>
                 <h1>Welcome to Cloud Control!</h1>
                 <p>This is the default home page.</p>
