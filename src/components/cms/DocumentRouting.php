@@ -74,7 +74,12 @@ class DocumentRouting implements CmsRouting
                 header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
                 exit;
             }
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], true));
+            $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], true);
+            if ($documentType === null) {
+                $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+                $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+            }
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
             $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
         } else {
             $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();

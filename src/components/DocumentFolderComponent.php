@@ -27,7 +27,6 @@ class DocumentFolderComponent extends CachableBaseComponent
         parent::run($storage);
 
         $this->checkParameters();
-
         $this->parameters[$this->documentFolderParameterName] = $this->storage->getDocuments()->getDocumentFolderBySlug($this->documentFolderPath);
     }
 
