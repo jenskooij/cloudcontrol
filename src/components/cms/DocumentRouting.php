@@ -121,7 +121,12 @@ class DocumentRouting implements CmsRouting
 
         $request::$get[CmsConstants::GET_PARAMETER_PATH] = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         if ($document instanceof Document) {
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug, true));
+            $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug, true);
+            if ($documentType === null) {
+                $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+                $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+            }
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
         } else {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?not-found');
             exit;

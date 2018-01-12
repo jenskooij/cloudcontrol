@@ -45,13 +45,18 @@ class Document
 
     public static $DOCUMENT_STATES = array('published', 'unpublished');
 
+    /**
+     * @param $name
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function __get($name)
     {
         if (in_array($name, $this->jsonEncodedFields)) {
-            if (is_string($this->$name)) {
+            if (isset($this->$name) && is_string($this->$name)) {
                 return json_decode($this->$name);
             } else {
-                return $this->$name;
+                return $this->getPropertyIfExists($name);
             }
         } elseif ($name === 'content') {
             if ($this->dbHandle === null) {
@@ -64,9 +69,13 @@ class Document
         } elseif ($name === 'dbHandle') {
             throw new \Exception('Trying to get protected property repository.');
         }
-        return $this->$name;
+        return $this->getPropertyIfExists($name);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     */
     public function __set($name, $value)
     {
         if (in_array($name, $this->jsonEncodedFields)) {
@@ -98,6 +107,15 @@ class Document
     public function __toString()
     {
         return 'Document:' . $this->title;
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    private function getPropertyIfExists($name)
+    {
+        return isset($this->$name) ? $this->$name : array('');
     }
 
 
