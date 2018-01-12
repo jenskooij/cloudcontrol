@@ -68,33 +68,13 @@ class DocumentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         if (isset($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE])) {
             if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsConstants::GET_PARAMETER_PATH])) {
-                $path = substr($cmsComponent->storage->getDocuments()->addDocument($request::$post), 1);
-                $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-                $cmsComponent->storage->getActivityLog()->add('created document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH], 'plus');
-                if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
-                    header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
-                } else {
-                    header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
-                }
-                exit;
+                $this->createNewDocument($request, $cmsComponent);
             }
-            $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], true);
-            if ($documentType === null) {
-                $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-                $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
-            }
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
+            $this->putDocumentTypeOnRequest($request, $cmsComponent);
             $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
         } else {
             $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-            $docTypesCount = count($documentTypes);
-            if ($docTypesCount < 1) {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?no-document-types');
-                exit;
-            } elseif ($docTypesCount == 1) {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
-                exit;
-            }
+            $this->checkDocumentType($request, $cmsComponent, $documentTypes);
             $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
         }
     }
@@ -264,5 +244,53 @@ class DocumentRouting implements CmsRouting
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add($activity. ' document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>', $icon);
+    }
+
+    /**
+     * @param $request
+     * @param $cmsComponent
+     */
+    private function createNewDocument($request, $cmsComponent)
+    {
+        $path = substr($cmsComponent->storage->getDocuments()->addDocument($request::$post), 1);
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add('created document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH], 'plus');
+        if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+        }
+        exit;
+    }
+
+    /**
+     * @param $request
+     * @param $cmsComponent
+     */
+    private function putDocumentTypeOnRequest($request, $cmsComponent)
+    {
+        $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], true);
+        if ($documentType === null) {
+            $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+        }
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
+    }
+
+    /**
+     * @param $request
+     * @param $cmsComponent
+     * @param $documentTypes
+     */
+    private function checkDocumentType($request, $cmsComponent, $documentTypes)
+    {
+        $docTypesCount = count($documentTypes);
+        if ($docTypesCount < 1) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?no-document-types');
+            exit;
+        } elseif ($docTypesCount == 1) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
+            exit;
+        }
     }
 }
