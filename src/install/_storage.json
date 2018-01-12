@@ -1,19 +1,18 @@
 {
   "sitemap": [
     {
-      "title": "root",
+      "title": "Root",
       "slug": "root",
-      "url": "/",
-      "regex": false,
+      "url": "\/",
       "component": "BaseComponent",
       "template": "base",
-      "parameters": {
-      }
+      "regex": false,
+      "parameters": {}
     },
     {
       "title": "cms",
       "slug": "cms",
-      "url": "/^\\/cms(.*)/",
+      "url": "\/^\\\/cms(.*)\/",
       "component": "CmsComponent",
       "template": "cms",
       "regex": true,
@@ -22,9 +21,27 @@
         "whitelistIps": "localhost, ::1, 127.0.0.1",
         "blacklistIps": "222.227.164.73"
       }
+    },
+    {
+      "title": "Documents",
+      "slug": "documents",
+      "url": "\/^\\\/(.*)\/",
+      "component": "DocumentComponent",
+      "template": "base",
+      "regex": true,
+      "parameters": {}
     }
   ],
-  "applicationComponents": [],
+  "applicationComponents": [
+    {
+      "title": "Main Navigation",
+      "slug": "main-navigation",
+      "component": "DocumentFolderComponent",
+      "parameters": {
+        "documentFolderPath": "/"
+      }
+    }
+  ],
   "documents": [],
   "documentTypes": [],
   "bricks": [],
