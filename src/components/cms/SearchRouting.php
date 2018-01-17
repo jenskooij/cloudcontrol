@@ -22,6 +22,7 @@ class SearchRouting implements CmsRouting
      * @param \CloudControl\Cms\cc\Request $request
      * @param                                  $relativeCmsUri
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
@@ -35,6 +36,7 @@ class SearchRouting implements CmsRouting
 
     /**
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function overviewRoute($cmsComponent)
     {
@@ -72,13 +74,17 @@ class SearchRouting implements CmsRouting
             $step = $request::$get['step'];
             $this->stepRouting($step, $cmsComponent, $indexer);
         } else {
-            $this->showJson('No step defined.', 'HTTP/1.0 500 Internal Server Error');
+            $this->showJson('No step defined.', 500);
         }
     }
 
-    private function showJson($obj, $httpHeader = 'HTTP/1.0 200 OK')
+    /**
+     * @param $obj
+     * @param int $httpHeader
+     */
+    private function showJson($obj, $httpHeader = 200)
     {
-        header($_SERVER['SERVER_PROTOCOL'] . $httpHeader, true);
+        http_response_code($httpHeader);
         header('Content-type: application/json');
         die(json_encode($obj));
     }
@@ -87,6 +93,7 @@ class SearchRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @param string $step
      * @param Indexer $indexer
+     * @throws \Exception
      */
     private function stepRouting($step, $cmsComponent, $indexer)
     {
@@ -104,7 +111,7 @@ class SearchRouting implements CmsRouting
                 $indexer->replaceOldIndex();
                 $cmsComponent->storage->getActivityLog()->add('updated search index', 'search');
                 break;
-            default : $this->showJson('Invalid step: ' . $step . '.', 'HTTP/1.0 500 Internal Server Error'); break;
+            default : $this->showJson('Invalid step: ' . $step . '.', 500); break;
         }
         $this->showJson('done');
     }
