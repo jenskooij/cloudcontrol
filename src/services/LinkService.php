@@ -39,6 +39,7 @@ class LinkService
      */
     public static function get($relativePath)
     {
+        $relativePath = substr($relativePath, 0, 1) === '/' ? substr($relativePath, 1) : $relativePath;
         if (isset($_SESSION[LanguageComponent::SESSION_PARAMETER_LANGUAGE_COMPONENT][LanguageComponent::SESSION_PARAMETER_LANGUAGE])) {
             $language = $_SESSION[LanguageComponent::SESSION_PARAMETER_LANGUAGE_COMPONENT][LanguageComponent::SESSION_PARAMETER_LANGUAGE];
             if ($language == LanguageComponent::$DEFAULT_LANGUAGE) {

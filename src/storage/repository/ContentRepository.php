@@ -108,7 +108,6 @@ namespace CloudControl\Cms\storage\repository {
             foreach ($documents as $key => $document) {
                 $documents = $this->setAssetsToDocumentFolders($repository, $document, $db, $documents, $key);
             }
-            //dump($documents);
             return $documents;
         }
 
@@ -156,6 +155,9 @@ namespace CloudControl\Cms\storage\repository {
             if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
                 throw new \RuntimeException('Unsupported document state: ' . $state);
             }
+            if ($path === '/') {
+                return $this->getRootFolder($repository);
+            }
             $db = $this->getContentDbHandle();
             $document = $this->fetchDocument('
             SELECT *
@@ -196,7 +198,7 @@ namespace CloudControl\Cms\storage\repository {
             $slugLength = strlen($document->slug);
             $containerPath = substr($path, 0, -$slugLength);
             if ($containerPath === '/') {
-                return $this->getRootFolder();
+                return $this->getRootFolder($repository);
             }
             if (substr($containerPath, -1) === '/') {
                 $containerPath = substr($containerPath, 0, -1);
@@ -207,13 +209,16 @@ namespace CloudControl\Cms\storage\repository {
 
         /**
          * Create a (non-existent) root folder Document and return it
+         * @param Repository $repository
          * @return Document
          */
-        protected function getRootFolder()
+        protected function getRootFolder(Repository $repository)
         {
             $rootFolder = new Document();
             $rootFolder->path = '/';
             $rootFolder->type = 'folder';
+            $rootFolder->dbHandle = $this->getContentDbHandle();
+            $rootFolder->documentStorage = new DocumentStorage($repository);
             return $rootFolder;
         }
 

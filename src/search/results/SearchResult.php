@@ -34,6 +34,7 @@ class SearchResult
 
     /**
      * @return Document
+     * @throws \Exception
      */
     public function getDocument()
     {

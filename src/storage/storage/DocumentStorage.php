@@ -34,6 +34,7 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @return int
+     * @throws \Exception
      */
     public function getTotalDocumentCount()
     {
@@ -88,6 +89,7 @@ class DocumentStorage extends AbstractStorage
      * @param        $postValues
      * @param string $state
      * @return string path
+     * @throws \Exception
      */
     public function addDocument($postValues, $state = 'unpublished')
     {
@@ -105,6 +107,7 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @param $slug
+     * @throws \Exception
      */
     public function deleteDocumentBySlug($slug)
     {
@@ -125,6 +128,10 @@ class DocumentStorage extends AbstractStorage
         return $this->repository->getContentRepository()->getDocumentContainerByPath($this->repository, $path);
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function getPublishedDocumentsNoFolders()
     {
         return $this->repository->getContentRepository()->getPublishedDocumentsNoFolders();
@@ -170,6 +177,7 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @param string $slug
+     * @throws \Exception
      */
     public function publishDocumentBySlug($slug)
     {
@@ -179,6 +187,7 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @param string $slug
+     * @throws \Exception
      */
     public function unpublishDocumentBySlug($slug)
     {
@@ -196,7 +205,11 @@ class DocumentStorage extends AbstractStorage
      */
     public function getDocumentFolderBySlug($slug)
     {
-        $path = '/' . $slug;
+        if ($slug === '/') {
+            $path = $slug;
+        } else {
+            $path = '/' . $slug;
+        }
 
         return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path);
     }
