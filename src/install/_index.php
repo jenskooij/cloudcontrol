@@ -18,7 +18,9 @@ ini_set('error_reporting', E_ALL);
 ini_set('short_open_tag', true);
 
 // Set internal encoding
-mb_internal_encoding("UTF-8");
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding("UTF-8");
+}
 
 // Time settings
 setlocale(LC_ALL, 'nl_NL');
