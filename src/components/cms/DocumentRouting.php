@@ -248,7 +248,8 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function createNewDocument($request, $cmsComponent)
     {
