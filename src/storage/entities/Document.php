@@ -55,19 +55,21 @@ class Document
         if (in_array($name, $this->jsonEncodedFields, true)) {
             if (isset($this->$name) && is_string($this->$name)) {
                 return $this->decodeJsonToFieldContainer($name);
-            } else {
-                return $this->getPropertyIfExists($name);
             }
-        } elseif ($name === 'content') {
+
+            return $this->getPropertyIfExists($name);
+        }
+
+        if ($name === 'content') {
             if ($this->dbHandle === null) {
-                throw new \Exception('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
-            } else {
-                if ($this->content === null) {
-                    return $this->getContent();
-                }
+                throw new \RuntimeException('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
+            }
+
+            if ($this->content === null) {
+                return $this->getContent();
             }
         } elseif ($name === 'dbHandle') {
-            throw new \Exception('Trying to get protected property repository.');
+            throw new \RuntimeException('Trying to get protected property repository.');
         }
         return $this->getPropertyIfExists($name);
     }
