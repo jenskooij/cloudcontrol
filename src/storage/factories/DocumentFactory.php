@@ -218,8 +218,11 @@ class DocumentFactory
         $config->set('HTML.SafeIframe', true);
         $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%'); //allow YouTube and Vimeo
         $config->set('Attr.AllowedFrameTargets', array('_blank'));
-        $config->set('HTML.AllowedAttributes', 'src, alt, href, target, frameborder');
+        $config->set('HTML.AllowedAttributes', 'src, alt, href, target, frameborder, data-original');
         $config->set('URI.AllowedSchemes', array('data' => true, 'http' => true, 'https' => true));
+        $config->set('Cache.DefinitionImpl', null); // remove this later!
+        $def = $config->getHTMLDefinition(true);
+        $def->addAttribute('img', 'data-original', 'Text');
         self::$purifier = new HTMLPurifier($config);
         return self::$purifier;
     }
