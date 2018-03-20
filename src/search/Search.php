@@ -261,7 +261,7 @@ class Search extends SearchDbConnected
         $allResults = array();
         foreach ($tokens as $token) {
             $db = $this->getSearchDbHandle();
-            $db->sqliteCreateFunction('levenshtein', 'levenshtein', 2);
+            $db->/** @scrutinizer ignore-call */sqliteCreateFunction('levenshtein', 'levenshtein', 2);
             $sql = '
 				SELECT *
 				  FROM (
