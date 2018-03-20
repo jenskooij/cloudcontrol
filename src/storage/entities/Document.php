@@ -52,7 +52,7 @@ class Document
      */
     public function __get($name)
     {
-        if (in_array($name, $this->jsonEncodedFields)) {
+        if (in_array($name, $this->jsonEncodedFields, true)) {
             if (isset($this->$name) && is_string($this->$name)) {
                 return $this->decodeJsonToFieldContainer($name);
             } else {
@@ -78,7 +78,7 @@ class Document
      */
     public function __set($name, $value)
     {
-        if (in_array($name, $this->jsonEncodedFields)) {
+        if (in_array($name, $this->jsonEncodedFields, true)) {
             $this->$name = json_encode($value);
         } elseif ($name === 'content') {
             // Dont do anything for now..
