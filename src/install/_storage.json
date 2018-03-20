@@ -4,7 +4,7 @@
       "title": "Root",
       "slug": "root",
       "url": "\/",
-      "component": "SearchComponent",
+      "component": "BaseComponent",
       "template": "base",
       "regex": false,
       "parameters": {}
