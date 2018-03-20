@@ -16,8 +16,8 @@ use CloudControl\Cms\storage\storage\DocumentStorage;
  * @property array bricks
  * @property array dynamicBricks
  * @property array content
- * @property-write \PDO dbHandle
- * @property-write DocumentStorage documentStorage
+ * @property \PDO dbHandle
+ * @property DocumentStorage documentStorage
  * @property boolean unpublishedChanges
  */
 class Document
@@ -52,22 +52,16 @@ class Document
      */
     public function __get($name)
     {
-        if (in_array($name, $this->jsonEncodedFields)) {
-            if (isset($this->$name) && is_string($this->$name)) {
-                return $this->decodeJsonToFieldContainer($name);
-            } else {
-                return $this->getPropertyIfExists($name);
-            }
-        } elseif ($name === 'content') {
-            if ($this->dbHandle === null) {
-                throw new \Exception('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
-            } else {
-                if ($this->content === null) {
-                    return $this->getContent();
-                }
-            }
-        } elseif ($name === 'dbHandle') {
-            throw new \Exception('Trying to get protected property repository.');
+        if (in_array($name, $this->jsonEncodedFields, true)) {
+            return $this->getJsonEncodedField($name);
+        }
+
+        if ($name === 'content') {
+            return $this->getContent();
+        }
+
+        if ($name === 'dbHandle') {
+            throw new \RuntimeException('Trying to get protected property repository.');
         }
         return $this->getPropertyIfExists($name);
     }
@@ -78,7 +72,7 @@ class Document
      */
     public function __set($name, $value)
     {
-        if (in_array($name, $this->jsonEncodedFields)) {
+        if (in_array($name, $this->jsonEncodedFields, true)) {
             $this->$name = json_encode($value);
         } elseif ($name === 'content') {
             // Dont do anything for now..
@@ -90,10 +84,15 @@ class Document
 
     /**
      * @return array
+     * @throws \RuntimeException
      */
     public function getContent()
     {
-        if (empty($this->content)) {
+        if ($this->dbHandle === null) {
+            throw new \RuntimeException('Document doesnt have a dbHandle handle. (path: ' . $this->path . ')');
+        }
+
+        if ($this->content === null) {
             $docs = $this->documentStorage->getDocumentsWithState($this->path);
             $this->content = $docs;
         }
@@ -128,6 +127,19 @@ class Document
         $temp = serialize($stdObj);
         $temp = preg_replace('@^O:8:"stdClass":@', 'O:' . strlen(FieldContainer::class) . ':"' . FieldContainer::class . '":', $temp);
         return unserialize($temp);
+    }
+
+    /**
+     * @param $name
+     * @return array|mixed
+     */
+    private function getJsonEncodedField($name)
+    {
+        if (isset($this->$name) && is_string($this->$name)) {
+            return $this->decodeJsonToFieldContainer($name);
+        }
+
+        return $this->getPropertyIfExists($name);
     }
 
 

@@ -15,34 +15,41 @@ class CloudControl
     /**
      * @param string $rootDir
      * @param string $configPath
+     * @throws \Exception
      */
     public static function run($rootDir, $configPath)
     {
         new Application($rootDir, $configPath);
     }
 
-    public static function postInstall(Event $event)
+    /**
+     * @param Composer\Script\Event $event
+     */
+    public static function postInstall($event)
     {
         $event->getIO()->write("Post install");
         self::checkInstall($event);
     }
 
-    public static function postUpdate(Event $event)
+    /**
+     * @param Composer\Script\Event $event
+     */
+    public static function postUpdate($event)
     {
         $event->getIO()->write("Post update");
         self::checkInstall($event);
     }
 
     /**
-     * @param Event $event
+     * @param Composer\Script\Event $event
      */
-    private static function checkInstall(Event $event)
+    private static function checkInstall($event)
     {
-        $event->getIO()->write("");
-        $event->getIO()->write("********************************************************");
-        $event->getIO()->write("*** Checking installation of Cloud Control framework ***");
-        $event->getIO()->write("********************************************************");
-        $event->getIO()->write("");
+        $event->getIO()->write('');
+        $event->getIO()->write('********************************************************');
+        $event->getIO()->write('*** Checking installation of Cloud Control framework ***');
+        $event->getIO()->write('********************************************************');
+        $event->getIO()->write('');
 
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $rootDir = realpath($vendorDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
@@ -80,17 +87,23 @@ class CloudControl
     }
 
     /**
-     * @param Event $event
+     * @param Composer\Script\Event $event
      * @param $baseConfigTargetPath
      * @param $configObject
      */
-    private static function saveConfig(Event $event, $baseConfigTargetPath, $configObject)
+    private static function saveConfig($event, $baseConfigTargetPath, $configObject)
     {
         file_put_contents($baseConfigTargetPath, json_encode($configObject));
         $event->getIO()->write("[INFO] Saved config to: " . $baseConfigTargetPath);
     }
 
-    private static function copyInstallFile(Event $event, $sourceFileName, $destinationPath, $destinationFileName = null)
+    /**
+     * @param Composer\Script\Event $event
+     * @param $sourceFileName
+     * @param $destinationPath
+     * @param null $destinationFileName
+     */
+    private static function copyInstallFile($event, $sourceFileName, $destinationPath, $destinationFileName = null)
     {
         $sourceFilePath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install/_' . $sourceFileName);
 
@@ -123,7 +136,13 @@ class CloudControl
         $repository->init($baseStorageDefaultPath, $baseStorageSqlPath);
     }
 
-    private static function createDir(Event $event, $rootDir, $dirName)
+    /**
+     * @param Composer\Script\Event $event
+     * @param $rootDir
+     * @param $dirName
+     * @return string
+     */
+    private static function createDir($event, $rootDir, $dirName)
     {
         $dir = $rootDir . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR;
         if (!is_dir($dir)) {
@@ -138,10 +157,11 @@ class CloudControl
     }
 
     /**
+     * @param Composer\Script\Event $event
      * @param $configTargetPath
      * @return mixed
      */
-    private static function getConfig(Event $event, $configTargetPath)
+    private static function getConfig($event, $configTargetPath)
     {
         $baseConfigDefaultPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . '_config.json');
 
