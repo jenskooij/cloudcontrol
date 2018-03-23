@@ -18,7 +18,6 @@ class ApplicationRenderer
     protected $storage;
     protected $request;
     protected $application;
-    const HEADER_POWERED_BY = 'Cloud Control - https://getcloudcontrol.org';
 
     /**
      * ApplicationRenderer constructor.
@@ -62,6 +61,7 @@ class ApplicationRenderer
     /**
      * Set the default caching of pages
      * @param string $intervalString
+     * @throws \Exception
      */
     public function setCachingHeaders($intervalString = CachableBaseComponent::DEFAULT_MAXAGE)
     {
@@ -69,7 +69,6 @@ class ApplicationRenderer
         $interval = new \DateInterval($intervalString);
         $maxAge = date_create('@0')->add($interval)->getTimestamp();
         $expires = $expires->add($interval);
-        header('X-Powered-By: ' . self::HEADER_POWERED_BY);
         header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', $expires->getTimestamp()));
         header('Cache-Control: max-age=' . $maxAge);
         header('Pragma: cache');
@@ -81,7 +80,6 @@ class ApplicationRenderer
      */
     public function setNotCachingHeaders()
     {
-        header('X-Powered-By: ' . self::HEADER_POWERED_BY);
         header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
