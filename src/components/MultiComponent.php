@@ -24,8 +24,10 @@ class MultiComponent extends CachableBaseComponent
      */
     public function __construct($template = '', Request $request, $parameters = array(), $matchedSitemapItem)
     {
+        $this->parameters = (array) $matchedSitemapItem->parameters;
         $selfParameters = $this->getParametersForNameSpace('self');
-        parent::__construct($template, $request, $selfParameters, $matchedSitemapItem);
+        $this->parameters = array_merge($this->parameters, $selfParameters);
+        parent::__construct($template, $request, $this->parameters, $matchedSitemapItem);
     }
 
     /**
