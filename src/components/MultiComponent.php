@@ -8,9 +8,8 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Request;
-use CloudControl\Cms\components\CachableBaseComponent;
-use CloudControl\Cms\storage\Storage;
 use CloudControl\Cms\components;
+use CloudControl\Cms\storage\Storage;
 
 class MultiComponent extends CachableBaseComponent
 {
@@ -90,7 +89,7 @@ class MultiComponent extends CachableBaseComponent
     private function getParametersForNameSpace($namespace)
     {
         $parameters = array();
-        foreach($this->parameters as $key => $value) {
+        foreach ($this->parameters as $key => $value) {
             if (0 === strpos($key, $namespace . ':')) {
                 $parameters[substr($key, strlen($namespace) + 1)] = $value;
             }
@@ -106,7 +105,7 @@ class MultiComponent extends CachableBaseComponent
     private function getParametersWithoutNamespace()
     {
         $parameters = array();
-        foreach($this->parameters as $key => $value) {
+        foreach ($this->parameters as $key => $value) {
             if (strpos($key, ':') === false) {
                 $parameters[$key] = $value;
             }
