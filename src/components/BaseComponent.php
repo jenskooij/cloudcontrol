@@ -135,6 +135,9 @@ namespace CloudControl\Cms\components {
             return $this->renderTemplate($template, false);
         }
 
+        /**
+         * @return array
+         */
         public function getParameters()
         {
             return $this->parameters;

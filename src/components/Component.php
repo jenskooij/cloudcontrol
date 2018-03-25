@@ -37,7 +37,7 @@ namespace CloudControl\Cms\components {
         public function get();
 
         /**
-         * @return \stdClass
+         * @return array
          */
         public function getParameters();
     }
