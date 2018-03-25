@@ -62,6 +62,7 @@ class ApplicationRenderer
     /**
      * Set the default caching of pages
      * @param string $intervalString
+     * @throws \Exception
      */
     public function setCachingHeaders($intervalString = CachableBaseComponent::DEFAULT_MAXAGE)
     {
