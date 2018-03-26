@@ -12,10 +12,10 @@ class FieldContainer
     {
         if (isset($this->$property)) {
             return $this->$property;
-        } else {
-            return array(
-                0 => ''
-            );
         }
+
+        return array(
+            0 => ''
+        );
     }
 }
