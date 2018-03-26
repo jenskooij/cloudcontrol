@@ -93,5 +93,11 @@ namespace CloudControl\Cms\cc {
                 || $_SERVER['SERVER_PORT'] == 443
                 || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
         }
+
+        public static function isLocalhost()
+        {
+            $ipchecklist = array("localhost", "127.0.0.1", "::1");
+            return in_array($_SERVER['REMOTE_ADDR'], $ipchecklist,true);
+        }
     }
 }

@@ -61,6 +61,7 @@ class Application
     const HEADER_CONTENT_SECURITY_POLICY = 'Content-Security-Policy: ';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE = 'default-src https: \'unsafe-inline\' \'unsafe-eval\'';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE = 'default-src \'self\' https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST = 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:;';
     const HEADER_X_CONTENT_SECURITY_POLICY = 'X-Content-Security-Policy: '; // For IE
     const HEADER_STRICT_TRANSPORT_SECURITY = 'Strict-Transport-Security: ';
     const HEADER_STRICT_TRANSPORT_SECURITY_CONTENT = 'max-age=31536000;';
@@ -230,6 +231,9 @@ class Application
             header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);
             header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);
             header(self::HEADER_STRICT_TRANSPORT_SECURITY . self::HEADER_STRICT_TRANSPORT_SECURITY_CONTENT);
+        } elseif (Request::isLocalhost()) {
+            header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST);
+            header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST);
         } else {
             header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE);
             header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE);
