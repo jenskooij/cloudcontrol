@@ -7,6 +7,7 @@ namespace CloudControl\Cms\components;
 
 
 use ApiComponent\Response;
+use CloudControl\Cms\cc\Application;
 use CloudControl\Cms\search\CharacterFilter;
 use CloudControl\Cms\search\results\SearchSuggestion;
 use CloudControl\Cms\search\Search;
@@ -66,8 +67,8 @@ class ApiComponent extends CachableBaseComponent
     }
 
     /**
-     * @param $db \PDO
-     * @param $id int
+     * @param \PDO $db
+     * @param int $id
      * @return string
      */
     private function getDocumentByIdSql($db, $id)
@@ -79,8 +80,8 @@ class ApiComponent extends CachableBaseComponent
     }
 
     /**
-     * @param $db \PDO
-     * @param $sql string
+     * @param \PDO $db
+     * @param string $sql
      * @return \PDOStatement
      */
     private function getPDOStatement($db, $sql)
@@ -106,21 +107,17 @@ class ApiComponent extends CachableBaseComponent
         }
 
         if ($document->type === 'folder') {
-            $document->dbHandle = $this->storage->getContentDbHandle();
-            $document->documentStorage = new DocumentStorage($this->storage->getRepository());
-            $document->getContent();
-            return new Response($document->getContent());
+            return $this->getFolderResponse($document);
         }
 
         $documentContent = $this->getDocumentContent($document);
-
         $document->documentContent = $documentContent;
 
         return new Response($document);
     }
 
     /**
-     * @param null $application
+     * @param Application $application
      */
     public function render($application = null)
     {
@@ -139,6 +136,7 @@ class ApiComponent extends CachableBaseComponent
 
     /**
      * @return Response
+     * @throws \Exception
      */
     private function getSearchDocumentsResponse()
     {
@@ -160,7 +158,7 @@ class ApiComponent extends CachableBaseComponent
     }
 
     /**
-     * @param $document
+     * @param Document $document
      * @return \stdClass
      */
     private function getDocumentContent($document)
@@ -174,6 +172,7 @@ class ApiComponent extends CachableBaseComponent
 
     /**
      * @return array
+     * @throws \Exception
      */
     private function getRawResults()
     {
@@ -184,6 +183,20 @@ class ApiComponent extends CachableBaseComponent
         return $rawResults;
     }
 
+    /**
+     * @param Document $document
+     * @return Response
+     */
+    private function getFolderResponse($document)
+    {
+        $document->dbHandle = $this->storage->getContentDbHandle();
+        $document->documentStorage = new DocumentStorage($this->storage->getRepository());
+        $document->getContent();
+        $response = new Response($document->getContent());
+        $response->folder = $document->path;
+        return $response;
+    }
+
 
 }
 
@@ -192,7 +205,6 @@ namespace ApiComponent;
 /**
  * Class Response
  * @package ApiComponent
- * @property result
  */
 class Response
 {
