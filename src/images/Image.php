@@ -12,6 +12,9 @@ namespace CloudControl\Cms\images {
 
     class Image
     {
+        /**
+         * @var resource
+         */
         private $_imageResource;
 
         /**
@@ -24,21 +27,60 @@ namespace CloudControl\Cms\images {
          */
         public function loadImage($imageContainer)
         {
+            if ($this->createImageResourceFromResource($imageContainer) ||
+                $this->createImageResourceFromFile($imageContainer) ||
+                $this->createImageResourceFromString($imageContainer)
+            ) {
+                return;
+            }
+
+            throw new \RuntimeException('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
+                    true) . '</pre>');
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         */
+        private function createImageResourceFromResource($imageContainer)
+        {
             if (is_resource($imageContainer) && get_resource_type($imageContainer) === 'gd') {
                 $this->_imageResource = $imageContainer;
-            } elseif (is_string($imageContainer) && file_exists($imageContainer)) {
-                if ($this->getImageMimeType($imageContainer) == IMAGETYPE_BMP) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         * @throws \Exception
+         */
+        private function createImageResourceFromFile($imageContainer)
+        {
+            if (is_string($imageContainer) && file_exists($imageContainer)) {
+                if ($this->getImageMimeType($imageContainer) === IMAGETYPE_BMP) {
                     $this->_imageResource = $this->createImageFromBmp($imageContainer);
                 } else {
                     $imageContent = file_get_contents($imageContainer);
                     $this->_imageResource = imagecreatefromstring($imageContent);
                 }
-            } elseif (is_string($imageContainer)) {
-                $this->_imageResource = imagecreatefromstring($imageContainer);
-            } else {
-                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
-                        true) . '</pre>');
+                return true;
             }
+            return false;
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         */
+        private function createImageResourceFromString($imageContainer)
+        {
+            if (is_string($imageContainer)) {
+                $this->_imageResource = imagecreatefromstring($imageContainer);
+                return true;
+            }
+            return false;
         }
 
         /**
@@ -60,13 +102,17 @@ namespace CloudControl\Cms\images {
 
             if ($mimeTypeConstantValue == IMAGETYPE_GIF) {
                 return imagegif($imageResource, $path);
-            } elseif ($mimeTypeConstantValue == IMAGETYPE_JPEG) {
-                return imagejpeg($imageResource, $path, $quality);
-            } elseif ($mimeTypeConstantValue == IMAGETYPE_PNG) {
-                return imagepng($imageResource, $path, ((int)($quality / 10) - 1));
-            } else {
-                throw new \Exception('Not a valid mimetypeconstant given see function documentation');
             }
+
+            if ($mimeTypeConstantValue == IMAGETYPE_JPEG) {
+                return imagejpeg($imageResource, $path, $quality);
+            }
+
+            if ($mimeTypeConstantValue == IMAGETYPE_PNG) {
+                return imagepng($imageResource, $path, ((int)($quality / 10) - 1));
+            }
+
+            throw new \RuntimeException('Not a valid mimetypeconstant given see function documentation');
         }
 
         /**
@@ -146,9 +192,9 @@ namespace CloudControl\Cms\images {
         {
             if (is_resource($this->_imageResource) && get_resource_type($this->_imageResource) === 'gd') {
                 return $this->_imageResource;
-            } else {
-                throw new \RuntimeException('Image resource is not set. Use $this->LoadImage to load an image into the resource');
             }
+
+            throw new \RuntimeException('Image resource is not set. Use $this->LoadImage to load an image into the resource');
         }
 
         /**
@@ -181,7 +227,7 @@ namespace CloudControl\Cms\images {
             $height = null;
 
             //    Structure: http://www.fastgraph.com/help/bmp_header_format.html
-            if (substr($header, 0, 4) == "424d") {
+            if (0 === strpos($header, '424d')) {
                 //    Cut it in parts of 2 bytes
                 $header_parts = str_split($header, 2);
                 //    Get the width        4 bytes
@@ -219,7 +265,8 @@ namespace CloudControl\Cms\images {
             $height,
             $body,
             $image
-        ) {
+        )
+        {
 //    Using a for-loop with index-calculation instead of str_split to avoid large memory consumption
             //    Calculate the next DWORD-position in the body
             for ($i = 0; $i < $bodySize; $i += 3) {
@@ -244,7 +291,7 @@ namespace CloudControl\Cms\images {
                 $g = hexdec($body[$iPos + 2] . $body[$iPos + 3]);
                 $b = hexdec($body[$iPos] . $body[$iPos + 1]);
                 //    Calculate and draw the pixel
-                $color = imagecolorallocate($image, intval($r), intval($g), intval($b));
+                $color = imagecolorallocate($image, (int)$r, (int)$g, (int)$b);
                 imagesetpixel($image, $x, $height - $y, $color);
                 //    Raise the horizontal position
                 $x++;
