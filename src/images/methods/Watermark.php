@@ -59,7 +59,8 @@ namespace CloudControl\Cms\images\methods {
          * Use build-in logic to position the x of watermark
          *
          * @param    resource $imageResource
-         * @return    self
+         * @return    int
+         * @throws \Exception
          */
         protected function calculateX($imageResource)
         {
@@ -84,7 +85,8 @@ namespace CloudControl\Cms\images\methods {
          * Use build-in logic to position the y of watermark
          *
          * @param    resource $imageResource
-         * @return    self
+         * @return    int
+         * @throws \Exception
          */
         public function calculateY($imageResource)
         {
@@ -153,6 +155,11 @@ namespace CloudControl\Cms\images\methods {
             return $this;
         }
 
+        /**
+         * @param resource $imageResource
+         * @return resource
+         * @throws \Exception
+         */
         public function Execute($imageResource)
         {
             $watermark = $this->GetWatermark();
