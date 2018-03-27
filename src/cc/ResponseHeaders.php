@@ -49,6 +49,7 @@ class ResponseHeaders
     const HEADER_X_XSS_PROTECTION_CONTENT = '1; mode=block';
 
     /**
+     * Default headers
      * @var array
      */
     protected static $headers = array(
@@ -121,6 +122,9 @@ class ResponseHeaders
 
     public static function sendAllHeaders()
     {
+        if (self::$initialized === false) {
+            self::init();
+        }
         foreach (self::$headers as $headerName => $headerContent) {
             header($headerName . ': ' . $headerContent);
         }
