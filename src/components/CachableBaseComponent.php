@@ -45,12 +45,11 @@ class CachableBaseComponent extends BaseComponent
 
     public function get()
     {
-        if ($this->isCachable() && $this->isCacheValid()) {
+        $isCachable = $this->isCachable();
+        if ($isCachable && $this->isCacheValid()) {
             return $this->cache->contents;
-        } else {
-            if ($this->isCachable() && !$this->isCacheValid()) {
-                $this->createCache($this->renderedContent);
-            }
+        } elseif ($isCachable && !$this->isCacheValid()) {
+            $this->createCache($this->renderedContent);
         }
         return $this->renderedContent;
     }
@@ -113,6 +112,7 @@ class CachableBaseComponent extends BaseComponent
     /**
      * Sets the new cache, unless a cms user is logged in
      * @param $renderedContent
+     * @throws \RuntimeException
      */
     private function createCache($renderedContent)
     {

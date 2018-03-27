@@ -9,6 +9,7 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Indexer;
 use CloudControl\Cms\search\Search;
@@ -85,7 +86,8 @@ class SearchRouting implements CmsRouting
     private function showJson($obj, $httpHeader = 200)
     {
         http_response_code($httpHeader);
-        header('Content-type: application/json');
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+        ResponseHeaders::sendAllHeaders();
         die(json_encode($obj));
     }
 

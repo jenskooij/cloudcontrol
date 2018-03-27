@@ -13,14 +13,26 @@ class ResponseHeaders
     const HEADER_ACCESS_CONTROL_ALLOW_ORIGIN_CONTENT = '*';
     const HEADER_CACHE_CONTROL = 'Cache-Control';
     const HEADER_CACHE_CONTROL_CONTENT_NO_STORE_NO_CACHE_MUST_REVALIDATE_MAX_AGE_0 = 'no-store, no-cache, must-revalidate, max-age=0';
+    const HEADER_CONNECTION = 'Connection';
+    const HEADER_CONNECTION_CONTENT_KEEP_ALIVE = 'Keep-Alive';
+    const HEADER_CONTENT_DESCRIPTION = 'Content-Description';
+    const HEADER_CONTENT_DESCRIPTION_CONTENT = 'File Transfer';
+    const HEADER_CONTENT_DISPOSITION = 'Content-Disposition';
+    const HEADER_CONTENT_LENGTH = 'Content-Length';
     const HEADER_CONTENT_SECURITY_POLICY = 'Content-Security-Policy';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE = 'default-src \'self\' https: \'unsafe-inline\' \'unsafe-eval\'';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST = 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE = 'default-src https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_TRANSFER_ENCODING = 'Content-Transfer-Encoding';
+    const HEADER_CONTENT_TRANSFER_ENCODING_CONTENT_BINARY = 'binary';
+    const HEADER_CONTENT_TYPE = 'Content-Type';
+    const HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON = 'application/json';
+    const HEADER_CONTENT_TYPE_CONTENT_TEXT_HTML = 'text/html';
     const HEADER_EXPIRES = 'Expires';
     const HEADER_PRAGMA = 'Pragma';
     const HEADER_PRAGMA_CONTENT_CACHE = 'cache';
     const HEADER_PRAGMA_CONTENT_NO_CACHE = 'no-cache';
+    const HEADER_PRAGMA_CONTENT_PUBLIC = 'public';
     const HEADER_REFERRER_POLICY = 'Referrer-Policy';
     const HEADER_REFERRER_POLICY_CONTENT = 'strict-origin-when-cross-origin';
     const HEADER_SET_COOKIE = 'Set-Cookie';
@@ -41,6 +53,7 @@ class ResponseHeaders
      */
     protected static $headers = array(
         self::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN => self::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN_CONTENT,
+        self::HEADER_CONTENT_TYPE => self::HEADER_CONTENT_TYPE_CONTENT_TEXT_HTML,
         self::HEADER_REFERRER_POLICY => self::HEADER_REFERRER_POLICY_CONTENT,
         self::HEADER_STRICT_TRANSPORT_SECURITY => self::HEADER_STRICT_TRANSPORT_SECURITY_CONTENT,
         self::HEADER_X_CONTENT_TYPE_OPTIONS => self::HEADER_X_CONTENT_TYPE_OPTIONS_CONTENT,

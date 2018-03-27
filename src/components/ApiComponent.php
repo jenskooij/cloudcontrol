@@ -8,6 +8,7 @@ namespace CloudControl\Cms\components;
 
 use CloudControl\Cms\cc\Application;
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\api\Response;
 use CloudControl\Cms\search\CharacterFilter;
 use CloudControl\Cms\search\results\SearchSuggestion;
@@ -30,7 +31,7 @@ class ApiComponent extends CachableBaseComponent
     public function run(Storage $storage)
     {
         parent::run($storage);
-        header('Content-Type: application/json');
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
         $this->setResponse();
     }
 
@@ -62,10 +63,11 @@ class ApiComponent extends CachableBaseComponent
 
     /**
      * @return Document
+     * @throws \RuntimeException
      */
     private function getDocumentById()
     {
-        $id = intval($_GET['id']);
+        $id = (int) $_GET['id'];
         $db = $this->storage->getRepository()->getContentRepository()->getContentDbHandle();
         $stmt = $this->getPDOStatement($db, $this->getDocumentByIdSql($db, $id));
         return $stmt->fetchObject(Document::class);
@@ -88,6 +90,7 @@ class ApiComponent extends CachableBaseComponent
      * @param \PDO $db
      * @param string $sql
      * @return \PDOStatement
+     * @throws \RuntimeException
      */
     private function getPDOStatement($db, $sql)
     {
@@ -102,6 +105,7 @@ class ApiComponent extends CachableBaseComponent
 
     /**
      * @return Response
+     * @throws \RuntimeException
      */
     private function getSingleDocumentResponse()
     {
@@ -136,7 +140,7 @@ class ApiComponent extends CachableBaseComponent
     private function getDocumentsByPathResponse()
     {
         $path = $_GET['path'];
-        if (substr($path, 0, 1) === '/') {
+        if ($path[0] === '/') {
             $path = substr($path, 1);
         }
         $folderDocument = $this->storage->getDocuments()->getDocumentFolderBySlug($path);
@@ -199,6 +203,7 @@ class ApiComponent extends CachableBaseComponent
     /**
      * @param Document $document
      * @return Response
+     * @throws \RuntimeException
      */
     private function getFolderResponse($document)
     {
@@ -207,7 +212,6 @@ class ApiComponent extends CachableBaseComponent
         }
         $document->dbHandle = $this->storage->getContentDbHandle();
         $document->documentStorage = new DocumentStorage($this->storage->getRepository());
-        $document->getContent();
         $response = new Response($document->getContent());
         $response->folder = $document->path;
         return $response;

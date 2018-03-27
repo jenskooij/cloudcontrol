@@ -8,6 +8,7 @@
 namespace CloudControl\Cms\components\cms;
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 
 class FilesRouting implements CmsRouting
@@ -45,15 +46,16 @@ class FilesRouting implements CmsRouting
         $quoted = sprintf('"%s"', addcslashes(basename($path . '/' . $file->file), '"\\'));
         $size = filesize($path . '/' . $file->file);
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: ' . $file->type);
-        header('Content-Disposition: attachment; filename=' . $quoted);
-        header('Content-Transfer-Encoding: binary');
-        header('Connection: Keep-Alive');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Content-Length: ' . $size);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_DESCRIPTION, ResponseHeaders::HEADER_CONTENT_DESCRIPTION_CONTENT);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, $file->type);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_DISPOSITION, 'attachment; filename=' . $quoted);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TRANSFER_ENCODING, ResponseHeaders::HEADER_CONTENT_TRANSFER_ENCODING_CONTENT_BINARY);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONNECTION, ResponseHeaders::HEADER_CONNECTION_CONTENT_KEEP_ALIVE);
+        ResponseHeaders::add(ResponseHeaders::HEADER_EXPIRES, 0);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CACHE_CONTROL, 'must-revalidate, post-check=0, pre-check=0');
+        ResponseHeaders::add(ResponseHeaders::HEADER_PRAGMA, ResponseHeaders::HEADER_PRAGMA_CONTENT_PUBLIC);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_LENGTH, $size);
+        ResponseHeaders::sendAllHeaders();
 
         readfile($path . '/' . $file->file);
         exit;
@@ -72,6 +74,7 @@ class FilesRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function newRoute($request, $cmsComponent)
     {
@@ -86,12 +89,14 @@ class FilesRouting implements CmsRouting
 
     /**
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function newAjaxRoute($cmsComponent)
     {
         if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
             $file = $cmsComponent->storage->getFiles()->addFile($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
-            header('Content-type: application/json');
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
             die(json_encode($file));
         }
         die('error occured');
@@ -100,6 +105,7 @@ class FilesRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function deleteRoute($request, $cmsComponent)
     {
