@@ -48,6 +48,7 @@ class Search extends SearchDbConnected
      * @param Tokenizer $tokenizer
      *
      * @return array
+     * @throws \Exception
      */
     public function getDocumentsForTokenizer(Tokenizer $tokenizer)
     {
@@ -95,6 +96,7 @@ class Search extends SearchDbConnected
      * and returns SearchResult objects for the found
      * documents
      * @return array
+     * @throws \Exception
      */
     private function queryTokens()
     {

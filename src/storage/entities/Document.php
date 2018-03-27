@@ -33,6 +33,7 @@ class Document
     public $lastModificationDate;
     public $creationDate;
     public $lastModifiedBy;
+    protected $documentStorage;
     protected $fields;
     protected $bricks;
     protected $dynamicBricks;
