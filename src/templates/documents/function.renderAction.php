@@ -4,7 +4,7 @@
  * @param string $class
  * @param string $href
  * @param string $icon
- * @param bool $onclick
+ * @param bool|string $onclick
  */
 function renderAction($condition, $title, $class, $href, $icon, $onclick = false)
 { ?>
