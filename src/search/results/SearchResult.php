@@ -43,7 +43,7 @@ class SearchResult
         } else {
             $this->document = $this->storage->getDocuments()->getDocumentBySlug(substr($this->documentPath, 1));
             $this->document->dbHandle = $this->storage->getContentDbHandle();
-            $this->document->documentStorage = $this->storage->getRepository();
+            $this->document->documentStorage = $this->storage->getDocuments();
 
             return $this->document;
         }
