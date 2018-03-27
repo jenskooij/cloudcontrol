@@ -53,6 +53,6 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
           'error',
           $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $slugPrefix . $document->slug,
           'trash',
-          'return confirm(\'Are you sure you want to delete this document?\');'); ?>
+          /** @scrutinizer ignore-type */ 'return confirm(\'Are you sure you want to delete this document?\');'); ?>
   </div>
 <?php } ?>
