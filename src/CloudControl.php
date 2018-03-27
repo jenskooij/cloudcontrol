@@ -62,11 +62,11 @@ class CloudControl
     private static function iniSets()
     {
         // Error settings
-        ini_set('display_errors', true);
+        ini_set('display_errors', 'true');
         ini_set('error_reporting', E_ALL);
 
         // Allow Short Open Tags
-        ini_set('short_open_tag', true);
+        ini_set('short_open_tag', 'true');
     }
 
     /**
