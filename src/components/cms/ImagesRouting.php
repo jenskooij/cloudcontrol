@@ -45,7 +45,8 @@ class ImagesRouting implements CmsRouting
         $cmsComponent->subTemplate = 'images';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_IMAGES);
         $cmsComponent->setParameter(CmsConstants::PARAMETER_IMAGES, $cmsComponent->storage->getImages()->getImages());
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE, $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
+            $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
     }
 
     /**
@@ -105,6 +106,7 @@ class ImagesRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'images/show';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_IMAGES);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_IMAGE, $cmsComponent->storage->getImages()->getImageByName($request::$get[CmsConstants::FILES_PARAMETER_FILE]));
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_IMAGE,
+            $cmsComponent->storage->getImages()->getImageByName($request::$get[CmsConstants::FILES_PARAMETER_FILE]));
     }
 }

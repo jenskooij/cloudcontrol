@@ -4,6 +4,7 @@
  */
 
 namespace CloudControl\Cms\services;
+
 use CloudControl\Cms\storage\entities\File;
 use CloudControl\Cms\storage\Storage;
 
@@ -25,7 +26,8 @@ class FileService
      * FileService constructor.
      */
     protected function __construct()
-    {}
+    {
+    }
 
     /**
      * @return FileService

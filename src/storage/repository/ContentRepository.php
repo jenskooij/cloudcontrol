@@ -89,9 +89,9 @@ namespace CloudControl\Cms\storage\repository {
 
             $sql = '
             SELECT documents_unpublished.*,
-            	   IFNULL(documents_published.state,"unpublished") as state,
-            	   IFNULL(documents_published.publicationDate,NULL) as publicationDate,
-            	   (documents_published.lastModificationDate != documents_unpublished.lastModificationDate) as unpublishedChanges 
+            	   IFNULL(documents_published.state,"unpublished") AS state,
+            	   IFNULL(documents_published.publicationDate,NULL) AS publicationDate,
+            	   (documents_published.lastModificationDate != documents_unpublished.lastModificationDate) AS unpublishedChanges 
               FROM documents_unpublished
 		 LEFT JOIN documents_published
          		ON documents_published.path = documents_unpublished.path
@@ -301,7 +301,7 @@ namespace CloudControl\Cms\storage\repository {
                 $sql = '
 				INSERT OR REPLACE INTO documents_published 
 					  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
-				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" as state,`lastModificationDate`,`creationDate`,' . time() . ' as publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
+				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" AS state,`lastModificationDate`,`creationDate`,' . time() . ' AS publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
 				  FROM documents_unpublished
 				 WHERE `path` = :path
 			';

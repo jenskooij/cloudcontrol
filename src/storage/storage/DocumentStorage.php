@@ -74,7 +74,8 @@ class DocumentStorage extends AbstractStorage
         $oldPath = '/' . $postValues['path'];
 
         $container = $this->getDocumentContainerByPath($oldPath);
-        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
+        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues,
+            new DocumentTypesStorage($this->repository));
         if ($container->path === '/') {
             $newPath = $container->path . $documentObject->slug;
         } else {
@@ -93,7 +94,8 @@ class DocumentStorage extends AbstractStorage
      */
     public function addDocument($postValues, $state = 'unpublished')
     {
-        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues, new DocumentTypesStorage($this->repository));
+        $documentObject = DocumentFactory::createDocumentFromPostValues($postValues,
+            new DocumentTypesStorage($this->repository));
         if ($postValues['path'] === '/') {
             $path = $postValues['path'] . $documentObject->slug;
         } else {

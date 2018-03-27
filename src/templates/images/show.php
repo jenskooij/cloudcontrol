@@ -1,5 +1,8 @@
 <section class="dashboard images">
-  <h2><i class="fa fa-image"></i> Images</h2>
+  <h2>
+    <i class="fa fa-image"></i>
+    Images
+  </h2>
   <nav class="actions">
     <ul>
       <li>

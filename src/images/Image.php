@@ -9,6 +9,7 @@
  */
 
 namespace CloudControl\Cms\images {
+
     class Image
     {
         private $_imageResource;
@@ -17,9 +18,9 @@ namespace CloudControl\Cms\images {
          * Load the a image resource into $this->_imageResource
          * automagically :-)
          *
-         * @param    resource | string | path
+         * @param resource|string $imageContainer
          *
-         * @throws    \Exception
+         * @throws \Exception
          */
         public function loadImage($imageContainer)
         {
@@ -35,7 +36,8 @@ namespace CloudControl\Cms\images {
             } elseif (is_string($imageContainer)) {
                 $this->_imageResource = imagecreatefromstring($imageContainer);
             } else {
-                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer, true) . '</pre>');
+                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
+                        true) . '</pre>');
             }
         }
 
@@ -102,6 +104,7 @@ namespace CloudControl\Cms\images {
          * @param    string $pathToBitmapFile
          *
          * @return  resource
+         * @throws \Exception
          */
         public function createImageFromBmp($pathToBitmapFile)
         {
@@ -149,13 +152,16 @@ namespace CloudControl\Cms\images {
         }
 
         /**
-         * @param string $pathToBitmapFile
-         *
-         * @return string
+         * @param $pathToBitmapFile
+         * @throws \Exception
+         * @return bool|string
          */
         private function getBitmapFileData($pathToBitmapFile)
         {
             $fileHandle = fopen($pathToBitmapFile, "rb");
+            if ($fileHandle === false) {
+                throw new \RuntimeException('Could not open bitmapfile ' . $pathToBitmapFile);
+            }
             $bitmapFileData = fread($fileHandle, 10);
             while (!feof($fileHandle) && ($bitmapFileData <> "")) {
                 $bitmapFileData .= fread($fileHandle, 1024);
@@ -204,8 +210,16 @@ namespace CloudControl\Cms\images {
          * @param string $body
          * @param resource $image
          */
-        private function loopThroughBodyAndCalculatePixels($bodySize, $x, $width, $usePadding, $y, $height, $body, $image)
-        {
+        private function loopThroughBodyAndCalculatePixels(
+            $bodySize,
+            $x,
+            $width,
+            $usePadding,
+            $y,
+            $height,
+            $body,
+            $image
+        ) {
 //    Using a for-loop with index-calculation instead of str_split to avoid large memory consumption
             //    Calculate the next DWORD-position in the body
             for ($i = 0; $i < $bodySize; $i += 3) {
@@ -230,7 +244,7 @@ namespace CloudControl\Cms\images {
                 $g = hexdec($body[$iPos + 2] . $body[$iPos + 3]);
                 $b = hexdec($body[$iPos] . $body[$iPos + 1]);
                 //    Calculate and draw the pixel
-                $color = imagecolorallocate($image, $r, $g, $b);
+                $color = imagecolorallocate($image, intval($r), intval($g), intval($b));
                 imagesetpixel($image, $x, $height - $y, $color);
                 //    Raise the horizontal position
                 $x++;

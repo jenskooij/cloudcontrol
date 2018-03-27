@@ -1,6 +1,8 @@
 <section class="dashboard configuration">
-  <h2><i class="fa fa-cogs"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Image Set</h2>
+  <h2>
+    <i class="fa fa-cogs"></i>
+    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Image Set
+  </h2>
   <nav class="actions">
     <ul>
       <li>

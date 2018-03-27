@@ -75,11 +75,13 @@ class BaseRouting implements CmsRouting
     {
         if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
             $this->cmsComponent->subTemplate = 'dashboard';
-            $this->cmsComponent->setParameter('activityLog', $this->cmsComponent->storage->getActivityLog()->getActivityLog());
+            $this->cmsComponent->setParameter('activityLog',
+                $this->cmsComponent->storage->getActivityLog()->getActivityLog());
             $documentCount = $this->cmsComponent->storage->getDocuments()->getTotalDocumentCount();
             $indexer = new Search($this->cmsComponent->storage);
             $indexedDocuments = $indexer->getIndexedDocuments();
-            $this->cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
+            $this->cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE,
+                $documentCount !== $indexedDocuments);
         }
     }
 

@@ -16,8 +16,12 @@
         <a class="btn js-fileSelector" onmousedown="fileSelect(this, '<?= $field->slug ?>');">Select</a>
         <input value="<?= isset($value) ? $value : '' ?>" placeholder="No file selected" required="required" readonly="readonly" id="<?= $field->slug ?>_input" type="text" name="<?= $fieldPrefix ?>[<?= $field->slug ?>][]"/>
         <ul class="file-selector" id="<?= $field->slug ?>_fileSelector" style="display:none;">
-          <li class="search"><input type="text" placeholder="Search..."/></li>
-          <li class="upload"><input type="file" placeholder="Upload"/></li>
+          <li class="search">
+            <input type="text" placeholder="Search..."/>
+          </li>
+          <li class="upload">
+            <input type="file" placeholder="Upload"/>
+          </li>
 
           <li class="no-results">No files found.</li>
         </ul>

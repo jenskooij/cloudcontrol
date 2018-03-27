@@ -38,7 +38,8 @@ class ValuelistRouting implements CmsRouting
     private function valuelistsRoute($cmsComponent)
     {
         $cmsComponent->subTemplate = 'valuelists';
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_VALUELISTS, $cmsComponent->storage->getValuelists()->getValuelists());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_VALUELISTS,
+            $cmsComponent->storage->getValuelists()->getValuelists());
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_VALUELISTS);
     }
 
@@ -53,7 +54,8 @@ class ValuelistRouting implements CmsRouting
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE])) {
             $slug = $cmsComponent->storage->getValuelists()->addValuelist($request::$post);
             $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists/edit?slug=' . $slug;
-            $cmsComponent->storage->getActivityLog()->add('created valuelist <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a>', 'plus');
+            $cmsComponent->storage->getActivityLog()->add('created valuelist <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a>',
+                'plus');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists');
             exit;
         }
@@ -69,9 +71,11 @@ class ValuelistRouting implements CmsRouting
         $folder = $cmsComponent->storage->getValuelists()->getValuelistBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
 
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getValuelists()->saveValuelist($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists/edit?slug=' . $request::$get[CmsConstants::GET_PARAMETER_SLUG];
-            $cmsComponent->storage->getActivityLog()->add('edited valuelist <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a>', 'pencil');
+            $cmsComponent->storage->getActivityLog()->add('edited valuelist <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a>',
+                'pencil');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists');
             exit;
         }
@@ -87,7 +91,8 @@ class ValuelistRouting implements CmsRouting
     private function deleteValuelistRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getValuelists()->deleteValuelistBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        $cmsComponent->storage->getActivityLog()->add('deleted valuelist ' . $request::$get[CmsConstants::GET_PARAMETER_SLUG], 'trash');
+        $cmsComponent->storage->getActivityLog()->add('deleted valuelist ' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
+            'trash');
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/valuelists');
         exit;
     }

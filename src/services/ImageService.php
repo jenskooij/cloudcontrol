@@ -26,7 +26,8 @@ class ImageService
      * ImageService constructor.
      */
     protected function __construct()
-    {}
+    {
+    }
 
     /**
      * @return ImageService
@@ -54,7 +55,7 @@ class ImageService
      */
     public function __toString()
     {
-        return (string) print_r(self::$instance, true);
+        return (string)print_r(self::$instance, true);
     }
 
     /**

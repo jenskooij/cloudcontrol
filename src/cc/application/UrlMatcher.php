@@ -35,7 +35,7 @@ class UrlMatcher
      */
     public function redirectMatching(Request $request)
     {
-        $redirects =$this->storage->getRedirects()->getRedirects();
+        $redirects = $this->storage->getRedirects()->getRedirects();
         $relativeUri = '/' . $request::$relativeUri;
 
         foreach ($redirects as $redirect) {

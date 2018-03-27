@@ -43,7 +43,7 @@
         </span>
         <nav class="mdl-navigation">
           <div class="mdl-navigation__link">
-            <form action="<?=\CloudControl\Cms\services\LinkService::get('/')?>">
+            <form action="<?= \CloudControl\Cms\services\LinkService::get('/') ?>">
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="q" name="q">
                 <label class="mdl-textfield__label" for="q">Search...</label>
@@ -88,7 +88,8 @@
                           <p>Did you mean
                             <a href="?q=<?= str_replace($result->original, $result->term, $_GET['q']) ?>">
                                 <?= str_replace($result->original, '<b>' . $result->term . '</b>', $_GET['q']) ?>
-                            </a>?
+                            </a>
+                            ?
                           </p>
                         </li>
                         <?php endif ?>

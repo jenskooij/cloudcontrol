@@ -36,7 +36,8 @@ class RedirectRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'redirects';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_REDIRECTS);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_REDIRECTS, $cmsComponent->storage->getRedirects()->getRedirects());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_REDIRECTS,
+            $cmsComponent->storage->getRedirects()->getRedirects());
     }
 
     private function redirectsNewRoute(Request $request, CmsComponent $cmsComponent)
@@ -56,7 +57,8 @@ class RedirectRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_REDIRECTS);
         $redirect = $cmsComponent->storage->getRedirects()->getRedirectBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$post[CmsConstants::POST_PARAMETER_FROM_URL], $request::$post[CmsConstants::POST_PARAMETER_TO_URL])) {
-            $cmsComponent->storage->getRedirects()->saveRedirect($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getRedirects()->saveRedirect($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/redirects');
             exit;
         }

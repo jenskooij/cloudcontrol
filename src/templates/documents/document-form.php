@@ -5,7 +5,10 @@
 <script>var smallestImage = '<?=$smallestImage?>';</script>
 <?php $copyable = '' ?>
 <section class="documents">
-  <h2><i class="fa fa-file-text-o"></i> Documents</h2>
+  <h2>
+    <i class="fa fa-file-text-o"></i>
+    Documents
+  </h2>
   <nav class="actions">
     <ul>
       <li>

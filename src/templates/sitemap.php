@@ -1,5 +1,8 @@
 <section class="sitemap">
-  <h2><i class="fa fa-map-signs"></i> Sitemap</h2>
+  <h2>
+    <i class="fa fa-map-signs"></i>
+    Sitemap
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -15,9 +18,15 @@
               <li>
                 <h3><?= $sitemapItem->title ?></h3>
                 <span class="url"><?= $sitemapItem->url ?></span>
-                <a class="btn move" title="Move"><i class="fa fa-arrows-v"></i></a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/delete?slug=<?= $sitemapItem->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
-                <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/edit?slug=<?= $sitemapItem->slug ?>" title="Edit"><i class="fa fa-pencil"></i></a>
+                <a class="btn move" title="Move">
+                  <i class="fa fa-arrows-v"></i>
+                </a>
+                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/delete?slug=<?= $sitemapItem->slug ?>" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+                <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/edit?slug=<?= $sitemapItem->slug ?>" title="Edit">
+                  <i class="fa fa-pencil"></i>
+                </a>
                 <textarea name="sitemapitem[]"><?= json_encode($sitemapItem) ?></textarea>
               </li>
             <?php endforeach ?>

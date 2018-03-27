@@ -24,7 +24,8 @@ class Valuelist
         $this->pairs = $valuelist->pairs;
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         return $this->pairs->{$key};
     }
 

@@ -23,6 +23,7 @@ class UsersRouting implements CmsRouting
      * @param Request $request
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
@@ -50,6 +51,7 @@ class UsersRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function newRoute($request, $cmsComponent)
     {
@@ -65,6 +67,7 @@ class UsersRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function deleteRoute($request, $cmsComponent)
     {
@@ -76,15 +79,19 @@ class UsersRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/users-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_USER, $cmsComponent->storage->getUsers()->getUserBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_USER,
+            $cmsComponent->storage->getUsers()->getUserBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
         if (isset($_POST[CmsConstants::POST_PARAMETER_USERNAME])) {
-            $cmsComponent->storage->getUsers()->saveUser($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/users');
+            $cmsComponent->storage->getUsers()->saveUser($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
+            header('Location: ' . $request::$subfolders . /** @scrutinizer ignore-type */
+                $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/users');
             exit;
         }
     }

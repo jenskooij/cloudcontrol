@@ -1,5 +1,8 @@
 <section class="redirects">
-  <h2><i class="fa fa-random"></i> Redirects</h2>
+  <h2>
+    <i class="fa fa-random"></i>
+    Redirects
+  </h2>
   <nav class="actions">
     <ul>
       <li>

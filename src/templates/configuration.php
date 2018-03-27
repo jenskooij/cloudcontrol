@@ -1,5 +1,8 @@
 <section class="dashboard configuration">
-  <h2><i class="fa fa-cogs"></i> Configuration</h2>
+  <h2>
+    <i class="fa fa-cogs"></i>
+    Configuration
+  </h2>
   <nav class="tiles grid-wrapper">
     <ul class="grid-container">
       <li class="tile grid-box-3">

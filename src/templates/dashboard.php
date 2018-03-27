@@ -86,14 +86,16 @@
           <div class="search">
               <?php if ($searchNeedsUpdate) : ?>
                 <div class="message warning">
-                  <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+                  <i class="fa fa-exclamation-triangle"></i>
+                  Search index is no longer in sync with documents.
                     <?php if (in_array('search', $userRights)) : ?>
-                      <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?=urlencode($request::$subfolders . $cmsPrefix)?>" title="Update Index">Update Index</a>
+                      <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?= urlencode($request::$subfolders . $cmsPrefix) ?>" title="Update Index">Update Index</a>
                     <?php endif ?>
                 </div>
               <?php else : ?>
                 <div class="message valid">
-                  <i class="fa fa-check"></i> Search index is in sync with documents.
+                  <i class="fa fa-check"></i>
+                  Search index is in sync with documents.
                 </div>
               <?php endif ?>
           </div>

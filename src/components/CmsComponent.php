@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\components {
 
+    use CloudControl\Cms\cc\Application;
     use CloudControl\Cms\cc\Request;
     use CloudControl\Cms\components\cms\BaseRouting;
     use CloudControl\Cms\components\cms\CmsConstants;
@@ -39,7 +40,8 @@ namespace CloudControl\Cms\components {
 
             $this->checkLogin();
 
-            $this->setParameter(CmsConstants::PARAMETER_USER_RIGHTS, $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]->rights);
+            $this->setParameter(CmsConstants::PARAMETER_USER_RIGHTS,
+                $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]->rights);
 
             $this->routing();
 
@@ -138,7 +140,8 @@ namespace CloudControl\Cms\components {
             $pos = strpos($request::$relativeUri, $this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]);
             $relativeCmsUri = '/';
             if ($pos !== false) {
-                $relativeCmsUri = substr_replace($request::$relativeUri, '', $pos, strlen($this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]));
+                $relativeCmsUri = substr_replace($request::$relativeUri, '', $pos,
+                    strlen($this->parameters[CmsConstants::PARAMETER_CMS_PREFIX]));
             }
 
             return $relativeCmsUri;
@@ -179,7 +182,8 @@ namespace CloudControl\Cms\components {
          */
         protected function invalidCredentials($crypt, $request)
         {
-            $crypt->encrypt($request::$post[CmsConstants::POST_PARAMETER_PASSWORD], 16); // Buy time, to avoid brute forcing
+            $crypt->encrypt($request::$post[CmsConstants::POST_PARAMETER_PASSWORD],
+                16); // Buy time, to avoid brute forcing
             $this->parameters[CmsConstants::PARAMETER_ERROR_MESSAGE] = CmsConstants::INVALID_CREDENTIALS_MESSAGE;
             $this->showLogin();
         }
@@ -195,7 +199,8 @@ namespace CloudControl\Cms\components {
             $salt = $user->salt;
             $password = $user->password;
 
-            $passwordCorrect = $crypt->compare($request::$post[CmsConstants::POST_PARAMETER_PASSWORD], $password, $salt);
+            $passwordCorrect = $crypt->compare($request::$post[CmsConstants::POST_PARAMETER_PASSWORD], $password,
+                $salt);
 
             if ($passwordCorrect) {
                 $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL] = $user;
@@ -223,7 +228,7 @@ namespace CloudControl\Cms\components {
 
         /**
          * @param $template
-         * @param null $application
+         * @param Application $application
          * @return string
          */
         protected function getTemplateDir($template, $application = null)
@@ -241,10 +246,10 @@ namespace CloudControl\Cms\components {
             }
         }
 
-    public static function isCmsLoggedIn()
-    {
-        return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
-    }
+        public static function isCmsLoggedIn()
+        {
+            return isset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
+        }
 
-}
+    }
 }

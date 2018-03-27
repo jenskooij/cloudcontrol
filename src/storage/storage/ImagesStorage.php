@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by jensk on 17-3-2017.
-6 */
+ */
 
 namespace CloudControl\Cms\storage\storage;
 

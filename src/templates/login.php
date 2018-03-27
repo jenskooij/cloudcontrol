@@ -12,8 +12,12 @@
     <main class="body grid-container">
       <h1>Cloud Control</h1>
       <!--[if lt IE 10]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please
-        <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+      <p class="browserupgrade">You are using an
+        <strong>outdated</strong>
+        browser. Please
+        <a href="http://browsehappy.com/">upgrade your browser</a>
+        to improve your experience.
+      </p>
       <![endif]-->
       <section class="login-form grid-box-4">
           <?php if (isset($errorMsg)) : ?>
@@ -33,7 +37,9 @@
           <div class="form-element">
             <i id="loadingSpinner" class="fa fa-spinner fa-spin fa-fw margin-bottom"></i>
             <input id="submitButton" class="btn" onclick="" type="submit" value="Login"/>
-            <a href="<?= $request::$subfolders ?>" class="btn" title="Return to site"><i class="fa fa-reply"></i></a>
+            <a href="<?= $request::$subfolders ?>" class="btn" title="Return to site">
+              <i class="fa fa-reply"></i>
+            </a>
           </div>
         </form>
       </section>

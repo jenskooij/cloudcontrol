@@ -39,7 +39,10 @@
     <table class="table table-bordered table-striped">
       <tr>
         <th>File</th>
-        <td><samp><?= $error['file'] ?><samp></td>
+        <td>
+          <samp><?= $error['file'] ?>
+            <samp>
+        </td>
       </tr>
       <tr>
         <th>Line</th>

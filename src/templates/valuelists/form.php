@@ -1,5 +1,8 @@
 <section class="documents valuelists">
-  <h2><i class="fa fa-tags"></i> Valuelists</h2>
+  <h2>
+    <i class="fa fa-tags"></i>
+    Valuelists
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -22,7 +25,9 @@
               <li class="form-element parameters">
                 <input type="text" required="required" name="keys[]" placeholder="Key" value="<?= htmlentities($key) ?>"/>&nbsp;
                 <input type="text" required="required" name="values[]" placeholder="Value" value="<?= htmlentities($value) ?>"/>
-                <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
+                <a class="btn error" id="sitemap_remove_parameter">
+                  <i class="fa fa-trash"></i>
+                </a>
               </li>
               <?php endforeach ?>
           <?php endif ?>
@@ -37,7 +42,9 @@
 <li class="form-element parameters" id="parameterPlaceholder" style="display:none;">
   <input type="text" required="required" name="keys[]" placeholder="Key"/>
   <input type="text" required="required" name="values[]" placeholder="Value"/>
-  <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
+  <a class="btn error" id="sitemap_remove_parameter">
+    <i class="fa fa-trash"></i>
+  </a>
 </li>
 <script>
   window.onload = function () {

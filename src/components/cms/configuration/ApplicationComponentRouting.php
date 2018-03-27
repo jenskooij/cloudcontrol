@@ -42,7 +42,8 @@ class ApplicationComponentRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'configuration/application-components';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_APPLICATION_COMPONENTS, $cmsComponent->storage->getApplicationComponents()->getApplicationComponents());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_APPLICATION_COMPONENTS,
+            $cmsComponent->storage->getApplicationComponents()->getApplicationComponents());
     }
 
     /**
@@ -70,7 +71,8 @@ class ApplicationComponentRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
         $applicationComponent = $cmsComponent->storage->getApplicationComponents()->getApplicationComponentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE])) {
-            $cmsComponent->storage->getApplicationComponents()->saveApplicationComponent($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getApplicationComponents()->saveApplicationComponent($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/application-components');
             exit;
         }

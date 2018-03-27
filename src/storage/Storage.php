@@ -95,6 +95,7 @@ namespace CloudControl\Cms\storage {
          * @param string $storageDir
          * @param $imagesDir
          * @param $filesDir
+         * @throws \Exception
          */
         public function __construct($storageDir, $imagesDir, $filesDir)
         {

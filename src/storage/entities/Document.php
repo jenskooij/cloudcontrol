@@ -19,6 +19,7 @@ use CloudControl\Cms\storage\storage\DocumentStorage;
  * @property \PDO dbHandle
  * @property DocumentStorage documentStorage
  * @property boolean unpublishedChanges
+ * @property \stdClass $documentContent Used in ApiComponent
  */
 class Document
 {
@@ -33,6 +34,7 @@ class Document
     public $lastModificationDate;
     public $creationDate;
     public $lastModifiedBy;
+    protected $documentStorage;
     protected $fields;
     protected $bricks;
     protected $dynamicBricks;
@@ -41,7 +43,17 @@ class Document
     protected $dbHandle;
 
     protected $jsonEncodedFields = array('fields', 'bricks', 'dynamicBricks');
-    protected $orderableFields = array('title', 'slug', 'type', 'documentType', 'documentTypeSlug', 'state', 'lastModificationDate', 'creationDate', 'lastModifiedBy');
+    protected $orderableFields = array(
+        'title',
+        'slug',
+        'type',
+        'documentType',
+        'documentTypeSlug',
+        'state',
+        'lastModificationDate',
+        'creationDate',
+        'lastModifiedBy'
+    );
 
     public static $DOCUMENT_STATES = array('published', 'unpublished');
 
@@ -125,7 +137,8 @@ class Document
     {
         $stdObj = json_decode($this->$name);
         $temp = serialize($stdObj);
-        $temp = preg_replace('@^O:8:"stdClass":@', 'O:' . strlen(FieldContainer::class) . ':"' . FieldContainer::class . '":', $temp);
+        $temp = preg_replace('@^O:8:"stdClass":@',
+            'O:' . strlen(FieldContainer::class) . ':"' . FieldContainer::class . '":', $temp);
         return unserialize($temp);
     }
 

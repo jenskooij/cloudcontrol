@@ -79,7 +79,8 @@ class ApplicationRunner
             $template = $sitemapItem->template;
             $parameters = $sitemapItem->parameters;
 
-            $matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters, $sitemapItem);
+            $matchedSitemapItems[$key]->object = $this->getComponentObject($class, $template, $parameters,
+                $sitemapItem);
 
             if ($matchedSitemapItems[$key]->object instanceof CachableBaseComponent
                 && $matchedSitemapItems[$key]->object->isCachable()

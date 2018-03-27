@@ -77,7 +77,8 @@ namespace CloudControl\Cms\images\methods {
             imagesavealpha($new, true);
 
             // Do the actual resizing
-            imagecopyresampled($new, $imageResource, 0, 0, 0, 0, $this->_width, $this->_height, $originalWidth, $originalHeight);
+            imagecopyresampled($new, $imageResource, 0, 0, 0, 0, $this->_width, $this->_height, $originalWidth,
+                $originalHeight);
 
             return $new;
         }

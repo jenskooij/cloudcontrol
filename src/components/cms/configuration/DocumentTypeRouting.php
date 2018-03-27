@@ -43,7 +43,8 @@ class DocumentTypeRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'configuration/document-types';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $cmsComponent->storage->getDocumentTypes()->getDocumentTypes());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES,
+            $cmsComponent->storage->getDocumentTypes()->getDocumentTypes());
     }
 
     /**
@@ -71,10 +72,12 @@ class DocumentTypeRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'configuration/document-types-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
-        $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG], false);
+        $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+            false);
         $bricks = $cmsComponent->storage->getBricks()->getBricks();
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE])) {
-            $cmsComponent->storage->getDocumentTypes()->saveDocumentType($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getDocumentTypes()->saveDocumentType($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/document-types');
             exit;
         }

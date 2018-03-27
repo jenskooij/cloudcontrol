@@ -1,5 +1,8 @@
 <section class="dashboard files">
-  <h2><i class="fa fa-files-o"></i> Files</h2>
+  <h2>
+    <i class="fa fa-files-o"></i>
+    Files
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -27,7 +30,9 @@
               </h3>
             </div>
             <div class="documentActions grid-box-2">
-              <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files/delete?file=<?= $file->file ?>" title="Delete"><i class="fa fa-trash"></i></a>
+              <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/files/delete?file=<?= $file->file ?>" title="Delete">
+                <i class="fa fa-trash"></i>
+              </a>
             </div>
           </li>
           <?php endforeach ?>

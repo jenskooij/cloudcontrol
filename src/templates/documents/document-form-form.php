@@ -271,8 +271,12 @@
 		</div>
 		<?php endif ?>
   <div class="form-element">
-    <input class="btn" type="submit" value="Save"/>
-    &nbsp;
-    <input class="btn" type="submit" name="btn_save_and_publish" value="Save and publish"/>
+      <?php if (isset($documentType)) : ?>
+        <input class="btn" type="submit" value="Save"/>
+        &nbsp;
+        <input class="btn" type="submit" name="btn_save_and_publish" value="Save and publish"/>
+      <?php else : ?>
+        <input class="btn" type="submit" value="Create"/>
+      <?php endif; ?>
   </div>
 </form>

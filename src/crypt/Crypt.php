@@ -1,6 +1,7 @@
 <?php
 
 namespace CloudControl\Cms\crypt {
+
     /**
      * Class Crypt
      * @package CloudControl\Cms\crypt

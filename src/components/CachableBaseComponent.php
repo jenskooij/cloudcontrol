@@ -7,7 +7,6 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Request;
-use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\storage\Cache;
 
 class CachableBaseComponent extends BaseComponent
@@ -48,8 +47,10 @@ class CachableBaseComponent extends BaseComponent
     {
         if ($this->isCachable() && $this->isCacheValid()) {
             return $this->cache->contents;
-        } else if ($this->isCachable() && !$this->isCacheValid()) {
-            $this->createCache($this->renderedContent);
+        } else {
+            if ($this->isCachable() && !$this->isCacheValid()) {
+                $this->createCache($this->renderedContent);
+            }
         }
         return $this->renderedContent;
     }
@@ -97,7 +98,7 @@ class CachableBaseComponent extends BaseComponent
             $cacheExists = $this->cache !== false;
             $cacheExpired = false;
             if ($cacheExists) {
-                $cacheCreationStamp = (int) $this->cache->creationStamp;
+                $cacheCreationStamp = (int)$this->cache->creationStamp;
                 $currentTime = time();
                 $cacheAge = $currentTime - $cacheCreationStamp;
                 $maxAgeInterval = new \DateInterval($this->maxAge);

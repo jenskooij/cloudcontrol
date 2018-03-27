@@ -47,6 +47,25 @@ class Application
      */
     private $applicationComponents = array();
 
+    const HEADER_X_POWERED_BY = 'X-Powered-By: ';
+    const HEADER_X_POWERED_BY_CONTENT = 'Cloud Control - https://getcloudcontrol.org';
+    const HEADER_X_FRAME_OPTIONS = "X-Frame-Options: ";
+    const HEADER_X_FRAME_OPTIONS_CONTENT = "SAMEORIGIN";
+    const HEADER_X_CONTENT_TYPE_OPTIONS = 'X-Content-Type-Options: ';
+    const HEADER_X_CONTENT_TYPE_OPTIONS_CONTENT = 'nosniff';
+    const HEADER_REFERRER_POLICY = 'Referrer-Policy: ';
+    const HEADER_REFERRER_POLICY_CONTENT = 'strict-origin-when-cross-origin';
+    const HEADER_X_XSS_PROTECTION = 'X-XSS-Protection: ';
+    const HEADER_X_XSS_PROTECTION_CONTENT = '1; mode=block';
+    const HEADER_SET_COOKIE = 'Set-Cookie: ';
+    const HEADER_CONTENT_SECURITY_POLICY = 'Content-Security-Policy: ';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE = 'default-src https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE = 'default-src \'self\' https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST = 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:;';
+    const HEADER_X_CONTENT_SECURITY_POLICY = 'X-Content-Security-Policy: '; // For IE
+    const HEADER_STRICT_TRANSPORT_SECURITY = 'Strict-Transport-Security: ';
+    const HEADER_STRICT_TRANSPORT_SECURITY_CONTENT = 'max-age=31536000;';
+
     /**
      * Application constructor.
      * @param string $rootDir
@@ -72,8 +91,8 @@ class Application
         $this->urlMatching();
 
         $this->getApplicationComponents();
-
         $this->run();
+        $this->setHeaders();
         $this->render();
     }
 
@@ -98,7 +117,8 @@ class Application
      */
     private function storage()
     {
-        $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir, $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
+        $this->storage = new Storage($this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->storageDir,
+            $this->config->rootDir . DIRECTORY_SEPARATOR . $this->config->imagesDir, $this->config->filesDir);
     }
 
     public function getAllApplicationComponentParameters()
@@ -155,6 +175,9 @@ class Application
         $whoops->register();
     }
 
+    /**
+     * @throws \Exception
+     */
     private function urlMatching()
     {
         $urlMatcher = new UrlMatcher($this, $this->storage);
@@ -169,6 +192,9 @@ class Application
         $applicationRunner->runSitemapComponents($this->matchedSitemapItems);
     }
 
+    /**
+     * @throws \Exception
+     */
     private function render()
     {
         $applicationRenderer = new ApplicationRenderer($this, $this->storage, $this->request);
@@ -186,5 +212,35 @@ class Application
     public function addMatchedSitemapItem($matchedClone)
     {
         $this->matchedSitemapItems[] = $matchedClone;
+    }
+
+    /**
+     * Sets default headers. Please note that caching headers are set
+     * here: \CloudControl\Cms\cc\application\ApplicationRenderer::setCachingHeaders
+     * and here: \CloudControl\Cms\cc\application\ApplicationRenderer::setNotCachingHeaders
+     */
+    private function setHeaders()
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        header(self::HEADER_X_POWERED_BY . self::HEADER_X_POWERED_BY_CONTENT);
+        header(self::HEADER_X_FRAME_OPTIONS . self::HEADER_X_FRAME_OPTIONS_CONTENT);
+        header(self::HEADER_X_CONTENT_TYPE_OPTIONS . self::HEADER_X_CONTENT_TYPE_OPTIONS_CONTENT);
+        header(self::HEADER_REFERRER_POLICY . self::HEADER_REFERRER_POLICY_CONTENT);
+        header(self::HEADER_X_XSS_PROTECTION . self::HEADER_X_XSS_PROTECTION_CONTENT);
+        header(self::HEADER_SET_COOKIE . '__Host-sess=' . session_id() . '; path=' . Request::$subfolders . '; Secure; HttpOnly; SameSite');
+        if (Request::isSecure()) {
+            header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);
+            header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);
+            header(self::HEADER_STRICT_TRANSPORT_SECURITY . self::HEADER_STRICT_TRANSPORT_SECURITY_CONTENT);
+        } elseif (Request::isLocalhost()) {
+            header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST);
+            header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST);
+        } else {
+            header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE);
+            header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE);
+        }
+
     }
 }

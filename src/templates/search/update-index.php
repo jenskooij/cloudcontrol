@@ -1,10 +1,12 @@
 <section class="dashboard search">
-  <h2><i class="fa fa-search"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search" title="Search">Search</a> &raquo; Update Index</h2>
+  <h2>
+    <i class="fa fa-search"></i>
+    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search" title="Search">Search</a> &raquo; Update Index
+  </h2>
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" href="<?=$returnUrl?>" title="Back">Back</a>
+        <a class="btn" href="<?= $returnUrl ?>" title="Back">Back</a>
       </li>
     </ul>
   </nav>

@@ -1,6 +1,8 @@
 <section class="dashboard configuration">
-  <h2><i class="fa fa-cogs"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Users</h2>
+  <h2>
+    <i class="fa fa-cogs"></i>
+    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Users
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -22,13 +24,27 @@
     <div class="form-element">
       <label for="rights">Rights</label>
       <select name="rights[]" id="rights" multiple="multiple">
-        <option value="documents"<?= isset($user) && in_array('documents', $user->rights) ? ' selected="selected"' : '' ?>>Documents</option>
-        <option value="valuelists"<?= isset($user) && in_array('valuelists', $user->rights) ? ' selected="selected"' : '' ?>>Valuelists</option>
-        <option value="sitemap"<?= isset($user) && in_array('sitemap', $user->rights) ? ' selected="selected"' : '' ?>>Sitemap</option>
-        <option value="redirects"<?= isset($user) && in_array('redirects', $user->rights) ? ' selected="selected"' : '' ?>>Redirects</option>
-        <option value="images"<?= isset($user) && in_array('images', $user->rights) ? ' selected="selected"' : '' ?>>Images</option>
-        <option value="files"<?= isset($user) && in_array('files', $user->rights) ? ' selected="selected"' : '' ?>>Files</option>
-        <option value="configuration"<?= isset($user) && in_array('configuration', $user->rights) ? ' selected="selected"' : '' ?>>Configuration</option>
+        <option value="documents"<?= isset($user) && in_array('documents',
+            $user->rights) ? ' selected="selected"' : '' ?>>Documents
+        </option>
+        <option value="valuelists"<?= isset($user) && in_array('valuelists',
+            $user->rights) ? ' selected="selected"' : '' ?>>Valuelists
+        </option>
+        <option value="sitemap"<?= isset($user) && in_array('sitemap',
+            $user->rights) ? ' selected="selected"' : '' ?>>Sitemap
+        </option>
+        <option value="redirects"<?= isset($user) && in_array('redirects',
+            $user->rights) ? ' selected="selected"' : '' ?>>Redirects
+        </option>
+        <option value="images"<?= isset($user) && in_array('images',
+            $user->rights) ? ' selected="selected"' : '' ?>>Images
+        </option>
+        <option value="files"<?= isset($user) && in_array('files',
+            $user->rights) ? ' selected="selected"' : '' ?>>Files
+        </option>
+        <option value="configuration"<?= isset($user) && in_array('configuration',
+            $user->rights) ? ' selected="selected"' : '' ?>>Configuration
+        </option>
       </select>
     </div>
     <div class="form-element">
