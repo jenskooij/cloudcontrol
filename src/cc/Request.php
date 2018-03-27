@@ -37,6 +37,10 @@ namespace CloudControl\Cms\cc {
          */
         public static $get = array();
         /**
+         * @var array|mixed
+         */
+        public static $argv;
+        /**
          * @var array
          */
         private $statics;
@@ -48,7 +52,7 @@ namespace CloudControl\Cms\cc {
         {
             $rootPath = str_replace('\\', '/', realpath(str_replace('\\', '/', dirname(__FILE__)) . '/../../') . '/');
 
-            if (PHP_SAPI === 'cli-server') {
+            if (PHP_SAPI === 'cli-server' || PHP_SAPI === 'cli') {
                 self::$subfolders = '/';
             } else {
                 self::$subfolders = '/' . str_replace('//', '/', str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), "", $rootPath));
@@ -57,10 +61,9 @@ namespace CloudControl\Cms\cc {
             }
 
             if (PHP_SAPI === 'cli') {
-                global $argv;
-                array_shift($argv);
+                array_shift(self::$argv);
                 self::$queryString = '';
-                self::$requestUri = self::$subfolders . implode('/', $argv);
+                self::$requestUri = self::$subfolders . implode('/', self::$argv);
             } else {
                 self::$requestUri = $_SERVER['REQUEST_URI'];
                 self::$queryString = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';

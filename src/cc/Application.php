@@ -91,7 +91,6 @@ class Application
         $this->urlMatching();
 
         $this->getApplicationComponents();
-
         $this->run();
         $this->setHeaders();
         $this->render();
@@ -221,6 +220,9 @@ class Application
      */
     private function setHeaders()
     {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
         header(self::HEADER_X_POWERED_BY . self::HEADER_X_POWERED_BY_CONTENT);
         header(self::HEADER_X_FRAME_OPTIONS . self::HEADER_X_FRAME_OPTIONS_CONTENT);
         header(self::HEADER_X_CONTENT_TYPE_OPTIONS . self::HEADER_X_CONTENT_TYPE_OPTIONS_CONTENT);
