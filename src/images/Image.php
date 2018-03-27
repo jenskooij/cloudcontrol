@@ -102,6 +102,7 @@ namespace CloudControl\Cms\images {
          * @param    string $pathToBitmapFile
          *
          * @return  resource
+         * @throws \Exception
          */
         public function createImageFromBmp($pathToBitmapFile)
         {
@@ -149,13 +150,16 @@ namespace CloudControl\Cms\images {
         }
 
         /**
-         * @param string $pathToBitmapFile
-         *
-         * @return string
+         * @param $pathToBitmapFile
+         * @throws \Exception
+         * @return bool|string
          */
         private function getBitmapFileData($pathToBitmapFile)
         {
             $fileHandle = fopen($pathToBitmapFile, "rb");
+            if ($fileHandle === false) {
+                throw new \RuntimeException('Could not open bitmapfile ' . $pathToBitmapFile);
+            }
             $bitmapFileData = fread($fileHandle, 10);
             while (!feof($fileHandle) && ($bitmapFileData <> "")) {
                 $bitmapFileData .= fread($fileHandle, 1024);
@@ -230,7 +234,7 @@ namespace CloudControl\Cms\images {
                 $g = hexdec($body[$iPos + 2] . $body[$iPos + 3]);
                 $b = hexdec($body[$iPos] . $body[$iPos + 1]);
                 //    Calculate and draw the pixel
-                $color = imagecolorallocate($image, $r, $g, $b);
+                $color = imagecolorallocate($image, intval($r), intval($g), intval($b));
                 imagesetpixel($image, $x, $height - $y, $color);
                 //    Raise the horizontal position
                 $x++;
