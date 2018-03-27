@@ -16,7 +16,9 @@
         <a class="btn js-fileSelector" onmousedown="documentSelect(this, '<?= $field->slug ?>');">Select</a>
         <input value="<?= isset($value) ? $value : '' ?>" placeholder="No document selected" required="required" readonly="readonly" id="<?= $field->slug ?>_input" type="text" name="<?= $fieldPrefix ?>[<?= $field->slug ?>][]"/>
         <ul class="document-selector" id="<?= $field->slug ?>_documentSelector" style="display:none;">
-          <li class="search"><input type="text" placeholder="Search..."/></li>
+          <li class="search">
+            <input type="text" placeholder="Search..."/>
+          </li>
           <li class="no-results">No documents found.</li>
         </ul>
       </div>

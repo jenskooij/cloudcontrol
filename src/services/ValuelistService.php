@@ -22,7 +22,8 @@ class ValuelistService
      * FileService constructor.
      */
     protected function __construct()
-    {}
+    {
+    }
 
     /**
      * @return ValuelistService

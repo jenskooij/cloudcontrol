@@ -42,7 +42,8 @@ class LanguageComponent implements Component
         $this->parameters = (array)$parameters;
         $this->checkParameters();
 
-        $lang = substr(isset($_SERVER[self::HTTP_ACCEPT_LANGUAGE]) ? $_SERVER[self::HTTP_ACCEPT_LANGUAGE] : self::$DEFAULT_LANGUAGE, 0, 2);
+        $lang = substr(isset($_SERVER[self::HTTP_ACCEPT_LANGUAGE]) ? $_SERVER[self::HTTP_ACCEPT_LANGUAGE] : self::$DEFAULT_LANGUAGE,
+            0, 2);
         $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_DETECTED_LANGUAGE] = $lang;
 
         $this->checkLanguageSwitch($request);
@@ -51,7 +52,8 @@ class LanguageComponent implements Component
             $this->detectLanguage($lang, $request);
         } else {
             if ($this->forceRedirect === true) {
-                $this->detectLanguage($_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE], $request);
+                $this->detectLanguage($_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE],
+                    $request);
             }
         }
 
@@ -165,7 +167,7 @@ class LanguageComponent implements Component
 
         if ($this->acceptedLanguages === null) {
             $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = $lang;
-        } else if (in_array($lang, $this->acceptedLanguages)) {
+        } elseif (in_array($lang, $this->acceptedLanguages)) {
             $_SESSION[self::SESSION_PARAMETER_LANGUAGE_COMPONENT][self::SESSION_PARAMETER_LANGUAGE] = $lang;
         } else {
             $lang = self::$DEFAULT_LANGUAGE;

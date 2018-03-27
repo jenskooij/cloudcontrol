@@ -9,6 +9,7 @@
  */
 
 namespace CloudControl\Cms\images\methods {
+
     class BoxCrop extends Crop
     {
         /**
@@ -27,7 +28,9 @@ namespace CloudControl\Cms\images\methods {
 
             // Define which ratio will be used, depending on which is the smallest side
             $ratio = min($hRatio, $wRatio);
-            if ($ratio > 1) $ratio = 1;
+            if ($ratio > 1) {
+                $ratio = 1;
+            }
 
             // Define sizes
             $this->_destWidth = floor($originalWidth * $ratio);

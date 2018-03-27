@@ -1,5 +1,8 @@
 <section class="dashboard images">
-  <h2><i class="fa fa-image"></i> Images</h2>
+  <h2>
+    <i class="fa fa-image"></i>
+    Images
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -13,7 +16,9 @@
             <?php foreach ($images as $image) : ?>
             <li class="grid-box-2">
               <div class="grid-inner">
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images/delete?file=<?= $image->file ?>" title="Delete"><i class="fa fa-trash"></i></a>
+                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images/delete?file=<?= $image->file ?>" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
                 <a class="image-link" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/images/show?file=<?= $image->file ?>" title="Show">
                   <img src="<?= $request::$subfolders ?>images/<?= isset($image->set->$smallestImage) ? $image->set->$smallestImage : current($image->set) ?>"/>
                 </a>

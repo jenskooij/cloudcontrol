@@ -85,10 +85,13 @@ class UsersRouting implements CmsRouting
     {
         $cmsComponent->subTemplate = 'configuration/users-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_USER, $cmsComponent->storage->getUsers()->getUserBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_USER,
+            $cmsComponent->storage->getUsers()->getUserBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
         if (isset($_POST[CmsConstants::POST_PARAMETER_USERNAME])) {
-            $cmsComponent->storage->getUsers()->saveUser($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
-            header('Location: ' . $request::$subfolders . /** @scrutinizer ignore-type */ $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/users');
+            $cmsComponent->storage->getUsers()->saveUser($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
+            header('Location: ' . $request::$subfolders . /** @scrutinizer ignore-type */
+                $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/users');
             exit;
         }
     }

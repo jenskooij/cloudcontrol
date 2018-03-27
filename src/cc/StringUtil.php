@@ -78,12 +78,15 @@ class StringUtil
      */
     public static function humanFileSize($size, $unit = "")
     {
-        if ((!$unit && $size >= 1 << 30) || $unit == "GB")
+        if ((!$unit && $size >= 1 << 30) || $unit == "GB") {
             return number_format($size / (1 << 30), 2) . "GB";
-        if ((!$unit && $size >= 1 << 20) || $unit == "MB")
+        }
+        if ((!$unit && $size >= 1 << 20) || $unit == "MB") {
             return number_format($size / (1 << 20), 2) . "MB";
-        if ((!$unit && $size >= 1 << 10) || $unit == "KB")
+        }
+        if ((!$unit && $size >= 1 << 10) || $unit == "KB") {
             return number_format($size / (1 << 10), 2) . "KB";
+        }
 
         return number_format($size) . " bytes";
     }
@@ -103,14 +106,16 @@ class StringUtil
         }
 
         /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-        $a = array(365 * 24 * 60 * 60 => 'year',
+        $a = array(
+            365 * 24 * 60 * 60 => 'year',
             30 * 24 * 60 * 60 => 'month',
             24 * 60 * 60 => 'day',
             60 * 60 => 'hour',
             60 => 'minute',
             1 => 'second'
         );
-        $a_plural = array('year' => 'years',
+        $a_plural = array(
+            'year' => 'years',
             'month' => 'months',
             'day' => 'days',
             'hour' => 'hours',

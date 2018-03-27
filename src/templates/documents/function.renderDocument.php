@@ -11,7 +11,8 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
       <a class="btn documentTitle" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/edit-document?slug=<?= $slugPrefix . $document->slug ?>" title="Edit">
         <i class="fa fa-file-text-o"></i>
         <small class="state <?= strtolower($document->state) ?>">
-          <i class="fa <?= $document->state == 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i></small>
+          <i class="fa <?= $document->state == 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
+        </small>
           <?= $document->title ?>
       </a>
         <?php if ($document->unpublishedChanges) : ?>

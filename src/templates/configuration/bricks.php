@@ -1,6 +1,8 @@
 <section class="dashboard configuration">
-  <h2><i class="fa fa-cogs"></i>
-    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Bricks</h2>
+  <h2>
+    <i class="fa fa-cogs"></i>
+    <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Bricks
+  </h2>
   <nav class="actions">
     <ul>
       <li>
@@ -20,8 +22,12 @@
                 </h3>
               </div>
               <div class="documentActions grid-box-4">
-                <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/bricks/edit?slug=<?= $brick->slug ?>" title="Edit"><i class="fa fa-pencil"></i></a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/bricks/delete?slug=<?= $brick->slug ?>" title="Delete"><i class="fa fa-trash"></i></a>
+                <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/bricks/edit?slug=<?= $brick->slug ?>" title="Edit">
+                  <i class="fa fa-pencil"></i>
+                </a>
+                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/bricks/delete?slug=<?= $brick->slug ?>" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
               </div>
             </li>
           <?php endforeach ?>

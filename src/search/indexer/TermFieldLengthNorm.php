@@ -36,9 +36,10 @@ class TermFieldLengthNorm
     public function execute()
     {
         $db = $this->dbHandle;
-        $db->/** @scrutinizer ignore-call */sqliteCreateFunction('sqrt', 'sqrt', 1);
+        $db->/** @scrutinizer ignore-call */
+        sqliteCreateFunction('sqrt', 'sqrt', 1);
         $sql = '
-		SELECT documentPath, field, COUNT(`count`) as termCount
+		SELECT documentPath, field, COUNT(`count`) AS termCount
 		  FROM term_count
 	  GROUP BY documentPath, field
 		';

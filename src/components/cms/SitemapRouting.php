@@ -45,7 +45,8 @@ class SitemapRouting implements CmsRouting
             $cmsComponent->storage->getSitemap()->saveSitemap($request::$post);
         }
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SITEMAP);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SITEMAP, $cmsComponent->storage->getSitemap()->getSitemap());
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SITEMAP,
+            $cmsComponent->storage->getSitemap()->getSitemap());
     }
 
     /**
@@ -73,7 +74,8 @@ class SitemapRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SITEMAP);
         $sitemapItem = $cmsComponent->storage->getSitemap()->getSitemapItemBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$post[CmsConstants::POST_PARAMETER_TEMPLATE], $request::$post[CmsConstants::POST_PARAMETER_COMPONENT])) {
-            $cmsComponent->storage->getSitemap()->saveSitemapItem($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getSitemap()->saveSitemapItem($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/sitemap');
             exit;
         }

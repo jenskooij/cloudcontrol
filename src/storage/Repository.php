@@ -28,7 +28,19 @@ class Repository
 {
     protected $storagePath;
 
-    protected $fileBasedSubsets = array('sitemap', 'applicationComponents', 'documentTypes', 'bricks', 'imageSet', 'images', 'files', 'users', 'valuelists', 'redirects', 'activityLog');
+    protected $fileBasedSubsets = array(
+        'sitemap',
+        'applicationComponents',
+        'documentTypes',
+        'bricks',
+        'imageSet',
+        'images',
+        'files',
+        'users',
+        'valuelists',
+        'redirects',
+        'activityLog'
+    );
 
     protected $sitemap;
     protected $sitemapChanges = false;
@@ -140,7 +152,8 @@ class Repository
             $changes = $name . 'Changes';
             $this->$changes = true;
         } else {
-            throw new \Exception('Trying to persist unknown subset in repository: ' . $name . ' <br /><pre>' . print_r($value, true) . '</pre>');
+            throw new \Exception('Trying to persist unknown subset in repository: ' . $name . ' <br /><pre>' . print_r($value,
+                    true) . '</pre>');
         }
     }
 

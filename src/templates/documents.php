@@ -6,23 +6,28 @@
     History.replaceState(null, 'Cloud Control CMS', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');
   };</script>
 <section class="documents">
-  <h2><i class="fa fa-file-text-o"></i> Documents</h2>
+  <h2>
+    <i class="fa fa-file-text-o"></i>
+    Documents
+  </h2>
     <?php if (isset($infoMessage)) : ?>
       <div class="infoMessage <?= isset($infoMessageClass) ? $infoMessageClass : '' ?>">
         <div class="content">
-          <?= $infoMessage ?>
+            <?= $infoMessage ?>
         </div>
       </div>
     <?php endif ?>
   <div class="search">
       <?php if ($searchNeedsUpdate) : ?>
         <div class="message warning">
-          <i class="fa fa-exclamation-triangle"></i> Search index is no longer in sync with documents.
+          <i class="fa fa-exclamation-triangle"></i>
+          Search index is no longer in sync with documents.
           <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/search/update-index?returnUrl=<?= urlencode($request::$subfolders . $cmsPrefix . '/documents') ?>" title="Update Index">Update Index</a>
         </div>
       <?php else : ?>
         <div class="message valid">
-          <i class="fa fa-check"></i> Search index is in sync with documents.
+          <i class="fa fa-check"></i>
+          Search index is in sync with documents.
         </div>
       <?php endif ?>
   </div>
@@ -30,10 +35,12 @@
     <ul>
       <li>
         <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-document?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-document" title="New Document">
-          + <i class="fa fa-file-text-o"></i>
+          +
+          <i class="fa fa-file-text-o"></i>
         </a>
         <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder" title="New Folder">
-          + <i class="fa fa-folder-o"></i>
+          +
+          <i class="fa fa-folder-o"></i>
         </a>
       </li>
     </ul>

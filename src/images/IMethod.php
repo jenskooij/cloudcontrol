@@ -9,6 +9,7 @@
  */
 
 namespace CloudControl\Cms\images {
+
     abstract class IMethod
     {
         /**

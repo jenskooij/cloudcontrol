@@ -1,6 +1,7 @@
 <?php
 
 namespace CloudControl\Cms\cc {
+
     /**
      * Class Request
      * @package CloudControl\Cms\cc
@@ -55,7 +56,8 @@ namespace CloudControl\Cms\cc {
             if (PHP_SAPI === 'cli-server' || PHP_SAPI === 'cli') {
                 self::$subfolders = '/';
             } else {
-                self::$subfolders = '/' . str_replace('//', '/', str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), "", $rootPath));
+                self::$subfolders = '/' . str_replace('//', '/',
+                        str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), "", $rootPath));
                 self::$subfolders = str_replace('//', '/', self::$subfolders);
                 self::$subfolders = str_replace('vendor/getcloudcontrol/cloudcontrol/', '', self::$subfolders);
             }
@@ -71,7 +73,8 @@ namespace CloudControl\Cms\cc {
             if (self::$subfolders === '/') {
                 self::$relativeUri = str_replace('?' . self::$queryString, '', substr(self::$requestUri, 1));
             } else {
-                self::$relativeUri = str_replace('?' . self::$queryString, '', str_replace(self::$subfolders, '', self::$requestUri));
+                self::$relativeUri = str_replace('?' . self::$queryString, '',
+                    str_replace(self::$subfolders, '', self::$requestUri));
             }
 
             self::$requestParameters = explode('/', self::$relativeUri);
@@ -90,7 +93,8 @@ namespace CloudControl\Cms\cc {
             );
         }
 
-        public static function isSecure() {
+        public static function isSecure()
+        {
             return
                 (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || $_SERVER['SERVER_PORT'] == 443
@@ -100,7 +104,7 @@ namespace CloudControl\Cms\cc {
         public static function isLocalhost()
         {
             $ipchecklist = array("localhost", "127.0.0.1", "::1");
-            return in_array($_SERVER['REMOTE_ADDR'], $ipchecklist,true);
+            return in_array($_SERVER['REMOTE_ADDR'], $ipchecklist, true);
         }
     }
 }

@@ -70,7 +70,8 @@ class BricksRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
         $brick = $cmsComponent->storage->getBricks()->getBrickBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE])) {
-            $cmsComponent->storage->getBricks()->saveBrick($request::$get[CmsConstants::GET_PARAMETER_SLUG], $request::$post);
+            $cmsComponent->storage->getBricks()->saveBrick($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                $request::$post);
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/bricks');
             exit;
         }

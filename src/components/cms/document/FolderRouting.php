@@ -25,9 +25,9 @@ namespace CloudControl\Cms\components\cms\document {
         {
             if ($relativeCmsUri == '/documents/new-folder' && isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
                 $this->newFolderRoute($request, $cmsComponent);
-            } else if ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
+            } elseif ($relativeCmsUri == '/documents/edit-folder' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
                 $this->editFolderRoute($request, $cmsComponent);
-            } else if ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
+            } elseif ($relativeCmsUri == '/documents/delete-folder' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
                 $this->deleteFolderRoute($request, $cmsComponent);
             }
         }
@@ -42,7 +42,8 @@ namespace CloudControl\Cms\components\cms\document {
             $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
             if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$post[CmsConstants::GET_PARAMETER_PATH])) {
                 $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
-                $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH], 'plus');
+                $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH],
+                    'plus');
                 header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
                 exit;
             }
@@ -66,7 +67,8 @@ namespace CloudControl\Cms\components\cms\document {
 
             if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$post['content'])) {
                 $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
-                $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH], 'pencil');
+                $cmsComponent->storage->getActivityLog()->add('edited folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH],
+                    'pencil');
                 header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
                 exit;
             }
@@ -82,7 +84,8 @@ namespace CloudControl\Cms\components\cms\document {
         private function deleteFolderRoute($request, $cmsComponent)
         {
             $cmsComponent->storage->getDocuments()->deleteDocumentFolderBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-            $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG], 'trash');
+            $cmsComponent->storage->getActivityLog()->add('deleted folder /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
+                'trash');
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?folder-delete');
             exit;
         }

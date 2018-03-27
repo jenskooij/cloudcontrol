@@ -6,6 +6,7 @@
  */
 
 namespace CloudControl\Cms\search;
+
 use CloudControl\Cms\search\results\SearchResult;
 
 /**
@@ -74,7 +75,7 @@ class Search extends SearchDbConnected
     {
         $db = $this->getSearchDbHandle();
         $sql = '
-			SELECT count(DISTINCT documentPath) as indexedDocuments
+			SELECT count(DISTINCT documentPath) AS indexedDocuments
 			  FROM term_frequency
 		';
         if (!$stmt = $db->query($sql)) {
@@ -145,10 +146,10 @@ class Search extends SearchDbConnected
 						* inverse_document_frequency.inverseDocumentFrequency -- IDF
 						* SUM(term_frequency.termNorm) -- norm
 						) 
-				    )as score,
-				   SUM(term_frequency.frequency) as TF,
-				   inverse_document_frequency.inverseDocumentFrequency as IDF,
-				   SUM(term_frequency.termNorm) as norm,
+				    )AS score,
+				   SUM(term_frequency.frequency) AS TF,
+				   inverse_document_frequency.inverseDocumentFrequency AS IDF,
+				   SUM(term_frequency.termNorm) AS norm,
 				   term_frequency.documentPath
 			  FROM term_frequency
 		 LEFT JOIN inverse_document_frequency
@@ -158,12 +159,14 @@ class Search extends SearchDbConnected
 		  ORDER BY score DESC
 		';
         if (!$stmt = $db->prepare($sql)) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         $stmt->bindValue(':query', $token);
         $stmt->bindValue(':queryNorm', $queryNorm);
         if (!$stmt->execute()) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         return $stmt->fetchAll(\PDO::FETCH_CLASS, SearchResult::class);
     }
@@ -212,21 +215,24 @@ class Search extends SearchDbConnected
     private function getQueryNorm($tokens)
     {
         $db = $this->getSearchDbHandle();
-        $db->/** @scrutinizer ignore-call */sqliteCreateFunction('sqrt', 'sqrt', 1);
+        $db->/** @scrutinizer ignore-call */
+        sqliteCreateFunction('sqrt', 'sqrt', 1);
         foreach ($tokens as $key => $token) {
             $tokens[$key] = $db->quote($token);
         }
         $terms = implode(',', $tokens);
         $sql = '
-			SELECT (1 / sqrt(SUM(inverseDocumentFrequency))) as queryNorm
+			SELECT (1 / sqrt(SUM(inverseDocumentFrequency))) AS queryNorm
 			  FROM inverse_document_frequency
 			 WHERE term IN (' . $terms . ') 
 		';
         if (!$stmt = $db->prepare($sql)) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         if (!$stmt->execute()) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         $result = $stmt->fetch(\PDO::FETCH_OBJ);
         return $result->queryNorm == null ? 1 : $result->queryNorm;
@@ -263,11 +269,12 @@ class Search extends SearchDbConnected
         $allResults = array();
         foreach ($tokens as $token) {
             $db = $this->getSearchDbHandle();
-            $db->/** @scrutinizer ignore-call */sqliteCreateFunction('levenshtein', 'levenshtein', 2);
+            $db->/** @scrutinizer ignore-call */
+            sqliteCreateFunction('levenshtein', 'levenshtein', 2);
             $sql = '
 				SELECT *
 				  FROM (
-				  	SELECT :token as original, term, levenshtein(term, :token) as editDistance
+				  	SELECT :token AS original, term, levenshtein(term, :token) AS editDistance
 				  	  FROM inverse_document_frequency
 			  	  ORDER BY editDistance ASC
 			  	     LIMIT 0, 1
@@ -276,11 +283,13 @@ class Search extends SearchDbConnected
 			';
             $stmt = $db->prepare($sql);
             if ($stmt === false) {
-                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                        true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
             }
             $stmt->bindValue(':token', $token);
             if (($stmt === false) || (!$stmt->execute())) {
-                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(), true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                        true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
             }
             $result = $stmt->fetchAll(\PDO::FETCH_CLASS, results\SearchSuggestion::class);
             $allResults = array_merge($result, $allResults);

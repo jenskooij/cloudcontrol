@@ -110,7 +110,8 @@ namespace CloudControl\Cms\images\methods {
             $new = imagecreatetruecolor($this->_width, $this->_height);
 
             if ($this->_backgroundColor !== null) {
-                $fill = imagecolorallocate($new, $this->_backgroundColor[0], $this->_backgroundColor[1], $this->_backgroundColor[2]);
+                $fill = imagecolorallocate($new, $this->_backgroundColor[0], $this->_backgroundColor[1],
+                    $this->_backgroundColor[2]);
                 imagefill($new, 0, 0, $fill);
             }
 
@@ -119,7 +120,8 @@ namespace CloudControl\Cms\images\methods {
             imagealphablending($new, false);
             imagesavealpha($new, true);
 
-            imagecopyresampled($new, $imageResource, $this->_destX, $this->_destY, $this->_x, $this->_y, $this->_destWidth, $this->_destHeight, $this->_destWidth, $this->_destHeight);
+            imagecopyresampled($new, $imageResource, $this->_destX, $this->_destY, $this->_x, $this->_y,
+                $this->_destWidth, $this->_destHeight, $this->_destWidth, $this->_destHeight);
 
             return $new;
         }

@@ -9,6 +9,7 @@
  */
 
 namespace CloudControl\Cms\images {
+
     class Image
     {
         private $_imageResource;
@@ -35,7 +36,8 @@ namespace CloudControl\Cms\images {
             } elseif (is_string($imageContainer)) {
                 $this->_imageResource = imagecreatefromstring($imageContainer);
             } else {
-                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer, true) . '</pre>');
+                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
+                        true) . '</pre>');
             }
         }
 
@@ -208,8 +210,16 @@ namespace CloudControl\Cms\images {
          * @param string $body
          * @param resource $image
          */
-        private function loopThroughBodyAndCalculatePixels($bodySize, $x, $width, $usePadding, $y, $height, $body, $image)
-        {
+        private function loopThroughBodyAndCalculatePixels(
+            $bodySize,
+            $x,
+            $width,
+            $usePadding,
+            $y,
+            $height,
+            $body,
+            $image
+        ) {
 //    Using a for-loop with index-calculation instead of str_split to avoid large memory consumption
             //    Calculate the next DWORD-position in the body
             for ($i = 0; $i < $bodySize; $i += 3) {

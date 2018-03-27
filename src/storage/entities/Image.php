@@ -30,7 +30,7 @@ class Image
         $this->file = $image->file;
         $this->type = $image->type;
         $this->size = $image->size;
-        $this->set  = $image->set;
+        $this->set = $image->set;
         $this->imagePath = $imagePath;
     }
 
@@ -42,7 +42,8 @@ class Image
     public function get($imageVariant = 'original')
     {
         if (!isset($this->set->{$imageVariant})) {
-            throw new \Exception('Image variant `' . $imageVariant . '` does not exist. Existing variants are ' . implode(', ', array_keys((array) $this->set)));
+            throw new \Exception('Image variant `' . $imageVariant . '` does not exist. Existing variants are ' . implode(', ',
+                    array_keys((array)$this->set)));
         }
         return Request::$subfolders . $this->imagePath . '/' . $this->set->{$imageVariant};
     }

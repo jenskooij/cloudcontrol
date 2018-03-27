@@ -161,7 +161,8 @@ class Indexer extends SearchDbConnected
     private function addLog($string)
     {
         $currentTime = round(microtime(true) * 1000);
-        $this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 50, " ", STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
+        $this->log .= date('d-m-Y H:i:s - ') . str_pad($string, 50, " ",
+                STR_PAD_RIGHT) . "\t" . ($currentTime - $this->lastLog) . 'ms since last log. ' . "\t" . ($currentTime - $this->loggingStart) . 'ms since start.' . PHP_EOL;
         $this->lastLog = round(microtime(true) * 1000);
     }
 

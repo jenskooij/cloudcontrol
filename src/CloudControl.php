@@ -6,9 +6,6 @@
 namespace CloudControl\Cms;
 
 use CloudControl\Cms\cc\Application;
-use CloudControl\Cms\storage\Cache;
-use CloudControl\Cms\storage\Repository;
-use Composer\Script\Event;
 
 class CloudControl
 {
@@ -47,7 +44,8 @@ class CloudControl
     public static function cliServerServeResource($dir)
     {
         if (PHP_SAPI === 'cli-server') {
-            if (preg_match('/\.(?:js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3|xml|map|scss)$/', $_SERVER['REQUEST_URI'])) {
+            if (preg_match('/\.(?:js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3|xml|map|scss)$/',
+                $_SERVER['REQUEST_URI'])) {
                 if (file_exists($dir . $_SERVER["REQUEST_URI"])) {
                     return true;    // serve the requested resource as-is.
                 }

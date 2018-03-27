@@ -57,7 +57,8 @@ class Cms
     {
         if (self::isLoggedIn()) {
             $return = self::getAssetsIfNotIncluded();
-            return $return . '<a title="New Document" data-href="' . self::newDocumentLink($path, $documentType) . '" class="ccEditDocumentButton ccNewDocumentButton"></a>';
+            return $return . '<a title="New Document" data-href="' . self::newDocumentLink($path,
+                    $documentType) . '" class="ccEditDocumentButton ccNewDocumentButton"></a>';
         } else {
             return '';
         }

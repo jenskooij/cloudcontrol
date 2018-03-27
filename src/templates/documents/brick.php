@@ -1,12 +1,18 @@
 <div class="handles">
-  <a class="btn error js-deletemultiple"><i class="fa fa-trash"></i></a>
-  <a class="btn move ui-sortable-handle"><i class="fa fa-arrows-v"></i></a>
+  <a class="btn error js-deletemultiple">
+    <i class="fa fa-trash"></i>
+  </a>
+  <a class="btn move ui-sortable-handle">
+    <i class="fa fa-arrows-v"></i>
+  </a>
 </div>
 <label><?= $brick->title ?></label>
 <?php if ($static == true) {
-    $fieldPrefix = 'bricks[' . $myBrickSlug . '][' . str_replace('.', '', str_replace(' ', '', microtime())) . '][fields]';
+    $fieldPrefix = 'bricks[' . $myBrickSlug . '][' . str_replace('.', '',
+            str_replace(' ', '', microtime())) . '][fields]';
 } else {
-    $fieldPrefix = 'dynamicBricks[' . $brick->slug . '][' . str_replace('.', '', str_replace(' ', '', microtime())) . ']';
+    $fieldPrefix = 'dynamicBricks[' . $brick->slug . '][' . str_replace('.', '',
+            str_replace(' ', '', microtime())) . ']';
 } ?>
 <?php foreach ($brick->fields as $field) : ?>
 			<div class="form-element">

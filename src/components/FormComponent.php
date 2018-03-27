@@ -120,7 +120,8 @@ class FormComponent Extends BaseComponent
         $this->parameters[self::PARAMETER_SMALLEST_IMAGE] = $storage->getImageSet()->getSmallestImageSet();
         $this->parameters[self::PARAMETER_CMS_PREFIX] = '';
 
-        $this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $this->storage->getDocumentTypes()->getDocumentTypeBySlug($this->documentType, true);
+        $this->parameters[self::PARAMETER_DOCUMENT_TYPE] = $this->storage->getDocumentTypes()->getDocumentTypeBySlug($this->documentType,
+            true);
         $this->parameters[self::PARAMETER_DOCUMENT_TYPES] = $this->storage->getDocumentTypes()->getDocumentTypes();
         $this->parameters[self::PARAMETER_HIDE_TITLE_AND_STATE] = true;
         $this->parameters[self::PARAMETER_FORM_ID] = $this->formId;
@@ -151,8 +152,12 @@ class FormComponent Extends BaseComponent
      * @param $postValues
      * @param Storage $storage
      */
-    protected function postSubmit(/** @scrutinizer ignore-unused */$postValues, /** @scrutinizer ignore-unused */$storage)
-    {
+    protected function postSubmit(
+        /** @scrutinizer ignore-unused */
+        $postValues,
+        /** @scrutinizer ignore-unused */
+        $storage
+    ) {
     }
 
     /**

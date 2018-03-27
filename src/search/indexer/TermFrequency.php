@@ -44,7 +44,8 @@ class TermFrequency
         $db = $this->dbHandle;
         $totalTermCountPerDocument = $this->getTotalTermCountPerDocument($db);
         foreach ($totalTermCountPerDocument as $documentField) {
-            $termsForDocumentField = $this->getTermsForDocumentField($documentField->documentPath, $documentField->field);
+            $termsForDocumentField = $this->getTermsForDocumentField($documentField->documentPath,
+                $documentField->field);
             $sql = '
 				INSERT INTO term_frequency (documentPath, field, term, frequency)
 					 VALUES 
@@ -92,7 +93,7 @@ class TermFrequency
     private function getTotalTermCountPerDocument($db)
     {
         $stmt = $db->prepare('
-			SELECT documentPath, field, SUM(count) as totalTermCount
+			SELECT documentPath, field, SUM(count) AS totalTermCount
 			  FROM term_count
 		  GROUP BY documentPath, field
 		');

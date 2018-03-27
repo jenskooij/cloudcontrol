@@ -1,5 +1,8 @@
 <section class="dashboard files">
-  <h2><i class="fa fa-files-o"></i> Files</h2>
+  <h2>
+    <i class="fa fa-files-o"></i>
+    Files
+  </h2>
   <nav class="actions">
     <ul>
       <li>

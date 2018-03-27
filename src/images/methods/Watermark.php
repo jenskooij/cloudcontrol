@@ -64,7 +64,9 @@ namespace CloudControl\Cms\images\methods {
          */
         protected function calculateX($imageResource)
         {
-            if ((int)$this->_x === $this->_x) return $this->_x;
+            if ((int)$this->_x === $this->_x) {
+                return $this->_x;
+            }
 
             $x = strtolower($this->_x);
 
@@ -90,7 +92,9 @@ namespace CloudControl\Cms\images\methods {
          */
         public function calculateY($imageResource)
         {
-            if ((int)$this->_y === $this->_y) return $this->_y;
+            if ((int)$this->_y === $this->_y) {
+                return $this->_y;
+            }
 
             $y = strtolower($this->_y);
 
@@ -127,7 +131,9 @@ namespace CloudControl\Cms\images\methods {
          */
         public function GetWatermark()
         {
-            if ($this->_watermark == null) throw new \Exception('A watermark is not set. Please supply a \CloudControl\Cms\image\Image using $this->SetWatermark');
+            if ($this->_watermark == null) {
+                throw new \Exception('A watermark is not set. Please supply a \CloudControl\Cms\image\Image using $this->SetWatermark');
+            }
             return $this->_watermark;
         }
 
@@ -180,7 +186,8 @@ namespace CloudControl\Cms\images\methods {
             imagesavealpha($new, true);
 
             // Preserve transparency of the watermark
-            imagecolortransparent($watermark->getImageResource(), imagecolorallocatealpha($watermark->getImageResource(), 0, 0, 0, 127));
+            imagecolortransparent($watermark->getImageResource(),
+                imagecolorallocatealpha($watermark->getImageResource(), 0, 0, 0, 127));
             imagealphablending($watermark->getImageResource(), false);
             imagesavealpha($watermark->getImageResource(), true);
 
@@ -188,7 +195,8 @@ namespace CloudControl\Cms\images\methods {
             imagealphablending($watermark->getImageResource(), true);
 
             imagecopy($new, $imageResource, 0, 0, 0, 0, $imageWidth, $imageHeight);
-            imagecopymerge($new, $watermark->getImageResource(), $x, $y, 0, 0, $watermarkWidth, $watermarkHeight, $this->_transparency);
+            imagecopymerge($new, $watermark->getImageResource(), $x, $y, 0, 0, $watermarkWidth, $watermarkHeight,
+                $this->_transparency);
 
             return $new;
         }

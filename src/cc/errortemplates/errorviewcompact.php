@@ -9,6 +9,8 @@
   <body>
     <h1>An Error Occured</h1>
     <p>It appears something went wrong. We suggest you return
-      <a href="<?= \CloudControl\Cms\cc\Request::$subfolders ?>">home</a>!</p>
+      <a href="<?= \CloudControl\Cms\cc\Request::$subfolders ?>">home</a>
+      !
+    </p>
   </body>
 </html>

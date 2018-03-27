@@ -211,7 +211,8 @@ class ComposerScripts
     private static function removePointerToCurrentDir($relPath)
     {
         while (strpos($relPath, '.' . DIRECTORY_SEPARATOR . '.' . DIRECTORY_SEPARATOR) !== false) {
-            $relPath = str_replace('.' . DIRECTORY_SEPARATOR . '.' . DIRECTORY_SEPARATOR, '.' . DIRECTORY_SEPARATOR, $relPath);
+            $relPath = str_replace('.' . DIRECTORY_SEPARATOR . '.' . DIRECTORY_SEPARATOR, '.' . DIRECTORY_SEPARATOR,
+                $relPath);
         }
         return $relPath;
     }

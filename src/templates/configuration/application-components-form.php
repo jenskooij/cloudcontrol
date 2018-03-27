@@ -1,5 +1,6 @@
 <section class="dashboard configuration">
-  <h2><i class="fa fa-cogs"></i>
+  <h2>
+    <i class="fa fa-cogs"></i>
     <a href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration">Configuration</a> &raquo; Application Components
   </h2>
   <nav class="actions">
@@ -26,7 +27,9 @@
               <li class="form-element parameters">
                 <input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name" value="<?= $key ?>"/>
                 <input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value" value="<?= $value ?>"/>
-                <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
+                <a class="btn error" id="sitemap_remove_parameter">
+                  <i class="fa fa-trash"></i>
+                </a>
               </li>
               <?php endforeach ?>
           <?php endif ?>
@@ -41,7 +44,9 @@
 <li class="form-element parameters" id="parameterPlaceholder" style="display:none;">
   <input type="text" required="required" name="parameterNames[]" placeholder="Parameter Name"/>
   <input type="text" required="required" name="parameterValues[]" placeholder="Parameter Value"/>
-  <a class="btn error" id="sitemap_remove_parameter"><i class="fa fa-trash"></i></a>
+  <a class="btn error" id="sitemap_remove_parameter">
+    <i class="fa fa-trash"></i>
+  </a>
 </li>
 <script>
   window.onload = function () {
