@@ -5,14 +5,14 @@
 
 namespace CloudControl\Cms\cc;
 
-
 use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\Repository;
+use Composer\Script\Event;
 
 class ComposerScripts
 {
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @throws \Exception
      */
     public static function postInstall($event)
@@ -22,7 +22,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @throws \Exception
      */
     public static function postUpdate($event)
@@ -32,7 +32,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @throws \Exception
      */
     private static function checkInstall($event)
@@ -79,7 +79,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @param $baseConfigTargetPath
      * @param $configObject
      */
@@ -90,7 +90,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @param $sourceFileName
      * @param $destinationPath
      * @param string $destinationFileName
@@ -130,7 +130,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @param $rootDir
      * @param $dirName
      * @return string
@@ -150,7 +150,7 @@ class ComposerScripts
     }
 
     /**
-     * @param Composer\Script\Event $event
+     * @param Event $event
      * @param $configTargetPath
      * @return mixed
      */

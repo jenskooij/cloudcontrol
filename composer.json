@@ -18,7 +18,8 @@
   },
   "require": {
     "filp/whoops": "^2.1",
-    "ezyang/htmlpurifier": "^4.9"
+    "ezyang/htmlpurifier": "^4.9",
+    "composer/composer": "^1.6"
   },
   "autoload": {
     "psr-4": {
