@@ -6,8 +6,8 @@
 namespace CloudControl\Cms\components;
 
 
-use ApiComponent\Response;
 use CloudControl\Cms\cc\Application;
+use CloudControl\Cms\components\api\Response;
 use CloudControl\Cms\search\CharacterFilter;
 use CloudControl\Cms\search\results\SearchSuggestion;
 use CloudControl\Cms\search\Search;
@@ -198,36 +198,4 @@ class ApiComponent extends CachableBaseComponent
     }
 
 
-}
-
-namespace ApiComponent;
-
-/**
- * Class Response
- * @package ApiComponent
- * @property $folder
- * @property $searchSuggestions
- * @property $documentContent
- */
-class Response
-{
-    public $success = true;
-    public $results = array();
-    public $error;
-
-    public function __construct($results = array(), $success = true, $error = null)
-    {
-        $this->results = $results;
-        $this->error = $error;
-        $this->success = $success;
-    }
-
-
-    public function __toString()
-    {
-        if (!is_array($this->results)) {
-            $this->results = array($this->results);
-        }
-        return json_encode($this);
-    }
 }
