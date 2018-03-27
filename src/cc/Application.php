@@ -65,6 +65,8 @@ class Application
     const HEADER_X_CONTENT_SECURITY_POLICY = 'X-Content-Security-Policy: '; // For IE
     const HEADER_STRICT_TRANSPORT_SECURITY = 'Strict-Transport-Security: ';
     const HEADER_STRICT_TRANSPORT_SECURITY_CONTENT = 'max-age=31536000;';
+    const HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = 'Access-Control-Allow-Origin: ';
+    const HEADER_ACCESS_CONTROL_ALLOW_ORIGIN_CONTENT = '*';
 
     /**
      * Application constructor.
@@ -114,6 +116,7 @@ class Application
 
     /**
      * Initialize the storage
+     * @throws \Exception
      */
     private function storage()
     {
@@ -230,6 +233,7 @@ class Application
         header(self::HEADER_REFERRER_POLICY . self::HEADER_REFERRER_POLICY_CONTENT);
         header(self::HEADER_X_XSS_PROTECTION . self::HEADER_X_XSS_PROTECTION_CONTENT);
         header(self::HEADER_SET_COOKIE . '__Host-sess=' . session_id() . '; path=' . Request::$subfolders . '; Secure; HttpOnly; SameSite');
+        header(self::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN . self::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN_CONTENT);
         if (Request::isSecure()) {
             header(self::HEADER_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);
             header(self::HEADER_X_CONTENT_SECURITY_POLICY . self::HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE);

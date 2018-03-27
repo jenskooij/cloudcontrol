@@ -7,6 +7,7 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Application;
+use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\api\Response;
 use CloudControl\Cms\search\CharacterFilter;
 use CloudControl\Cms\search\results\SearchSuggestion;
@@ -30,28 +31,32 @@ class ApiComponent extends CachableBaseComponent
     {
         parent::run($storage);
         header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: *');
-        $this->response = $this->getResponse();
+        $this->setResponse();
     }
 
-    /**
-     * @return Response
-     */
-    private function getResponse()
+    private function setResponse()
     {
         try {
             if (isset($_GET['id'])) {
-                return $this->getSingleDocumentResponse();
+                $this->response = $this->getSingleDocumentResponse();
+                return;
             }
 
             if (isset($_GET['q'])) {
-                return $this->getSearchDocumentsResponse();
+                $this->response = $this->getSearchDocumentsResponse();
+                return;
             }
 
-            return $this->getRootDocumentsResponse();
+            if (isset($_GET['path'])) {
+                $this->response = $this->getDocumentsByPathResponse();
+                return;
+            }
+            $this->response = '{"swagger":"2.0","info":{"description":"This is documentation for the ApiComponent of the Cloud Control Framework & CMS. See https://getcloudcontrol.org. Additional documentation regarding the ApiComponent can be found here: https://github.com/jenskooij/cloudcontrol/wiki/ApiComponent","title":"ApiComponent for Cloud Control - Framework & CMS","contact":{"name":"Cloud Control - Framework & CMS","url":"https://getcloudcontrol.org"},"license":{"name":"MIT","url":"https://github.com/jenskooij/cloudcontrol/blob/master/LICENSE"},"version":"1.0.0"},"basePath":"' . Request::$subfolders . '","paths":{"' . Request::$subfolders . Request::$relativeUri . '":{"get":{"summary":"Retrieve documents","produces":["application/json"],"parameters":[{"name":"id","in":"query","description":"The identifier for the document that you\'re looking up","required":false,"type":"string"},{"name":"q","in":"query","description":"Search query","required":false,"type":"string"},{"name":"path","in":"query","description":"The (folder) path of which you want to see the contents","required":false,"type":"string"}],"responses":{"200":{"description":"Successful operation","schema":{"$ref":"#/definitions/ApiResponse"}},"default":{"schema":{"type":"string","example":"{}"},"description":"When no parameters present, shows the swagger definition"}}}}},"definitions":{"ApiResponse":{"type":"object","properties":{"success":{"type":"boolean","title":"Wheter or not the call was processed succesful"},"results":{"type":"array","title":"The array of Documents that were found","items":{"$ref":"#/definitions/Document"}},"error":{"title":"If an error occured, it will be displayed, empty if not.","type":"string"},"folder":{"type":"string","title":"Path of the currently selected folder, by using the id parameter","example":"/folder"},"searchSuggestions":{"type":"array","items":{"type":"array","items":{"$ref":"#/definitions/SearchSuggestion"}}}}},"Document":{"type":"object","properties":{"id":{"type":"string","title":"The Document identifier","example":"1"},"path":{"type":"string","title":"The Document path"},"title":{"type":"string","title":"The Document title"},"slug":{"type":"string","title":"The Document slug"},"type":{"type":"string","title":"The Document type","enum":["document","folder"]},"documentType":{"type":"string","title":"The Document DocumentType, as defined in the CMS"},"documentTypeSlug":{"type":"string","title":"The Document DocumentType slug"},"state":{"type":"string","title":"The publication state for this document","enum":["published","unpublished"]},"lastModificationDate":{"type":"string","title":"The Document\'s last modification timestamp","example":"0"},"publicationDate":{"type":"string","title":"The Document\'s publication timestamp","example":"0"}}},"SearchSuggestion":{"type":"object","properties":{"original":{"type":"string","title":"The query that was retrieved from parameter q","example":"kyeword"},"term":{"type":"string","title":"An existing term that is closest to the original","example":"keyword"},"editDistance":{"type":"string","title":"The amount of changes were made to get from the term to the original","example":"2"}}}}}';
+            return;
         } catch (\Exception $e) {
             $error = $e->getFile() . ':' . $e->getLine() . ' ' . $e->getMessage();
-            return new Response(array(), false, $error);
+            $this->response = new Response(array(), false, $error);
+            return;
         }
     }
 
@@ -128,10 +133,18 @@ class ApiComponent extends CachableBaseComponent
      * @return Response
      * @throws \Exception
      */
-    private function getRootDocumentsResponse()
+    private function getDocumentsByPathResponse()
     {
-        $documents = $this->storage->getDocuments()->getDocuments('published');
-        return new Response($documents);
+        $path = $_GET['path'];
+        if (substr($path, 0, 1) === '/') {
+            $path = substr($path, 1);
+        }
+        $folderDocument = $this->storage->getDocuments()->getDocumentFolderBySlug($path);
+        if ($folderDocument !== false) {
+            return $this->getFolderResponse($folderDocument);
+        }
+
+        return new Response();
     }
 
     /**
@@ -189,6 +202,9 @@ class ApiComponent extends CachableBaseComponent
      */
     private function getFolderResponse($document)
     {
+        if ($document->type !== 'folder') {
+            return new Response();
+        }
         $document->dbHandle = $this->storage->getContentDbHandle();
         $document->documentStorage = new DocumentStorage($this->storage->getRepository());
         $document->getContent();
