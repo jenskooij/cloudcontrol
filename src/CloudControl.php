@@ -135,7 +135,7 @@ class CloudControl
      * @param Composer\Script\Event $event
      * @param $sourceFileName
      * @param $destinationPath
-     * @param null $destinationFileName
+     * @param string $destinationFileName
      */
     private static function copyInstallFile($event, $sourceFileName, $destinationPath, $destinationFileName = null)
     {
