@@ -7,6 +7,7 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\storage\Cache;
 
 class CachableBaseComponent extends BaseComponent
@@ -47,8 +48,11 @@ class CachableBaseComponent extends BaseComponent
     {
         $isCachable = $this->isCachable();
         if ($isCachable && $this->isCacheValid()) {
+            $this->setHeadersFromCache();
             return $this->cache->contents;
-        } elseif ($isCachable && !$this->isCacheValid()) {
+        }
+
+        if ($isCachable && !$this->isCacheValid()) {
             $this->createCache($this->renderedContent);
         }
         return $this->renderedContent;
@@ -117,8 +121,21 @@ class CachableBaseComponent extends BaseComponent
     private function createCache($renderedContent)
     {
         if (!CmsComponent::isCmsLoggedIn()) {
-            Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent);
+            Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent, json_encode(ResponseHeaders::getHeaders()));
         }
+    }
+
+    private function setHeadersFromCache()
+    {
+        if (isset($this->cache->headers)) {
+            $headers = (array)json_decode($this->cache->headers);
+            /** @var array $headers */
+            foreach ($headers as $headerName => $headerContent) {
+                ResponseHeaders::add($headerName, $headerContent);
+            }
+        }
+
+
     }
 
 }
