@@ -4,9 +4,8 @@ namespace CloudControl\Cms\components\api;
 /**
  * Class Response
  * @package ApiComponent
- * @property $folder
- * @property $searchSuggestions
- * @property $documentContent
+ * @property string $folder The path of the folder that is found
+ * @property array $searchSuggestions Search suggestions
  */
 class Response
 {
