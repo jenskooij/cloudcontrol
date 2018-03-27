@@ -19,6 +19,7 @@ use CloudControl\Cms\storage\storage\DocumentStorage;
  * @property \PDO dbHandle
  * @property DocumentStorage documentStorage
  * @property boolean unpublishedChanges
+ * @property \stdClass $documentContent Used in ApiComponent
  */
 class Document
 {

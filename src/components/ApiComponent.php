@@ -205,6 +205,9 @@ namespace ApiComponent;
 /**
  * Class Response
  * @package ApiComponent
+ * @property $folder
+ * @property $searchSuggestions
+ * @property $documentContent
  */
 class Response
 {
