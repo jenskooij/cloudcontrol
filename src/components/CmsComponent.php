@@ -2,6 +2,7 @@
 
 namespace CloudControl\Cms\components {
 
+    use CloudControl\Cms\cc\Application;
     use CloudControl\Cms\cc\Request;
     use CloudControl\Cms\components\cms\BaseRouting;
     use CloudControl\Cms\components\cms\CmsConstants;
@@ -223,7 +224,7 @@ namespace CloudControl\Cms\components {
 
         /**
          * @param $template
-         * @param null $application
+         * @param Application $application
          * @return string
          */
         protected function getTemplateDir($template, $application = null)

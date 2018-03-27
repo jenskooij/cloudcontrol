@@ -58,6 +58,7 @@ class CloudControl
 
     /**
      * @param Composer\Script\Event $event
+     * @throws \Exception
      */
     public static function postInstall($event)
     {
@@ -67,6 +68,7 @@ class CloudControl
 
     /**
      * @param Composer\Script\Event $event
+     * @throws \Exception
      */
     public static function postUpdate($event)
     {
@@ -76,6 +78,7 @@ class CloudControl
 
     /**
      * @param Composer\Script\Event $event
+     * @throws \Exception
      */
     private static function checkInstall($event)
     {
@@ -163,6 +166,7 @@ class CloudControl
      * @param $storageDir
      * @param $baseStorageDefaultPath
      * @param $baseStorageSqlPath
+     * @throws \Exception
      */
     private static function createStorage($storageDir, $baseStorageDefaultPath, $baseStorageSqlPath)
     {
