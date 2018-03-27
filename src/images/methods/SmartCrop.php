@@ -14,8 +14,8 @@ namespace CloudControl\Cms\images\methods {
         /**
          * Use build-in logic to position the smartcrop
          *
-         * @param    string $x
-         * @param    string $y
+         * @param    int $x
+         * @param    int $y
          * @return    self
          */
         public function SetPosition($x, $y)

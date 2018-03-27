@@ -17,9 +17,9 @@ namespace CloudControl\Cms\images {
          * Load the a image resource into $this->_imageResource
          * automagically :-)
          *
-         * @param    resource | string | path
+         * @param resource|string $imageContainer
          *
-         * @throws    \Exception
+         * @throws \Exception
          */
         public function loadImage($imageContainer)
         {
