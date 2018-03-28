@@ -9,6 +9,7 @@ namespace CloudControl\Cms\cc\application;
 
 use CloudControl\Cms\cc\Application;
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CachableBaseComponent;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\storage\Storage;
@@ -69,9 +70,9 @@ class ApplicationRenderer
         $interval = new \DateInterval($intervalString);
         $maxAge = date_create('@0')->add($interval)->getTimestamp();
         $expires = $expires->add($interval);
-        header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', $expires->getTimestamp()));
-        header('Cache-Control: max-age=' . $maxAge);
-        header('Pragma: cache');
+        ResponseHeaders::add(ResponseHeaders::HEADER_EXPIRES, gmdate('D, d M Y H:i:s \G\M\T', $expires->getTimestamp()));
+        ResponseHeaders::add(ResponseHeaders::HEADER_CACHE_CONTROL, 'max-age=' . $maxAge);
+        ResponseHeaders::add(ResponseHeaders::HEADER_PRAGMA, ResponseHeaders::HEADER_PRAGMA_CONTENT_CACHE);
     }
 
     /**
@@ -80,9 +81,8 @@ class ApplicationRenderer
      */
     public function setNotCachingHeaders()
     {
-        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
+        ResponseHeaders::add(ResponseHeaders::HEADER_CACHE_CONTROL, ResponseHeaders::HEADER_CACHE_CONTROL_CONTENT_NO_STORE_NO_CACHE_MUST_REVALIDATE_MAX_AGE_0);
+        ResponseHeaders::add(ResponseHeaders::HEADER_PRAGMA, ResponseHeaders::HEADER_PRAGMA_CONTENT_NO_CACHE);
     }
 
     /**
@@ -96,6 +96,7 @@ class ApplicationRenderer
         $this->handleSitemapComponentCaching($sitemapItem, $isCachable);
 
         echo $sitemapItem->object->get();
+        $this->sendHeaders();
         ob_end_flush();
         exit;
     }
@@ -107,7 +108,7 @@ class ApplicationRenderer
      */
     private function handleSitemapComponentCaching($sitemapItem, $isCachable)
     {
-        if (($isCachable && !$sitemapItem->object->isCachable()) || $isCachable === false) {
+        if ($isCachable === false || ($isCachable && !$sitemapItem->object->isCachable())) {
             $sitemapItem->object->render($this->application);
             ob_clean();
             $this->setNotCachingHeaders();
@@ -117,6 +118,16 @@ class ApplicationRenderer
             }
             ob_clean();
             $this->setCachingHeaders($sitemapItem->object->getMaxAge());
+        }
+    }
+
+    /**
+     * Send headers
+     */
+    private function sendHeaders()
+    {
+        if (PHP_SAPI !== 'cli') {
+            ResponseHeaders::sendAllHeaders();
         }
     }
 }

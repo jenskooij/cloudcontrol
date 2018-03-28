@@ -9,6 +9,7 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 
 class ImagesRouting implements CmsRouting
@@ -54,7 +55,8 @@ class ImagesRouting implements CmsRouting
      */
     private function jsonRoute($cmsComponent)
     {
-        header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+        ResponseHeaders::sendAllHeaders();
         die(json_encode($cmsComponent->storage->getImages()));
     }
 
@@ -81,7 +83,8 @@ class ImagesRouting implements CmsRouting
     {
         if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
             $image = $cmsComponent->storage->getImages()->addImage($_FILES[CmsConstants::FILES_PARAMETER_FILE]);
-            header('Content-type: application/json');
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
             die(json_encode($image));
         }
         die('error occured');

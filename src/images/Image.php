@@ -12,6 +12,9 @@ namespace CloudControl\Cms\images {
 
     class Image
     {
+        /**
+         * @var resource
+         */
         private $_imageResource;
 
         /**
@@ -24,21 +27,60 @@ namespace CloudControl\Cms\images {
          */
         public function loadImage($imageContainer)
         {
+            if ($this->createImageResourceFromResource($imageContainer) ||
+                $this->createImageResourceFromFile($imageContainer) ||
+                $this->createImageResourceFromString($imageContainer)
+            ) {
+                return;
+            }
+
+            throw new \RuntimeException('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
+                    true) . '</pre>');
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         */
+        private function createImageResourceFromResource($imageContainer)
+        {
             if (is_resource($imageContainer) && get_resource_type($imageContainer) === 'gd') {
                 $this->_imageResource = $imageContainer;
-            } elseif (is_string($imageContainer) && file_exists($imageContainer)) {
-                if ($this->getImageMimeType($imageContainer) == IMAGETYPE_BMP) {
-                    $this->_imageResource = $this->createImageFromBmp($imageContainer);
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         * @throws \Exception
+         */
+        private function createImageResourceFromFile($imageContainer)
+        {
+            if (is_string($imageContainer) && file_exists($imageContainer)) {
+                if ($this->getImageMimeType($imageContainer) === IMAGETYPE_BMP) {
+                    $this->_imageResource = BitmapFactory::createImageFromBmp($imageContainer);
                 } else {
                     $imageContent = file_get_contents($imageContainer);
                     $this->_imageResource = imagecreatefromstring($imageContent);
                 }
-            } elseif (is_string($imageContainer)) {
-                $this->_imageResource = imagecreatefromstring($imageContainer);
-            } else {
-                throw new \Exception('Could not create image resource, accepted inputs are: "resource of type (gd)", path_to_image and "string". <br /><pre>' . var_export($imageContainer,
-                        true) . '</pre>');
+                return true;
             }
+            return false;
+        }
+
+        /**
+         * @param $imageContainer
+         * @return bool
+         */
+        private function createImageResourceFromString($imageContainer)
+        {
+            if (is_string($imageContainer)) {
+                $this->_imageResource = imagecreatefromstring($imageContainer);
+                return true;
+            }
+            return false;
         }
 
         /**
@@ -60,13 +102,17 @@ namespace CloudControl\Cms\images {
 
             if ($mimeTypeConstantValue == IMAGETYPE_GIF) {
                 return imagegif($imageResource, $path);
-            } elseif ($mimeTypeConstantValue == IMAGETYPE_JPEG) {
-                return imagejpeg($imageResource, $path, $quality);
-            } elseif ($mimeTypeConstantValue == IMAGETYPE_PNG) {
-                return imagepng($imageResource, $path, ((int)($quality / 10) - 1));
-            } else {
-                throw new \Exception('Not a valid mimetypeconstant given see function documentation');
             }
+
+            if ($mimeTypeConstantValue == IMAGETYPE_JPEG) {
+                return imagejpeg($imageResource, $path, $quality);
+            }
+
+            if ($mimeTypeConstantValue == IMAGETYPE_PNG) {
+                return imagepng($imageResource, $path, ((int)($quality / 10) - 1));
+            }
+
+            throw new \RuntimeException('Not a valid mimetypeconstant given see function documentation');
         }
 
         /**
@@ -85,57 +131,16 @@ namespace CloudControl\Cms\images {
             if (function_exists('exif_imagetype')) {
                 $exif = exif_imagetype($imagePath);
             } else {
+                $exif = false;
                 if ((list($width, $height, $type, $attr) = getimagesize($imagePath)) !== false) {
                     $exif = $type;
-                } else {
-                    $exif = false;
                 }
             }
 
             return $getExtension ? image_type_to_extension($exif) : $exif;
         }
 
-        /**
-         * Create Image resource from Bitmap
-         *
-         * @see       http://www.php.net/manual/en/function.imagecreatefromwbmp.php#86214
-         * @author    alexander at alexauto dot nl
-         *
-         * @param    string $pathToBitmapFile
-         *
-         * @return  resource
-         * @throws \Exception
-         */
-        public function createImageFromBmp($pathToBitmapFile)
-        {
-            $bitmapFileData = $this->getBitmapFileData($pathToBitmapFile);
 
-            $temp = unpack("H*", $bitmapFileData);
-            $hex = $temp[1];
-            $header = substr($hex, 0, 108);
-            list($width, $height) = $this->calculateWidthAndHeight($header);
-
-            //    Define starting X and Y 
-            $x = 0;
-            $y = 1;
-
-            $image = imagecreatetruecolor($width, $height);
-
-            //    Grab the body from the image 
-            $body = substr($hex, 108);
-
-            //    Calculate if padding at the end-line is needed. Divided by two to keep overview. 1 byte = 2 HEX-chars
-            $bodySize = (strlen($body) / 2);
-            $headerSize = ($width * $height);
-
-            //    Use end-line padding? Only when needed 
-            $usePadding = ($bodySize > ($headerSize * 3) + 4);
-            $this->loopThroughBodyAndCalculatePixels($bodySize, $x, $width, $usePadding, $y, $height, $body, $image);
-
-            unset($body);
-
-            return $image;
-        }
 
         /**
          * Returns the image resource
@@ -146,109 +151,9 @@ namespace CloudControl\Cms\images {
         {
             if (is_resource($this->_imageResource) && get_resource_type($this->_imageResource) === 'gd') {
                 return $this->_imageResource;
-            } else {
-                throw new \RuntimeException('Image resource is not set. Use $this->LoadImage to load an image into the resource');
-            }
-        }
-
-        /**
-         * @param $pathToBitmapFile
-         * @throws \Exception
-         * @return bool|string
-         */
-        private function getBitmapFileData($pathToBitmapFile)
-        {
-            $fileHandle = fopen($pathToBitmapFile, "rb");
-            if ($fileHandle === false) {
-                throw new \RuntimeException('Could not open bitmapfile ' . $pathToBitmapFile);
-            }
-            $bitmapFileData = fread($fileHandle, 10);
-            while (!feof($fileHandle) && ($bitmapFileData <> "")) {
-                $bitmapFileData .= fread($fileHandle, 1024);
             }
 
-            return $bitmapFileData;
-        }
-
-        /**
-         * @param string $header
-         *
-         * @return array
-         */
-        private function calculateWidthAndHeight($header)
-        {
-            $width = null;
-            $height = null;
-
-            //    Structure: http://www.fastgraph.com/help/bmp_header_format.html
-            if (substr($header, 0, 4) == "424d") {
-                //    Cut it in parts of 2 bytes
-                $header_parts = str_split($header, 2);
-                //    Get the width        4 bytes
-                $width = hexdec($header_parts[19] . $header_parts[18]);
-                //    Get the height        4 bytes
-                $height = hexdec($header_parts[23] . $header_parts[22]);
-                //    Unset the header params
-                unset($header_parts);
-
-                return array($width, $height);
-            }
-
-            return array($width, $height);
-        }
-
-        /**
-         * Loop through the data in the body of the bitmap
-         * file and calculate each individual pixel based on the
-         * bytes
-         * @param integer $bodySize
-         * @param integer $x
-         * @param $width
-         * @param boolean $usePadding
-         * @param integer $y
-         * @param $height
-         * @param string $body
-         * @param resource $image
-         */
-        private function loopThroughBodyAndCalculatePixels(
-            $bodySize,
-            $x,
-            $width,
-            $usePadding,
-            $y,
-            $height,
-            $body,
-            $image
-        ) {
-//    Using a for-loop with index-calculation instead of str_split to avoid large memory consumption
-            //    Calculate the next DWORD-position in the body
-            for ($i = 0; $i < $bodySize; $i += 3) {
-                //    Calculate line-ending and padding
-                if ($x >= $width) {
-                    //    If padding needed, ignore image-padding. Shift i to the ending of the current 32-bit-block
-                    if ($usePadding) {
-                        $i += $width % 4;
-                    }
-                    //    Reset horizontal position
-                    $x = 0;
-                    //    Raise the height-position (bottom-up)
-                    $y++;
-                    //    Reached the image-height? Break the for-loop
-                    if ($y > $height) {
-                        break;
-                    }
-                }
-                //    Calculation of the RGB-pixel (defined as BGR in image-data). Define $iPos as absolute position in the body
-                $iPos = $i * 2;
-                $r = hexdec($body[$iPos + 4] . $body[$iPos + 5]);
-                $g = hexdec($body[$iPos + 2] . $body[$iPos + 3]);
-                $b = hexdec($body[$iPos] . $body[$iPos + 1]);
-                //    Calculate and draw the pixel
-                $color = imagecolorallocate($image, intval($r), intval($g), intval($b));
-                imagesetpixel($image, $x, $height - $y, $color);
-                //    Raise the horizontal position
-                $x++;
-            }
+            throw new \RuntimeException('Image resource is not set. Use $this->LoadImage to load an image into the resource');
         }
     }
 }

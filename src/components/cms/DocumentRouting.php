@@ -9,6 +9,7 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\cms\document\FolderRouting;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
@@ -147,13 +148,15 @@ class DocumentRouting implements CmsRouting
         $result->body = $cmsComponent->renderTemplate('documents/brick');
         $result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
         ob_clean();
-        header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+        ResponseHeaders::sendAllHeaders();
         die(json_encode($result));
     }
 
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function deleteDocumentRoute($request, $cmsComponent)
     {
@@ -167,6 +170,7 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function publishDocumentRoute($request, $cmsComponent)
     {
@@ -178,6 +182,7 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     private function unpublishDocumentRoute($request, $cmsComponent)
     {
@@ -234,7 +239,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param string $param
      */
     private function doAfterPublishRedirect($request, $cmsComponent, $param = 'published')
@@ -249,7 +254,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param string $icon
      * @param string $activity
      */
@@ -287,7 +292,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      */
     private function putDocumentTypeOnRequest($request, $cmsComponent)
     {
@@ -311,7 +316,9 @@ class DocumentRouting implements CmsRouting
         if ($docTypesCount < 1) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?no-document-types');
             exit;
-        } elseif ($docTypesCount == 1) {
+        }
+
+        if ($docTypesCount === 1) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
             exit;
         }

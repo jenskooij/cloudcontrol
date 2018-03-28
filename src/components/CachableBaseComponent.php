@@ -7,6 +7,7 @@ namespace CloudControl\Cms\components;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\storage\Cache;
 
 class CachableBaseComponent extends BaseComponent
@@ -45,12 +46,14 @@ class CachableBaseComponent extends BaseComponent
 
     public function get()
     {
-        if ($this->isCachable() && $this->isCacheValid()) {
+        $isCachable = $this->isCachable();
+        if ($isCachable && $this->isCacheValid()) {
+            $this->setHeadersFromCache();
             return $this->cache->contents;
-        } else {
-            if ($this->isCachable() && !$this->isCacheValid()) {
-                $this->createCache($this->renderedContent);
-            }
+        }
+
+        if ($isCachable && !$this->isCacheValid()) {
+            $this->createCache($this->renderedContent);
         }
         return $this->renderedContent;
     }
@@ -113,12 +116,26 @@ class CachableBaseComponent extends BaseComponent
     /**
      * Sets the new cache, unless a cms user is logged in
      * @param $renderedContent
+     * @throws \RuntimeException
      */
     private function createCache($renderedContent)
     {
         if (!CmsComponent::isCmsLoggedIn()) {
-            Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent);
+            Cache::getInstance()->setCacheForPath(Request::$requestUri, $renderedContent, json_encode(ResponseHeaders::getHeaders()));
         }
+    }
+
+    private function setHeadersFromCache()
+    {
+        if (isset($this->cache->headers)) {
+            $headers = (array)json_decode($this->cache->headers);
+            /** @var array $headers */
+            foreach ($headers as $headerName => $headerContent) {
+                ResponseHeaders::add($headerName, $headerContent);
+            }
+        }
+
+
     }
 
 }

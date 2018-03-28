@@ -41,6 +41,7 @@ class Cache
     /**
      * @param $path
      * @return \stdClass
+     * @throws \RuntimeException
      */
     public function getCacheForPath($path)
     {
@@ -114,15 +115,17 @@ class Cache
     }
 
     /**
-     * @param $requestUri
-     * @param $renderedContent
+     * @param string $requestUri
+     * @param string $renderedContent
+     * @param string $headers
+     * @throws \RuntimeException
      */
-    public function setCacheForPath($requestUri, $renderedContent)
+    public function setCacheForPath($requestUri, $renderedContent, $headers)
     {
         $dbInstace = $this->getDbInstance();
         $sql = '
-            INSERT OR REPLACE INTO `cache` (path, creationStamp, contents)
-                 VALUES (:path, :creationStamp, :contents);
+            INSERT OR REPLACE INTO `cache` (path, creationStamp, headers, contents)
+                 VALUES (:path, :creationStamp, :headers, :contents);
         ';
         $contents = \sanitize_output($renderedContent);
         $creationStamp = time();
@@ -130,6 +133,7 @@ class Cache
         $stmt->bindParam(':path', $requestUri);
         $stmt->bindParam(':creationStamp', $creationStamp);
         $stmt->bindParam(':contents', $contents);
+        $stmt->bindParam(':headers', $headers);
         if ($stmt->execute()) {
             return;
         } else {

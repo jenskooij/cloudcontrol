@@ -9,6 +9,7 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
 
@@ -52,6 +53,7 @@ class BaseRouting implements CmsRouting
 
     /**
      * Call the different routing methods
+     * @throws \Exception
      */
     public function route()
     {
@@ -70,10 +72,11 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function dashboardRouting($relativeCmsUri)
     {
-        if ($relativeCmsUri == '' || $relativeCmsUri == '/') {
+        if ($relativeCmsUri === '' || $relativeCmsUri === '/') {
             $this->cmsComponent->subTemplate = 'dashboard';
             $this->cmsComponent->setParameter('activityLog',
                 $this->cmsComponent->storage->getActivityLog()->getActivityLog());
@@ -91,7 +94,7 @@ class BaseRouting implements CmsRouting
      */
     protected function logOffRouting($request, $relativeCmsUri)
     {
-        if ($relativeCmsUri == '/log-off') {
+        if ($relativeCmsUri === '/log-off') {
             $this->cmsComponent->storage->getActivityLog()->add('logged off', 'user');
             $_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL] = null;
             unset($_SESSION[CmsConstants::SESSION_PARAMETER_CLOUD_CONTROL]);
@@ -102,17 +105,21 @@ class BaseRouting implements CmsRouting
 
     /**
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function apiRouting($relativeCmsUri)
     {
-        if ($relativeCmsUri == '/images.json') {
-            header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        if ($relativeCmsUri === '/images.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
             die(json_encode($this->cmsComponent->storage->getImages()->getImages()));
-        } elseif ($relativeCmsUri == '/files.json') {
-            header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        } elseif ($relativeCmsUri === '/files.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
             die(json_encode($this->cmsComponent->storage->getFiles()->getFiles()));
-        } elseif ($relativeCmsUri == '/documents.json') {
-            header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        } elseif ($relativeCmsUri === '/documents.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
             die(json_encode($this->cmsComponent->storage->getDocuments()->getDocuments()));
         }
     }
