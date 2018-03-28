@@ -6,6 +6,8 @@
 namespace CloudControl\Cms;
 
 use CloudControl\Cms\cc\Application;
+use CloudControl\Cms\cc\ComposerScripts;
+use Composer\Script\Event;
 
 class CloudControl
 {
@@ -84,6 +86,30 @@ class CloudControl
     {
         setlocale(LC_ALL, 'nl_NL');
         date_default_timezone_set('Europe/Amsterdam');
+    }
+
+    /**
+     * @deprecated
+     * @since v1.0.27
+     * @param Event $event
+     * @throws \Exception
+     */
+    public static function postUpdate($event)
+    {
+        $event->getIO()->write('[DEPRECATED] In your composer.json file, please change CloudControl\\Cms\\CloudControl::postUpdate to CloudControl\\Cms\\cc\\ComposerScripts::postUpdate');
+        ComposerScripts::checkInstall($event);
+    }
+
+    /**
+     * @deprecated
+     * @since v1.0.27
+     * @param Event $event
+     * @throws \Exception
+     */
+    public static function postInstall($event)
+    {
+        $event->getIO()->write('[DEPRECATED] In your composer.json file, please change CloudControl\\Cms\\CloudControl::postInstall to CloudControl\\Cms\\cc\\ComposerScripts::postInstall');
+        ComposerScripts::checkInstall($event);
     }
 
 }
