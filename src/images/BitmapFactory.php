@@ -9,21 +9,18 @@ namespace CloudControl\Cms\images;
 
 class BitmapFactory
 {
+
     /**
-     * Create Image resource from Bitmap
+     * Checks if native function imagecreatefrombmp exists (PHP >= 7.2.0)
+     * otherwise uses built in implementation
      *
-     * @see       http://www.php.net/manual/en/function.imagecreatefromwbmp.php#86214
-     * @author    alexander at alexauto dot nl
-     *
-     * @param    string $pathToBitmapFile
-     *
-     * @return  resource
-     * @throws \Exception
+     * @param $pathToBitmapFile
+     * @return resource
      */
     public static function createImageFromBmp($pathToBitmapFile)
     {
         if (function_exists('imagecreatefrombmp ')) {
-            return imagecreatefrombmp($pathToBitmapFile);
+            return /** @scrutinizer ignore-call */ imagecreatefrombmp($pathToBitmapFile);
         }
         return self::imageCreateFromBmp($pathToBitmapFile);
     }
@@ -116,8 +113,14 @@ class BitmapFactory
     }
 
     /**
-     * @param $pathToBitmapFile
-     * @return resource
+     * Create Image resource from Bitmap
+     *
+     * @see       http://www.php.net/manual/en/function.imagecreatefromwbmp.php#86214
+     * @author    alexander at alexauto dot nl
+     *
+     * @param    string $pathToBitmapFile
+     *
+     * @return  resource
      * @throws \Exception
      */
     public static function imageCreateFromBmp($pathToBitmapFile)
