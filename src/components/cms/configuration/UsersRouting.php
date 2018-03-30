@@ -14,8 +14,15 @@ use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\components\cms\CmsRouting;
 use CloudControl\Cms\components\CmsComponent;
 
-class UsersRouting implements CmsRouting
+class UsersRouting extends CmsRouting
 {
+
+    protected static $routes = array(
+        '/configuration/users' => 'overviewRoute',
+        '/configuration/users/new' => 'newRoute',
+        '/configuration/users/edit' => 'editRoute',
+        '/configuration/users/delete' => 'deleteRoute',
+    );
 
     /**
      * CmsRouting constructor.
@@ -27,21 +34,14 @@ class UsersRouting implements CmsRouting
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/configuration/users') {
-            $this->overviewRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/users/new') {
-            $this->newRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/users/delete' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->deleteRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/users/edit' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->editRoute($request, $cmsComponent);
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
+     * @param $request
      * @param CmsComponent $cmsComponent
      */
-    private function overviewRoute($cmsComponent)
+    protected function overviewRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/users';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -53,7 +53,7 @@ class UsersRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function newRoute($request, $cmsComponent)
+    protected function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/users-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -69,7 +69,7 @@ class UsersRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function deleteRoute($request, $cmsComponent)
+    protected function deleteRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getUsers()->deleteUserBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/users');
@@ -81,7 +81,7 @@ class UsersRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function editRoute($request, $cmsComponent)
+    protected function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/users-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);

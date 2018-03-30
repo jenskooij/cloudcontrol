@@ -12,8 +12,14 @@ use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\components\cms\CmsRouting;
 use CloudControl\Cms\components\CmsComponent;
 
-class BricksRouting implements CmsRouting
+class BricksRouting extends CmsRouting
 {
+    protected static $routes = array(
+        '/configuration/bricks' => 'overviewRoute',
+        '/configuration/bricks/new' => 'newRoute',
+        '/configuration/bricks/edit' => 'editRoute',
+        '/configuration/bricks/delete' => 'deleteRoute',
+    );
 
     /**
      * CmsRouting constructor.
@@ -21,24 +27,18 @@ class BricksRouting implements CmsRouting
      * @param Request $request
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/configuration/bricks') {
-            $this->overviewRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/bricks/new') {
-            $this->newRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/bricks/edit' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->editRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/bricks/delete' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->deleteRoute($request, $cmsComponent);
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    private function overviewRoute($cmsComponent)
+    protected function overviewRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/bricks';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -48,8 +48,9 @@ class BricksRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function newRoute($request, $cmsComponent)
+    protected function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/bricks-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -63,8 +64,9 @@ class BricksRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function editRoute($request, $cmsComponent)
+    protected function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/bricks-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -81,8 +83,9 @@ class BricksRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function deleteRoute($request, $cmsComponent)
+    protected function deleteRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getBricks()->deleteBrickBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/bricks');

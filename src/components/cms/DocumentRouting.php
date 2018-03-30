@@ -16,9 +16,9 @@ use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\entities\Document;
 
-class DocumentRouting implements CmsRouting
+class DocumentRouting extends CmsRouting
 {
-    private static $routes = array(
+    protected static $routes = array(
         '/documents' => 'overviewRouting',
         '/documents/new-document' => 'documentNewRoute',
         '/documents/edit-document' => 'editDocumentRoute',
@@ -37,23 +37,8 @@ class DocumentRouting implements CmsRouting
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
         new FolderRouting($request, $relativeCmsUri, $cmsComponent);
-    }
-
-
-    /**
-     * @param Request $request
-     * @param string $relativeCmsUri
-     * @param CmsComponent $cmsComponent
-     * @throws \Exception
-     */
-    private function documentRouting($request, $relativeCmsUri, $cmsComponent)
-    {
-        if (array_key_exists($relativeCmsUri, self::$routes)) {
-            $method = self::$routes[$relativeCmsUri];
-            $this->$method($request, $cmsComponent);
-        }
     }
 
     /**
@@ -62,7 +47,7 @@ class DocumentRouting implements CmsRouting
      *
      * @throws \Exception
      */
-    private function documentNewRoute($request, $cmsComponent)
+    protected function documentNewRoute($request, $cmsComponent)
     {
         if (isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
             $cmsComponent->subTemplate = 'documents/document-form';
@@ -83,7 +68,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function editDocumentRoute($request, $cmsComponent)
+    protected function editDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents/document-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
@@ -127,7 +112,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function getBrickRoute($request, $cmsComponent)
+    protected function getBrickRoute($request, $cmsComponent)
     {
         $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
             $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
@@ -154,7 +139,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function deleteDocumentRoute($request, $cmsComponent)
+    protected function deleteDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->deleteDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         $cmsComponent->storage->getActivityLog()->add('deleted document /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
@@ -168,7 +153,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function publishDocumentRoute($request, $cmsComponent)
+    protected function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         $this->clearCacheAndLogActivity($request, $cmsComponent);
@@ -180,7 +165,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function unpublishDocumentRoute($request, $cmsComponent)
+    protected function unpublishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         $this->clearCacheAndLogActivity($request, $cmsComponent, 'times-circle-o', 'unpublished');
@@ -192,7 +177,7 @@ class DocumentRouting implements CmsRouting
      * @param Request $request
      * @throws \Exception
      */
-    private function overviewRouting($request, $cmsComponent)
+    protected function overviewRouting($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENTS,

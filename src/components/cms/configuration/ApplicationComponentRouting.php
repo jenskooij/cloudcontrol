@@ -12,8 +12,14 @@ use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\components\cms\CmsRouting;
 use CloudControl\Cms\components\CmsComponent;
 
-class ApplicationComponentRouting implements CmsRouting
+class ApplicationComponentRouting extends CmsRouting
 {
+    protected static $routes = array(
+        '/configuration/application-components' => 'overviewRoute',
+        '/configuration/application-components/new' => 'newRoute',
+        '/configuration/application-components/edit' => 'editRoute',
+        '/configuration/application-components/delete' => 'deleteRoute',
+    );
 
     /**
      * CmsRouting constructor.
@@ -21,24 +27,18 @@ class ApplicationComponentRouting implements CmsRouting
      * @param Request $request
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/configuration/application-components') {
-            $this->overviewRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/application-components/new') {
-            $this->newRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/application-components/edit' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->editRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/application-components/delete' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->deleteRoute($request, $cmsComponent);
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
+     * @param $request
      * @param CmsComponent $cmsComponent
      */
-    private function overviewRoute($cmsComponent)
+    protected function overviewRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/application-components';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -50,7 +50,7 @@ class ApplicationComponentRouting implements CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    private function newRoute($request, $cmsComponent)
+    protected function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/application-components-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -65,7 +65,7 @@ class ApplicationComponentRouting implements CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    private function editRoute($request, $cmsComponent)
+    protected function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/application-components-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -84,7 +84,7 @@ class ApplicationComponentRouting implements CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    private function deleteRoute($request, $cmsComponent)
+    protected function deleteRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getApplicationComponents()->deleteApplicationComponentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/application-components');

@@ -12,8 +12,10 @@ namespace CloudControl\Cms\components\cms;
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 
-interface CmsRouting
+abstract class CmsRouting
 {
+    protected static $routes = array();
+
     /**
      * CmsRouting constructor.
      *
@@ -21,5 +23,19 @@ interface CmsRouting
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
      */
-    public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent);
+    abstract public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent);
+
+    /**
+     * @param Request $request
+     * @param string $relativeCmsUri
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    protected function doRouting($request, $relativeCmsUri, $cmsComponent)
+    {
+        if (array_key_exists($relativeCmsUri, $this::$routes)) {
+            $method = $this::$routes[$relativeCmsUri];
+            $this->$method($request, $cmsComponent);
+        }
+    }
 }

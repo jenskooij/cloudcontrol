@@ -213,7 +213,7 @@ class DocumentStorage extends AbstractStorage
             $path = '/' . $slug;
         }
 
-        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path);
+        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path, 'unpublished');
     }
 
 }

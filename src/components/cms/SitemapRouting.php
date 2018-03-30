@@ -12,33 +12,35 @@ namespace CloudControl\Cms\components\cms;
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
 
-class SitemapRouting implements CmsRouting
+class SitemapRouting extends CmsRouting
 {
 
+    protected static $routes = array(
+        '/sitemap' => 'overviewRoute',
+        '/sitemap/new' => 'newRoute',
+        '/sitemap/edit' => 'editRoute',
+        '/sitemap/delete' => 'deleteRoute',
+    );
+
     /**
-     * SitemapRouting constructor.
-     * @param \CloudControl\Cms\cc\Request $request
-     * @param mixed|string $relativeCmsUri
+     * CmsRouting constructor.
+     *
+     * @param Request $request
+     * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/sitemap') {
-            $this->overviewRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/new') {
-            $this->newRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/edit' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->editRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/sitemap/delete' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->deleteRoute($request, $cmsComponent);
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'sitemap';
         if (isset($request::$post[CmsConstants::POST_PARAMETER_SAVE])) {
@@ -52,8 +54,9 @@ class SitemapRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function newRoute($request, $cmsComponent)
+    protected function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'sitemap/form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SITEMAP);
@@ -67,8 +70,9 @@ class SitemapRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function editRoute($request, $cmsComponent)
+    protected function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'sitemap/form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SITEMAP);
@@ -85,8 +89,9 @@ class SitemapRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function deleteRoute($request, $cmsComponent)
+    protected function deleteRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getSitemap()->deleteSitemapItemBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/sitemap');

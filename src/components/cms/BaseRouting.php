@@ -13,7 +13,7 @@ use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
 
-class BaseRouting implements CmsRouting
+class BaseRouting extends CmsRouting
 {
     protected $userRights;
     /**

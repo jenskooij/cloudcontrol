@@ -47,8 +47,8 @@ class FilesStorage extends AbstractStorage
         $filename = $this->validateFilename($postValues['name'], $destinationPath);
         $destination = $destinationPath . '/' . $filename;
 
-        if ($postValues['error'] != '0') {
-            throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+        if ('0' != $postValues['error']) {
+            throw new \RuntimeException('Error uploading file. Error code: ' . $postValues['error']);
         }
 
         if (move_uploaded_file($postValues['tmp_name'], $destination)) {
@@ -59,7 +59,7 @@ class FilesStorage extends AbstractStorage
             $this->repository->files = $files;
             $this->save();
         } else {
-            throw new \Exception('Error moving uploaded file');
+            throw new \RuntimeException('Error moving uploaded file');
         }
         return $file;
     }

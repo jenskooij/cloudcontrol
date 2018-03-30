@@ -16,7 +16,7 @@ use CloudControl\Cms\components\cms\configuration\ImageSetRouting;
 use CloudControl\Cms\components\cms\configuration\UsersRouting;
 use CloudControl\Cms\components\CmsComponent;
 
-class ConfigurationRouting implements CmsRouting
+class ConfigurationRouting extends CmsRouting
 {
     /**
      * ConfigurationRouting constructor.
@@ -24,10 +24,11 @@ class ConfigurationRouting implements CmsRouting
      * @param Request $request
      * @param String $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/configuration') {
+        if ($relativeCmsUri === '/configuration') {
             $cmsComponent->subTemplate = 'configuration';
             $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
         }
