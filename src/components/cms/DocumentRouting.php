@@ -18,6 +18,16 @@ use CloudControl\Cms\storage\entities\Document;
 
 class DocumentRouting implements CmsRouting
 {
+    private static $routes = array(
+        '/documents' => 'overviewRouting',
+        '/documents/new-document' => 'documentNewRoute',
+        '/documents/edit-document' => 'editDocumentRoute',
+        '/documents/get-brick' => 'getBrickRoute',
+        '/documents/delete-document' => 'deleteDocumentRoute',
+        '/documents/publish-document' => 'publishDocumentRoute',
+        '/documents/unpublish-document' => 'unpublishDocumentRoute',
+    );
+
     /**
      * DocumentRouting constructor.
      * @param $request
@@ -27,9 +37,6 @@ class DocumentRouting implements CmsRouting
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/documents') {
-            $this->overviewRouting($cmsComponent, $request);
-        }
         $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
         new FolderRouting($request, $relativeCmsUri, $cmsComponent);
     }
@@ -43,16 +50,9 @@ class DocumentRouting implements CmsRouting
      */
     private function documentRouting($request, $relativeCmsUri, $cmsComponent)
     {
-        if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
-            $this->documentNewRoute($request, $cmsComponent);
-        } elseif (isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            switch ($relativeCmsUri) {
-                case '/documents/edit-document': $this->editDocumentRoute($request, $cmsComponent); break;
-                case '/documents/get-brick': $this->getBrickRoute($request, $cmsComponent); break;
-                case '/documents/delete-document': $this->deleteDocumentRoute($request, $cmsComponent); break;
-                case '/documents/publish-document': $this->publishDocumentRoute($request, $cmsComponent); break;
-                case '/documents/unpublish-document': $this->unpublishDocumentRoute($request, $cmsComponent); break;
-            }
+        if (array_key_exists($relativeCmsUri, self::$routes)) {
+            $method = self::$routes[$relativeCmsUri];
+            $this->$method($request, $cmsComponent);
         }
     }
 
@@ -64,22 +64,18 @@ class DocumentRouting implements CmsRouting
      */
     private function documentNewRoute($request, $cmsComponent)
     {
-        $cmsComponent->subTemplate = 'documents/document-form';
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
-            $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
-        if (isset($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE])) {
-            if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsConstants::GET_PARAMETER_PATH])) {
-                $this->createNewDocument($request, $cmsComponent);
+        if (isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
+            $cmsComponent->subTemplate = 'documents/document-form';
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
+                $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
+            if (isset($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE])) {
+                $this->newDocumentRoute($request, $cmsComponent);
+            } else {
+                $this->selectDocumentTypesRoute($request, $cmsComponent);
             }
-            $this->putDocumentTypeOnRequest($request, $cmsComponent);
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
-                $cmsComponent->storage->getBricks()->getBricks());
-        } else {
-            $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-            $this->checkDocumentType($request, $cmsComponent, $documentTypes);
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
         }
+
     }
 
     /**
@@ -196,7 +192,7 @@ class DocumentRouting implements CmsRouting
      * @param Request $request
      * @throws \Exception
      */
-    private function overviewRouting($cmsComponent, $request)
+    private function overviewRouting($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENTS,
@@ -263,7 +259,8 @@ class DocumentRouting implements CmsRouting
         $cmsComponent,
         $icon = 'check-circle-o',
         $activity = 'published'
-    ) {
+    )
+    {
         Cache::getInstance()->clearCache();
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
@@ -291,7 +288,7 @@ class DocumentRouting implements CmsRouting
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param CmsComponent $cmsComponent
      */
     private function putDocumentTypeOnRequest($request, $cmsComponent)
@@ -307,7 +304,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param $documentTypes
      */
     private function checkDocumentType($request, $cmsComponent, $documentTypes)
@@ -322,5 +319,31 @@ class DocumentRouting implements CmsRouting
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
             exit;
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    private function newDocumentRoute($request, $cmsComponent)
+    {
+        if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsConstants::GET_PARAMETER_PATH])) {
+            $this->createNewDocument($request, $cmsComponent);
+        }
+        $this->putDocumentTypeOnRequest($request, $cmsComponent);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
+            $cmsComponent->storage->getBricks()->getBricks());
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     */
+    private function selectDocumentTypesRoute($request, $cmsComponent)
+    {
+        $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+        $this->checkDocumentType($request, $cmsComponent, $documentTypes);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
     }
 }

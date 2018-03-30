@@ -106,9 +106,9 @@ namespace CloudControl\Cms\components {
         {
             if (isset($this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS])) {
                 $whitelistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_WHITELIST_IPS]);
-                $whitelistIps = array_map("trim", $whitelistIps);
-                if (!in_array($remoteAddress, $whitelistIps)) {
-                    throw new \Exception('Ip address ' . $remoteAddress . ' is not on whitelist');
+                $whitelistIps = array_map('trim', $whitelistIps);
+                if (!in_array($remoteAddress, $whitelistIps, true)) {
+                    throw new \RuntimeException('Ip address ' . $remoteAddress . ' is not on whitelist');
                 }
             }
         }
@@ -122,9 +122,9 @@ namespace CloudControl\Cms\components {
         {
             if (isset($this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS])) {
                 $blacklistIps = explode(',', $this->parameters[CmsConstants::PARAMETER_BLACKLIST_IPS]);
-                $blacklistIps = array_map("trim", $blacklistIps);
-                if (in_array($remoteAddress, $blacklistIps)) {
-                    throw new \Exception('Ip address ' . $remoteAddress . ' is on blacklist');
+                $blacklistIps = array_map('trim', $blacklistIps);
+                if (in_array($remoteAddress, $blacklistIps, true)) {
+                    throw new \RuntimeException('Ip address ' . $remoteAddress . ' is on blacklist');
                 }
             }
         }
