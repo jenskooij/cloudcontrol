@@ -23,7 +23,7 @@ class DocumentApiComponent extends CachableBaseComponent
     const GET_PARAMETER_PATH = 'path';
     const GET_PARAMETER_Q = 'q';
     /**
-     * @var Response
+     * @var Response|string
      */
     protected $response;
 
@@ -142,7 +142,7 @@ class DocumentApiComponent extends CachableBaseComponent
             $path = substr($path, 1);
         }
         $folderDocument = $this->storage->getDocuments()->getDocumentFolderBySlug($path);
-        if ($folderDocument !== false && $folderDocument->type === 'folder') {
+        if ($folderDocument instanceof Document && $folderDocument->type === 'folder') {
             return $this->getFolderResponse($folderDocument);
         }
 
