@@ -8,7 +8,7 @@
 namespace CloudControl\Cms\storage\factories;
 
 
-use CloudControl\Cms\cc\StringUtil;
+use CloudControl\Cms\util\StringUtil;
 
 class BrickFactory extends AbstractBricksFactory
 {

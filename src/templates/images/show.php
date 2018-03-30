@@ -21,7 +21,7 @@
     </div>
     <label>Size</label>
     <div class="value">
-        <?= isset($image) ? \CloudControl\Cms\cc\StringUtil::humanFileSize($image->size) : '' ?>
+        <?= isset($image) ? \CloudControl\Cms\util\StringUtil::humanFileSize($image->size) : '' ?>
     </div>
     <label>Set</label>
       <?php if (isset($image)) : ?>

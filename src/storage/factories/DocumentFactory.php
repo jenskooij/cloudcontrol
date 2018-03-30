@@ -7,7 +7,7 @@
 
 namespace CloudControl\Cms\storage\factories;
 
-use CloudControl\Cms\cc\StringUtil;
+use CloudControl\Cms\util\StringUtil;
 use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\storage\DocumentTypesStorage;
 use CloudControl\Cms\util\GlobalFunctions;

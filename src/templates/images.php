@@ -32,7 +32,7 @@
                 </small>
                 <small class="small fileSize">
                   <span class="label">Size:</span>
-                    <?= \CloudControl\Cms\cc\StringUtil::humanFileSize($image->size) ?>
+                    <?= \CloudControl\Cms\util\StringUtil::humanFileSize($image->size) ?>
                 </small>
               </div>
             </li>

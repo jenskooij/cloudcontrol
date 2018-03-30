@@ -3,7 +3,7 @@
  * Created by jensk on 17-3-2017.
  */
 
-namespace CloudControl\Cms\cc;
+namespace CloudControl\Cms\util;
 
 
 class StringUtil
