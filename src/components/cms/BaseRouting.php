@@ -109,28 +109,19 @@ class BaseRouting implements CmsRouting
      */
     protected function apiRouting($relativeCmsUri)
     {
-        if ($relativeCmsUri === '/images.json') {
-            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
-            ResponseHeaders::sendAllHeaders();
-            die(json_encode($this->cmsComponent->storage->getImages()->getImages()));
-        } elseif ($relativeCmsUri === '/files.json') {
-            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
-            ResponseHeaders::sendAllHeaders();
-            die(json_encode($this->cmsComponent->storage->getFiles()->getFiles()));
-        } elseif ($relativeCmsUri === '/documents.json') {
-            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
-            ResponseHeaders::sendAllHeaders();
-            die(json_encode($this->cmsComponent->storage->getDocuments()->getDocuments()));
-        }
+        $this->imagesApiRouting($relativeCmsUri);
+        $this->filesApiRouting($relativeCmsUri);
+        $this->documentsApiRouting($relativeCmsUri);
     }
 
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function documentRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_DOCUMENTS, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_DOCUMENTS, $userRights, true)) {
             new DocumentRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -141,7 +132,7 @@ class BaseRouting implements CmsRouting
      */
     protected function valuelistsRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_VALUELISTS, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_VALUELISTS, $userRights, true)) {
             new ValuelistRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -152,7 +143,7 @@ class BaseRouting implements CmsRouting
      */
     protected function sitemapRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_SITEMAP, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_SITEMAP, $userRights, true)) {
             new SitemapRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -163,7 +154,7 @@ class BaseRouting implements CmsRouting
      */
     protected function redirectRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_SITEMAP, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_SITEMAP, $userRights, true)) {
             new RedirectRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -174,7 +165,7 @@ class BaseRouting implements CmsRouting
      */
     protected function imageRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_IMAGES, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_IMAGES, $userRights, true)) {
             new ImagesRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -185,7 +176,7 @@ class BaseRouting implements CmsRouting
      */
     protected function filesRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_FILES, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_FILES, $userRights, true)) {
             new FilesRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
@@ -196,16 +187,53 @@ class BaseRouting implements CmsRouting
      */
     protected function configurationRouting($userRights, $relativeCmsUri)
     {
-        if (in_array(CmsConstants::PARAMETER_CONFIGURATION, $userRights)) {
+        if (in_array(CmsConstants::PARAMETER_CONFIGURATION, $userRights, true)) {
             new ConfigurationRouting($this->request, $relativeCmsUri, $this->cmsComponent);
         }
     }
 
     /**
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function searchRouting($relativeCmsUri)
     {
         new SearchRouting($this->request, $relativeCmsUri, $this->cmsComponent);
+    }
+
+    /**
+     * @param $relativeCmsUri
+     */
+    protected function imagesApiRouting($relativeCmsUri)
+    {
+        if ($relativeCmsUri === '/images.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
+            die(json_encode($this->cmsComponent->storage->getImages()->getImages()));
+        }
+    }
+
+    /**
+     * @param $relativeCmsUri
+     */
+    protected function filesApiRouting($relativeCmsUri)
+    {
+        if ($relativeCmsUri === '/files.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
+            die(json_encode($this->cmsComponent->storage->getFiles()->getFiles()));
+        }
+    }
+
+    /**
+     * @param $relativeCmsUri
+     */
+    protected function documentsApiRouting($relativeCmsUri)
+    {
+        if ($relativeCmsUri === '/documents.json') {
+            ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+            ResponseHeaders::sendAllHeaders();
+            die(json_encode($this->cmsComponent->storage->getDocuments()->getDocuments()));
+        }
     }
 }
