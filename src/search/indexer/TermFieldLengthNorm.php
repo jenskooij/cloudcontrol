@@ -38,22 +38,7 @@ class TermFieldLengthNorm
         $db = $this->dbHandle;
         $db->/** @scrutinizer ignore-call */
         sqliteCreateFunction('sqrt', 'sqrt', 1);
-        $sql = '
-		SELECT documentPath, field, COUNT(`count`) AS termCount
-		  FROM term_count
-	  GROUP BY documentPath, field
-		';
-        $stmt = $db->prepare($sql);
-        if ($stmt === false) {
-            $errorInfo = $db->errorInfo();
-            $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-        }
-        if (($stmt->execute()) === false) {
-            $errorInfo = $db->errorInfo();
-            $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
-        }
+        $stmt = $this->getStatement($db);
         $uniqueFieldsPerDocument = $stmt->fetchAll(\PDO::FETCH_OBJ);
         $values = array();
         $i = 0;
@@ -66,7 +51,7 @@ class TermFieldLengthNorm
                 $i = 0;
             }
         }
-        if (count($values) != 0) {
+        if (count($values) !== 0) {
             $this->executeUpdateTermNorm($values, $db);
         }
     }
@@ -84,7 +69,33 @@ class TermFieldLengthNorm
         if (($db->exec($sql)) === false) {
             $errorInfo = $db->errorInfo();
             $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
         }
+    }
+
+    /**
+     * @param \PDO $db
+     * @return \PDOStatement
+     * @throws \Exception
+     */
+    protected function getStatement($db)
+    {
+        $sql = '
+		SELECT documentPath, field, COUNT(`count`) AS termCount
+		  FROM term_count
+	  GROUP BY documentPath, field
+		';
+        $stmt = $db->prepare($sql);
+        if ($stmt === false) {
+            $errorInfo = $db->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        if (($stmt->execute()) === false) {
+            $errorInfo = $db->errorInfo();
+            $errorMsg = $errorInfo[2];
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+        return $stmt;
     }
 }
