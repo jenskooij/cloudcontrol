@@ -71,7 +71,7 @@ class FilesRouting extends CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    protected function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'files';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_FILES);
@@ -99,7 +99,7 @@ class FilesRouting extends CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    protected function newAjaxRoute($request, $cmsComponent)
+    protected function newAjaxRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         if (isset($_FILES[CmsConstants::FILES_PARAMETER_FILE])) {
             $file = $cmsComponent->storage->getFiles()->addFile($_FILES[CmsConstants::FILES_PARAMETER_FILE]);

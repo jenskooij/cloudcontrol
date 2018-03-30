@@ -32,7 +32,7 @@ class RedirectRouting extends CmsRouting
         $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
-    protected function overviewRoute(Request $request, CmsComponent $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ Request $request, CmsComponent $cmsComponent)
     {
         $cmsComponent->subTemplate = 'redirects';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_REDIRECTS);

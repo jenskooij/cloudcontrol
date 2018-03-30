@@ -39,7 +39,7 @@ class DocumentTypeRouting extends CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    protected function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/document-types';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);

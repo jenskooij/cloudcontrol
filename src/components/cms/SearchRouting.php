@@ -41,7 +41,7 @@ class SearchRouting extends CmsRouting
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
      * @throws \Exception
      */
-    protected function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'search';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
@@ -81,7 +81,7 @@ class SearchRouting extends CmsRouting
         }
     }
 
-    protected function manualUpdateRoute($request, $cmsComponent)
+    protected function manualUpdateRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $indexer = new Indexer($cmsComponent->storage);
         $indexer->updateIndex();

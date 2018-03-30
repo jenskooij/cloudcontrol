@@ -38,7 +38,7 @@ class ApplicationComponentRouting extends CmsRouting
      * @param $request
      * @param CmsComponent $cmsComponent
      */
-    protected function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/application-components';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);

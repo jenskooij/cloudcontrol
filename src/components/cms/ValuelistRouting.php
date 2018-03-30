@@ -36,7 +36,7 @@ class ValuelistRouting extends CmsRouting
      * @param Request $request
      * @param CmsComponent $cmsComponent
      */
-    protected function overviewRoute($request, $cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'valuelists';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_VALUELISTS,
