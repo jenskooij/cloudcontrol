@@ -6,6 +6,8 @@
 namespace CloudControl\Cms\storage;
 
 
+use CloudControl\Cms\util\GlobalFunctions;
+
 class Cache
 {
     /**
@@ -127,7 +129,7 @@ class Cache
             INSERT OR REPLACE INTO `cache` (path, creationStamp, headers, contents)
                  VALUES (:path, :creationStamp, :headers, :contents);
         ';
-        $contents = \sanitize_output($renderedContent);
+        $contents = GlobalFunctions::sanitizeOutput($renderedContent);
         $creationStamp = time();
         $stmt = $dbInstace->prepare($sql);
         $stmt->bindParam(':path', $requestUri);

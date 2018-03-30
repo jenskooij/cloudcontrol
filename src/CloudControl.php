@@ -22,7 +22,7 @@ class CloudControl
         self::setLocalisation();
 
 
-        ob_start('sanitize_output');
+        ob_start('\CloudControl\Cms\util\GlobalFunctions::sanitizeOutput');
         session_start();
 
         $rootDir = realpath($dir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);

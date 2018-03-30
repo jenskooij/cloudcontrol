@@ -10,6 +10,7 @@ namespace CloudControl\Cms\storage\factories;
 use CloudControl\Cms\cc\StringUtil;
 use CloudControl\Cms\storage\entities\Document;
 use CloudControl\Cms\storage\storage\DocumentTypesStorage;
+use CloudControl\Cms\util\GlobalFunctions;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
@@ -25,7 +26,7 @@ class DocumentFactory
      */
     public static function createDocumentFromPostValues($postValues, DocumentTypesStorage $documentTypesStorage)
     {
-        $postValues = utf8Convert($postValues);
+        $postValues = GlobalFunctions::utf8Convert($postValues);
         $documentType = $documentTypesStorage->getDocumentTypeBySlug($postValues['documentType']);
 
         $staticBricks = $documentType->bricks;

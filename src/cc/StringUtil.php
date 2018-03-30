@@ -8,6 +8,24 @@ namespace CloudControl\Cms\cc;
 
 class StringUtil
 {
+    public static $fileTypeIcons = array(
+        'image' => 'file-image-o',
+        'pdf' => 'file-pdf-o',
+        'audio' => 'file-audio-o',
+        'x-msdownload' => 'windows',
+        'application/vnd.ms-excel' => 'file-excel-o',
+        'application/msexcel' => 'file-excel-o',
+        'application/xls' => 'file-excel-o',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'file-excel-o',
+        'application/vnd.google-apps.spreadsheet' => 'file-excel-o',
+        'application/msword' => 'file-word-o',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'file-word-o',
+        'application/x-rar-compressed' => 'file-archive-o',
+        'application/x-zip-compressed' => 'file-archive-o',
+        'application/zip' => 'file-archive-o',
+        'text' => 'file-text-o',
+    );
+
     /**
      * Convert a string to url friendly slug
      *
@@ -40,25 +58,9 @@ class StringUtil
      */
     public static function iconByFileType($fileType)
     {
-        $fileTypeIcons = array(
-            'image' => 'file-image-o',
-            'pdf' => 'file-pdf-o',
-            'audio' => 'file-audio-o',
-            'x-msdownload' => 'windows',
-            'application/vnd.ms-excel' => 'file-excel-o',
-            'application/msexcel' => 'file-excel-o',
-            'application/xls' => 'file-excel-o',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'file-excel-o',
-            'application/vnd.google-apps.spreadsheet' => 'file-excel-o',
-            'application/msword' => 'file-word-o',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'file-word-o',
-            'application/x-rar-compressed' => 'file-archive-o',
-            'application/x-zip-compressed' => 'file-archive-o',
-            'application/zip' => 'file-archive-o',
-            'text' => 'file-text-o',
-        );
 
-        foreach ($fileTypeIcons as $needle => $icon) {
+
+        foreach (self::$fileTypeIcons as $needle => $icon) {
             if (strpos($fileType, $needle) !== false) {
                 return $icon;
             }
@@ -76,19 +78,19 @@ class StringUtil
      *
      * @return string
      */
-    public static function humanFileSize($size, $unit = "")
+    public static function humanFileSize($size, $unit = '')
     {
-        if ((!$unit && $size >= 1 << 30) || $unit == "GB") {
-            return number_format($size / (1 << 30), 2) . "GB";
+        if (self::isHumanFilesizeUnitGb($size, $unit)) {
+            return number_format($size / (1 << 30), 2) . 'GB';
         }
-        if ((!$unit && $size >= 1 << 20) || $unit == "MB") {
-            return number_format($size / (1 << 20), 2) . "MB";
+        if (self::isHumanFilesizeUnitMb($size, $unit)) {
+            return number_format($size / (1 << 20), 2) . 'MB';
         }
-        if ((!$unit && $size >= 1 << 10) || $unit == "KB") {
-            return number_format($size / (1 << 10), 2) . "KB";
+        if (self::isHumanFilesizeUnitKb($size, $unit)) {
+            return number_format($size / (1 << 10), 2) . 'KB';
         }
 
-        return number_format($size) . " bytes";
+        return number_format($size) . ' bytes';
     }
 
     /**
@@ -133,5 +135,35 @@ class StringUtil
         }
 
         return 0;
+    }
+
+    /**
+     * @param $size
+     * @param $unit
+     * @return bool
+     */
+    protected static function isHumanFilesizeUnitGb($size, $unit)
+    {
+        return (!$unit && $size >= 1 << 30) || $unit === 'GB';
+    }
+
+    /**
+     * @param $size
+     * @param $unit
+     * @return bool
+     */
+    protected static function isHumanFilesizeUnitMb($size, $unit)
+    {
+        return (!$unit && $size >= 1 << 20) || $unit === 'MB';
+    }
+
+    /**
+     * @param $size
+     * @param $unit
+     * @return bool
+     */
+    protected static function isHumanFilesizeUnitKb($size, $unit)
+    {
+        return (!$unit && $size >= 1 << 10) || $unit === 'KB';
     }
 }
