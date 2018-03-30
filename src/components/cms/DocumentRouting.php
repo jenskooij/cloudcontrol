@@ -75,16 +75,7 @@ class DocumentRouting extends CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
             $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
-            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-            $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
-                'pencil');
-            if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
-            } else {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
-            }
-            exit;
+            $this->saveDocument($request, $cmsComponent);
         }
         $document = $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG],
             'unpublished');
@@ -92,13 +83,7 @@ class DocumentRouting extends CmsRouting
 
         $request::$get[CmsConstants::GET_PARAMETER_PATH] = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         if ($document instanceof Document) {
-            $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug,
-                true);
-            if ($documentType === null) {
-                $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-                $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
-            }
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
+            $this->setDocumentTypeParameter($cmsComponent, $document);
         } else {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?not-found');
             exit;
@@ -330,5 +315,39 @@ class DocumentRouting extends CmsRouting
         $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
         $this->checkDocumentType($request, $cmsComponent, $documentTypes);
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    protected function saveDocument($request, $cmsComponent)
+    {
+        $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
+            'pencil');
+        if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+        }
+        exit;
+    }
+
+    /**
+     * @param CmsComponent $cmsComponent
+     * @param Document $document
+     */
+    protected function setDocumentTypeParameter($cmsComponent, $document)
+    {
+        $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug,
+            true);
+        if ($documentType === null) {
+            $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+        }
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
     }
 }
