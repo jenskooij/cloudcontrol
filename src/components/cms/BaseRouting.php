@@ -129,6 +129,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function valuelistsRouting($userRights, $relativeCmsUri)
     {
@@ -140,6 +141,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function sitemapRouting($userRights, $relativeCmsUri)
     {
@@ -151,6 +153,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function redirectRouting($userRights, $relativeCmsUri)
     {
@@ -162,6 +165,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function imageRouting($userRights, $relativeCmsUri)
     {
@@ -173,6 +177,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function filesRouting($userRights, $relativeCmsUri)
     {
@@ -184,6 +189,7 @@ class BaseRouting extends CmsRouting
     /**
      * @param $userRights
      * @param string $relativeCmsUri
+     * @throws \Exception
      */
     protected function configurationRouting($userRights, $relativeCmsUri)
     {
@@ -227,6 +233,7 @@ class BaseRouting extends CmsRouting
 
     /**
      * @param $relativeCmsUri
+     * @throws \Exception
      */
     protected function documentsApiRouting($relativeCmsUri)
     {
