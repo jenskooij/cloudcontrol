@@ -223,11 +223,7 @@ class FormComponent Extends BaseComponent
 
     protected function isSubmitAllowed()
     {
-        if ($this->submitOncePerSession === true && $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName]['submitted'] === true) {
-            return false;
-        } else {
-            return true;
-        }
+        return !($this->submitOncePerSession === true && $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName]['submitted'] === true);
     }
 
     protected function checkDocumentTypeParameter()
@@ -284,7 +280,7 @@ class FormComponent Extends BaseComponent
     protected function checkRequiredParameters()
     {
         if ($this->documentType === null || $this->responseFolder === null) {
-            throw new \Exception('Parameters `documentType` and `responseFolder` are required for usage with this form');
+            throw new \RuntimeException('Parameters `documentType` and `responseFolder` are required for usage with this form');
         }
     }
 
