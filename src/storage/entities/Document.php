@@ -7,6 +7,7 @@
 
 namespace CloudControl\Cms\storage\entities;
 
+use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\storage\storage\DocumentStorage;
 
 /**
@@ -42,18 +43,7 @@ class Document
 
     protected $dbHandle;
 
-    protected $jsonEncodedFields = array('fields', 'bricks', 'dynamicBricks');
-    protected $orderableFields = array(
-        'title',
-        'slug',
-        'type',
-        'documentType',
-        'documentTypeSlug',
-        'state',
-        'lastModificationDate',
-        'creationDate',
-        'lastModifiedBy'
-    );
+    private static $JSON_ENCODED_FIELDS = array('fields', 'bricks', 'dynamicBricks');
 
     public static $DOCUMENT_STATES = array('published', 'unpublished');
 
@@ -64,7 +54,7 @@ class Document
      */
     public function __get($name)
     {
-        if (in_array($name, $this->jsonEncodedFields, true)) {
+        if (in_array($name, self::$JSON_ENCODED_FIELDS, true)) {
             return $this->getJsonEncodedField($name);
         }
 
@@ -84,7 +74,7 @@ class Document
      */
     public function __set($name, $value)
     {
-        if (in_array($name, $this->jsonEncodedFields, true)) {
+        if (in_array($name, self::$JSON_ENCODED_FIELDS, true)) {
             $this->$name = json_encode($value);
         } elseif ($name === 'content') {
             // Dont do anything for now..
@@ -96,6 +86,7 @@ class Document
 
     /**
      * @return array
+     * @throws \Exception
      * @throws \RuntimeException
      */
     public function getContent()
@@ -105,7 +96,13 @@ class Document
         }
 
         if ($this->content === null) {
-            $docs = $this->documentStorage->getDocumentsWithState($this->path);
+            $slug = substr($this->path, 1);
+            if (CmsComponent::isCmsLoggedIn()) {
+                $docs = $this->documentStorage->getDocumentsWithState($this->path);
+            } else {
+                $docs = $this->documentStorage->getDocumentsBySlug($slug);
+            }
+
             $this->content = $docs;
         }
 
