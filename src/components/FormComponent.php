@@ -132,6 +132,7 @@ class FormComponent Extends BaseComponent
      * Calls $this->postSubmit() afterwards
      *
      * @param Storage $storage
+     * @throws \Exception
      */
     protected function checkSubmit($storage)
     {
@@ -157,7 +158,8 @@ class FormComponent Extends BaseComponent
         $postValues,
         /** @scrutinizer ignore-unused */
         $storage
-    ) {
+    )
+    {
     }
 
     /**
@@ -173,18 +175,6 @@ class FormComponent Extends BaseComponent
             $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName]['submitted'] = false;
             $this->formId = $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID];
         }
-    }
-
-    /**
-     * Checks if this form has been submitted
-     *
-     * @param \CloudControl\Cms\cc\Request $request
-     *
-     * @return bool
-     */
-    protected function isFormSubmitted($request)
-    {
-        return !empty($request::$post) && isset($request::$post[self::PARAMETER_FORM_ID]) && $request::$post[self::PARAMETER_FORM_ID] === $this->formId && isset($_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID]) && $_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID] === $this->formId;
     }
 
     /**
@@ -336,5 +326,72 @@ class FormComponent Extends BaseComponent
         } else {
             $this->parameters[$this->formParameterName] = $form;
         }
+    }
+
+    /**
+     * Checks if this form has been submitted
+     *
+     * @param \CloudControl\Cms\cc\Request $request
+     * @return bool
+     */
+    protected function isFormSubmitted($request)
+    {
+        if (empty($request::$post)) {
+            return false;
+        }
+
+        return $this->checkFormId($request);
+    }
+
+    /**
+     * Checks if the form id is set in all places
+     * @param $request
+     * @return bool
+     */
+    private function checkFormId($request)
+    {
+        if (!$this->checkFormIdInPost($request)) {
+            return false;
+        }
+
+        return $this->checkFormIdInSession();
+
+
+    }
+
+    /**
+     * Checks if form id is set in _POST variable
+     *
+     * @param $request
+     * @return bool
+     */
+    private function checkFormIdInPost($request)
+    {
+        if (!isset($request::$post[self::PARAMETER_FORM_ID])) {
+            return false;
+        }
+
+        if (!$request::$post[self::PARAMETER_FORM_ID] === $this->formId) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if form is is set in _SESSION variable
+     * @return bool
+     */
+    private function checkFormIdInSession()
+    {
+        if (!isset($_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID])) {
+            return false;
+        }
+
+        if (!$_SESSION[self::SESSION_PARAMETER_FORM_COMPONENT][$this->formParameterName][self::PARAMETER_FORM_ID] === $this->formId) {
+            return false;
+        }
+
+        return true;
     }
 }
