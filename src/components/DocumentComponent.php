@@ -17,7 +17,14 @@ namespace CloudControl\Cms\components {
      */
     class DocumentComponent extends NotFoundComponent
     {
-        protected $documentParameterName = 'document';
+        protected $documentParameterName = self::PARAMETER_DOCUMENT;
+        const DOCUMENT_STATE_UNPUBLISHED = 'unpublished';
+        const DOCUMENT_STATE_PUBLISHED = 'published';
+        const DOCUMENT_TYPE_FOLDER = 'folder';
+
+        const PARAMETER_DOCUMENT = 'document';
+        const PARAMETER_DOCUMENT_PARAMETER_NAME = 'documentParameterName';
+
 
         /**
          * @param Storage $storage
@@ -43,8 +50,8 @@ namespace CloudControl\Cms\components {
          */
         protected function checkParameters()
         {
-            if (isset($this->parameters['documentParameterName'])) {
-                $this->documentParameterName = $this->parameters['documentParameterName'];
+            if (isset($this->parameters[self::PARAMETER_DOCUMENT_PARAMETER_NAME])) {
+                $this->documentParameterName = $this->parameters[self::PARAMETER_DOCUMENT_PARAMETER_NAME];
             }
         }
 
@@ -55,11 +62,11 @@ namespace CloudControl\Cms\components {
          */
         protected function runLikeApplicationComponent()
         {
-            if (isset($this->parameters['document'])) {
-                $this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
-                unset($this->parameters['document']);
+            if (isset($this->parameters[self::PARAMETER_DOCUMENT])) {
+                $this->parameters[$this->documentParameterName] = $this->storage->getDocuments()->getDocumentBySlug($this->parameters[self::PARAMETER_DOCUMENT]);
+                unset($this->parameters[self::PARAMETER_DOCUMENT]);
             } else {
-                throw new \Exception('When used as application component, you need to specify a document.');
+                throw new \RuntimeException('When used as application component, you need to specify a document.');
             }
         }
 
@@ -70,7 +77,7 @@ namespace CloudControl\Cms\components {
          */
         protected function runLikeRegularComponent()
         {
-            if ($this->matchedSitemapItem->regex == false || isset($this->parameters['document'])) {
+            if ($this->matchedSitemapItem->regex === false || isset($this->parameters[self::PARAMETER_DOCUMENT])) {
                 $this->runWithoutRegex();
             } else {
                 $this->runWithRegex();
@@ -84,10 +91,10 @@ namespace CloudControl\Cms\components {
          */
         protected function runWithoutRegex()
         {
-            if (isset($this->parameters['document'])) {
+            if (isset($this->parameters[self::PARAMETER_DOCUMENT])) {
                 $this->runByDocumentParameter();
             } else {
-                throw new \Exception('When not using a regex, you need to set the parameter `document` with the path to the document in this sitemap item: ' . $this->matchedSitemapItem->title);
+                throw new \RuntimeException('When not using a regex, you need to set the parameter `document` with the path to the document in this sitemap item: ' . $this->matchedSitemapItem->title);
             }
         }
 
@@ -100,9 +107,11 @@ namespace CloudControl\Cms\components {
         {
             $relativeDocumentUri = $this->checkForSpecificFolder();
 
-            $document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri);
+            $state = $this->getState();
 
-            if ($document instanceof Document && $document->state == 'published' && $document->type != 'folder') {
+            $document = $this->storage->getDocuments()->getDocumentBySlug($relativeDocumentUri, $state);
+
+            if ($document instanceof Document && $document->state === self::DOCUMENT_STATE_PUBLISHED && $document->type !== self::DOCUMENT_TYPE_FOLDER) {
                 $this->parameters[$this->documentParameterName] = $document;
             } else {
                 $this->set404Header();
@@ -112,10 +121,12 @@ namespace CloudControl\Cms\components {
 
         /**
          * Run using the given `document` parameter
+         * @throws \Exception
          */
         protected function runByDocumentParameter()
         {
-            $document = $this->storage->getDocuments()->getDocumentBySlug($this->parameters['document']);
+            $state = $this->getState();
+            $document = $this->storage->getDocuments()->getDocumentBySlug($this->parameters[self::PARAMETER_DOCUMENT], $state);
             if ($document instanceof Document) {
                 $this->parameters[$this->documentParameterName] = $document;
             } else {
@@ -130,13 +141,22 @@ namespace CloudControl\Cms\components {
         protected function checkForSpecificFolder()
         {
             $relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
-            if (isset($this->parameters['folder'])) {
-                if (substr($this->parameters['folder'], -1) !== '/') {
-                    $this->parameters['folder'] = $this->parameters['folder'] . '/';
+            if (isset($this->parameters[self::DOCUMENT_TYPE_FOLDER])) {
+                if (substr($this->parameters[self::DOCUMENT_TYPE_FOLDER], -1) !== '/') {
+                    $this->parameters[self::DOCUMENT_TYPE_FOLDER] .= '/';
                 }
-                $relativeDocumentUri = $this->parameters['folder'] . $relativeDocumentUri;
+                $relativeDocumentUri = $this->parameters[self::DOCUMENT_TYPE_FOLDER] . $relativeDocumentUri;
             }
             return $relativeDocumentUri;
+        }
+
+        /**
+         * @return string
+         */
+        protected function getState()
+        {
+            $state = CmsComponent::isCmsLoggedIn() ? self::DOCUMENT_STATE_UNPUBLISHED : self::DOCUMENT_STATE_PUBLISHED;
+            return $state;
         }
     }
 }
