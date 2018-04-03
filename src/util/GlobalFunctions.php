@@ -38,10 +38,7 @@ END;
         echo '<div>Dump: ' . $debug_backtrace['file'] . ':<b>' . $debug_backtrace['line'] . "</b></div>";
         echo '<pre>';
         $i = 0;
-        foreach (func_get_args() as $data) {
-            if ($i = 0) {
-                continue;
-            }
+        foreach ($debug_backtrace['args'] as $data) {
             echo '<code>';
             var_dump($data);
             echo '</code>';

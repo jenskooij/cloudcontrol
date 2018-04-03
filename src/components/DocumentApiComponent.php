@@ -114,7 +114,7 @@ class DocumentApiComponent extends CachableBaseComponent
         }
 
         if ($document->type === 'folder') {
-            return $this->getFolderResponse($document);
+            return $this->getFolderResponseByDocument($document);
         }
 
         $documentContent = $this->getDocumentContent($document);
@@ -137,13 +137,14 @@ class DocumentApiComponent extends CachableBaseComponent
      */
     private function getDocumentsByPathResponse()
     {
-        $path = $_GET[self::GET_PARAMETER_PATH];
-        if ($path[0] === '/') {
-            $path = substr($path, 1);
+        $slug = $this->getSlugFromPath();
+
+        if (($response = $this->getFolderWithState($slug)) !== false) {
+            return $response;
         }
-        $folderDocument = $this->storage->getDocuments()->getDocumentFolderBySlug($path);
-        if ($folderDocument instanceof Document && $folderDocument->type === 'folder') {
-            return $this->getFolderResponse($folderDocument);
+
+        if (($response = $this->getFolderWithoutState($slug)) !== false) {
+            return $response;
         }
 
         return $this->getSingleDocumentResponse();
@@ -203,7 +204,7 @@ class DocumentApiComponent extends CachableBaseComponent
      * @return Response
      * @throws \RuntimeException
      */
-    private function getFolderResponse($document)
+    private function getFolderResponseByDocument($document)
     {
         if ($document->type !== 'folder') {
             return new Response();
@@ -213,6 +214,52 @@ class DocumentApiComponent extends CachableBaseComponent
         $response = new Response($document->getContent());
         $response->folder = $document->path;
         return $response;
+    }
+
+    /**
+     * @return bool|string
+     */
+    private function getSlugFromPath()
+    {
+        $path = $_GET[self::GET_PARAMETER_PATH];
+        if ($path[0] === '/') {
+            $path = substr($path, 1);
+        }
+        return $path;
+    }
+
+    /**
+     * @param string $slug
+     * @return bool|Response
+     */
+    private function getFolderWithState($slug)
+    {
+        if (!CmsComponent::isCmsLoggedIn()) {
+            return false;
+        }
+        $documents = $this->storage->getDocuments()->getDocumentsWithState('/' . $slug);
+
+        if (!empty($documents)) {
+            $response = new Response($documents);
+            $response->folder = $_GET[self::GET_PARAMETER_PATH];
+            return $response;
+        }
+        return false;
+    }
+
+    /**
+     * @param $slug
+     * @return bool|Response
+     * @throws \Exception
+     */
+    private function getFolderWithoutState($slug)
+    {
+        $folderDocument = $this->storage->getDocuments()->getDocumentFolderBySlug($slug);
+
+        if ($folderDocument instanceof Document && $folderDocument->type === 'folder') {
+            return $this->getFolderResponseByDocument($folderDocument);
+        }
+        return false;
     }
 
 
