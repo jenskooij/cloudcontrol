@@ -22,17 +22,11 @@ class Sanitizer
     public static function sanitizeFields($postValues, $documentType)
     {
         $fields = array();
-        if (isset($postValues['fields'])) {
-            $purifier = self::getPurifier();
-            foreach ($postValues['fields'] as $key => $field) {
-                if (self::isRichTextField($key, $documentType)) {
-                    foreach ($field as $fieldKey => $value) {
-                        $newValue = $purifier->purify($value);
-                        $field[$fieldKey] = $newValue;
-                    }
-                    $postValues['fields'][$key] = $field;
-                }
+        $purifier = self::getPurifier();
 
+        if (isset($postValues['fields'])) {
+            foreach ($postValues['fields'] as $fieldNameSlug => $field) {
+                $postValues = self::sanitizeField($postValues, $documentType, $fieldNameSlug, $field, $purifier);
             }
             $fields = $postValues['fields'];
         }
@@ -81,13 +75,38 @@ class Sanitizer
         return $brickContent;
     }
 
-    private static function isRichTextField($key, $documentType)
+    /**
+     * @param $fieldNameSlug
+     * @param $documentType
+     * @return bool
+     */
+    private static function isRichTextField($fieldNameSlug, $documentType)
     {
         foreach ($documentType->fields as $fieldObj) {
-            if ($fieldObj->slug === $key && $fieldObj->type === 'Rich Text') {
+            if ($fieldObj->slug === $fieldNameSlug && $fieldObj->type === 'Rich Text') {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * @param array $postValues
+     * @param \stdClass $documentType
+     * @param string $fieldNameSlug
+     * @param array $field
+     * @param HTMLPurifier $purifier
+     * @return array
+     */
+    protected static function sanitizeField($postValues, $documentType, $fieldNameSlug, $field, $purifier)
+    {
+        if (self::isRichTextField($fieldNameSlug, $documentType)) {
+            foreach ($field as $fieldKey => $value) {
+                $newValue = $purifier->purify($value);
+                $field[$fieldKey] = $newValue;
+            }
+            $postValues['fields'][$fieldNameSlug] = $field;
+        }
+        return $postValues;
     }
 }
