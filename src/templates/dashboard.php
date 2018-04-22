@@ -105,7 +105,7 @@
                     <?php if ($row->icon !== null) : ?>
                       <i class="fa fa-<?= $row->icon ?>"></i>
                     <?php endif ?>
-                  <span class="timestamp"><?= \CloudControl\Cms\cc\StringUtil::timeElapsedString($row->timestamp) ?></span>
+                  <span class="timestamp"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($row->timestamp) ?></span>
                   <b><?= $row->user ?></b>
                   <span class="message"><?= $row->message ?></span>
                 </li>

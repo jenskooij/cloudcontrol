@@ -6,7 +6,7 @@
 namespace CloudControl\Cms\storage\storage;
 
 
-use CloudControl\Cms\cc\StringUtil;
+use CloudControl\Cms\util\StringUtil;
 use CloudControl\Cms\storage\Repository;
 
 abstract class AbstractStorage

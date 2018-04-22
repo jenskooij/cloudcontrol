@@ -42,7 +42,7 @@ class ImagesStorage extends AbstractStorage
     /**
      * @param $postValues
      *
-     * @return \stdClass
+     * @return \CloudControl\Cms\storage\entities\Image
      * @throws \Exception
      */
     public function addImage($postValues)
@@ -52,8 +52,8 @@ class ImagesStorage extends AbstractStorage
         $filename = $this->validateFilename($postValues['name'], $destinationPath);
         $destination = $destinationPath . DIRECTORY_SEPARATOR . $filename;
 
-        if ($postValues['error'] != '0') {
-            throw new \Exception('Error uploading file. Error code: ' . $postValues['error']);
+        if ('0' != $postValues['error']) {
+            throw new \RuntimeException('Error uploading file. Error code: ' . $postValues['error']);
         }
 
         if (move_uploaded_file($postValues['tmp_name'], $destination)) {
@@ -70,7 +70,7 @@ class ImagesStorage extends AbstractStorage
 
             return $imageObject;
         } else {
-            throw new \Exception('Error moving uploaded file');
+            throw new \RuntimeException('Error moving uploaded file');
         }
     }
 

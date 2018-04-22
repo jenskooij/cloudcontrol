@@ -21,7 +21,7 @@ function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
       <small class="small documentType"><?= $document->documentType ?></small>
       <small class="small lastModified" title="<?= date('r', $document->lastModificationDate) ?>">
         <span class="label">Modified:</span>
-          <?= \CloudControl\Cms\cc\StringUtil::timeElapsedString($document->lastModificationDate) ?>
+          <?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->lastModificationDate) ?>
       </small>
       <small class="small lastModifiedBy">
         <span class="label">By:</span>

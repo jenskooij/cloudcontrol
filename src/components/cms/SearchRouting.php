@@ -9,36 +9,39 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Indexer;
 use CloudControl\Cms\search\Search;
 
-class SearchRouting implements CmsRouting
+class SearchRouting extends CmsRouting
 {
+    protected static $routes = array(
+        '/search' => 'overviewRoute',
+        '/search/update-index' => 'updateIndexRoute',
+        '/search/ajax-update-index' => 'ajaxUpdateIndexRoute',
+        '/search/manual-update-index' => 'manualUpdateRoute',
+    );
 
     /**
-     * SearchRouting constructor.
+     * CmsRouting constructor.
      *
-     * @param \CloudControl\Cms\cc\Request $request
-     * @param                                  $relativeCmsUri
-     * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
+     * @param Request $request
+     * @param string $relativeCmsUri
+     * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        switch ($relativeCmsUri) {
-            case '/search': $this->overviewRoute($cmsComponent); break;
-            case '/search/update-index' : $this->updateIndexRoute($cmsComponent, $request); break;
-            case '/search/ajax-update-index': $this->ajaxUpdateIndexRoute($request, $cmsComponent); break;
-            case '/search/manual-update-index' : $indexer = new Indexer($cmsComponent->storage); $indexer->updateIndex(); break;
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
+     * @param $request
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function overviewRoute($cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'search';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
@@ -52,7 +55,7 @@ class SearchRouting implements CmsRouting
      * @param \CloudControl\Cms\components\CmsComponent $cmsComponent
      * @param Request $request
      */
-    private function updateIndexRoute($cmsComponent, $request)
+    protected function updateIndexRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'search/update-index';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
@@ -64,7 +67,7 @@ class SearchRouting implements CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_RETURN_URL, $returnUrl);
     }
 
-    private function ajaxUpdateIndexRoute($request, $cmsComponent)
+    protected function ajaxUpdateIndexRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'search/update-index';
         if (isset($request::$get['step'])) {
@@ -78,6 +81,12 @@ class SearchRouting implements CmsRouting
         }
     }
 
+    protected function manualUpdateRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
+    {
+        $indexer = new Indexer($cmsComponent->storage);
+        $indexer->updateIndex();
+    }
+
     /**
      * @param $obj
      * @param int $httpHeader
@@ -85,7 +94,8 @@ class SearchRouting implements CmsRouting
     private function showJson($obj, $httpHeader = 200)
     {
         http_response_code($httpHeader);
-        header('Content-type: application/json');
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+        ResponseHeaders::sendAllHeaders();
         die(json_encode($obj));
     }
 

@@ -62,7 +62,7 @@ namespace CloudControl\Cms\storage\repository {
          */
         private function setAssetsToDocumentFolders(Repository $repository, $document, $db, $documents, $key)
         {
-            if ($document->type === 'folder') {
+            if ($this->isFolder($document)) {
                 $document->dbHandle = $db;
                 $document->documentStorage = new DocumentStorage($repository);
                 $documents[$key] = $document;
@@ -87,20 +87,7 @@ namespace CloudControl\Cms\storage\repository {
                 $ifRootIndex = 0;
             }
 
-            $sql = '
-            SELECT documents_unpublished.*,
-            	   IFNULL(documents_published.state,"unpublished") AS state,
-            	   IFNULL(documents_published.publicationDate,NULL) AS publicationDate,
-            	   (documents_published.lastModificationDate != documents_unpublished.lastModificationDate) AS unpublishedChanges 
-              FROM documents_unpublished
-		 LEFT JOIN documents_published
-         		ON documents_published.path = documents_unpublished.path
-             WHERE documents_unpublished.`path` LIKE ' . $db->quote($folderPathWithWildcard) . '
-               AND substr(documents_unpublished.`path`, ' . (strlen($folderPath) + $ifRootIndex + 1) . ') NOT LIKE "%/%"
-               AND length(documents_unpublished.`path`) > ' . (strlen($folderPath) + $ifRootIndex) . '
-               AND documents_unpublished.path != ' . $db->quote($folderPath) . '
-          ORDER BY documents_unpublished.`type` DESC, documents_unpublished.`path` ASC
-        ';
+            $sql = $this->getSqlForDocumentsWithSate($folderPath, $db, $folderPathWithWildcard, $ifRootIndex);
             $stmt = $this->getDbStatement($sql);
 
 
@@ -159,12 +146,8 @@ namespace CloudControl\Cms\storage\repository {
                 return $this->getRootFolder($repository);
             }
             $db = $this->getContentDbHandle();
-            $document = $this->fetchDocument('
-            SELECT *
-              FROM documents_' . $state . '
-             WHERE path = ' . $db->quote($path) . '
-        ');
-            if ($document instanceof Document && $document->type === 'folder') {
+            $document = $this->fetchDocumentForDocumentByPath($path, $state, $db);
+            if ($this->isFolder($document)) {
                 $document->dbHandle = $db;
                 $document->documentStorage = new DocumentStorage($repository);
             }
@@ -346,24 +329,7 @@ namespace CloudControl\Cms\storage\repository {
                 throw new \RuntimeException('Unsupported document state: ' . $state);
             }
             $db = $this->getContentDbHandle();
-            $stmt = $this->getDbStatement('
-            INSERT OR REPLACE INTO documents_' . $state . ' (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
-            VALUES(
-              ' . $db->quote($documentObject->path) . ',
-              ' . $db->quote($documentObject->title) . ',
-              ' . $db->quote($documentObject->slug) . ',
-              ' . $db->quote($documentObject->type) . ',
-              ' . $db->quote($documentObject->documentType) . ',
-              ' . $db->quote($documentObject->documentTypeSlug) . ',
-              ' . $db->quote($documentObject->state) . ',
-              ' . $db->quote($documentObject->lastModificationDate) . ',
-              ' . $db->quote($documentObject->creationDate) . ',
-              ' . $db->quote($documentObject->lastModifiedBy) . ',
-              ' . $db->quote(json_encode($documentObject->fields)) . ',
-              ' . $db->quote(json_encode($documentObject->bricks)) . ',
-              ' . $db->quote(json_encode($documentObject->dynamicBricks)) . '
-            )
-        ');
+            $stmt = $this->getStatementForSaveDocument($documentObject, $state, $db);
             return $stmt->execute();
         }
 
@@ -397,6 +363,88 @@ namespace CloudControl\Cms\storage\repository {
                     $stmt->execute();
                 }
             }
+        }
+
+        /**
+         * @param $folderPath
+         * @param $db
+         * @param $folderPathWithWildcard
+         * @param $ifRootIndex
+         * @return string
+         */
+        private function getSqlForDocumentsWithSate($folderPath, $db, $folderPathWithWildcard, $ifRootIndex)
+        {
+            $sql = '
+            SELECT documents_unpublished.*,
+            	   IFNULL(documents_published.state,"unpublished") AS state,
+            	   IFNULL(documents_published.publicationDate,NULL) AS publicationDate,
+            	   (documents_published.lastModificationDate != documents_unpublished.lastModificationDate) AS unpublishedChanges 
+              FROM documents_unpublished
+		 LEFT JOIN documents_published
+         		ON documents_published.path = documents_unpublished.path
+             WHERE documents_unpublished.`path` LIKE ' . $db->quote($folderPathWithWildcard) . '
+               AND substr(documents_unpublished.`path`, ' . (strlen($folderPath) + $ifRootIndex + 1) . ') NOT LIKE "%/%"
+               AND length(documents_unpublished.`path`) > ' . (strlen($folderPath) + $ifRootIndex) . '
+               AND documents_unpublished.path != ' . $db->quote($folderPath) . '
+          ORDER BY documents_unpublished.`type` DESC, documents_unpublished.`path` ASC
+        ';
+            return $sql;
+        }
+
+        /**
+         * @param $documentObject
+         * @param $state
+         * @param $db
+         * @return \PDOStatement
+         * @throws \Exception
+         */
+        private function getStatementForSaveDocument($documentObject, $state, $db)
+        {
+            $stmt = $this->getDbStatement('
+            INSERT OR REPLACE INTO documents_' . $state . ' (`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
+            VALUES(
+              ' . $db->quote($documentObject->path) . ',
+              ' . $db->quote($documentObject->title) . ',
+              ' . $db->quote($documentObject->slug) . ',
+              ' . $db->quote($documentObject->type) . ',
+              ' . $db->quote($documentObject->documentType) . ',
+              ' . $db->quote($documentObject->documentTypeSlug) . ',
+              ' . $db->quote($documentObject->state) . ',
+              ' . $db->quote($documentObject->lastModificationDate) . ',
+              ' . $db->quote($documentObject->creationDate) . ',
+              ' . $db->quote($documentObject->lastModifiedBy) . ',
+              ' . $db->quote(json_encode($documentObject->fields)) . ',
+              ' . $db->quote(json_encode($documentObject->bricks)) . ',
+              ' . $db->quote(json_encode($documentObject->dynamicBricks)) . '
+            )
+        ');
+            return $stmt;
+        }
+
+        /**
+         * @param Document $document
+         * @return bool
+         */
+        private function isFolder($document)
+        {
+            return $document instanceof Document && $document->type === 'folder';
+        }
+
+        /**
+         * @param $path
+         * @param $state
+         * @param $db
+         * @return mixed
+         * @throws \Exception
+         */
+        private function fetchDocumentForDocumentByPath($path, $state, $db)
+        {
+            $document = $this->fetchDocument('
+            SELECT *
+              FROM documents_' . $state . '
+             WHERE path = ' . $db->quote($path) . '
+        ');
+            return $document;
         }
     }
 

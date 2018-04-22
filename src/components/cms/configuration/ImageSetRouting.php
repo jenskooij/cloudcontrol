@@ -13,8 +13,14 @@ use CloudControl\Cms\components\cms\CmsConstants;
 use CloudControl\Cms\components\cms\CmsRouting;
 use CloudControl\Cms\components\CmsComponent;
 
-class ImageSetRouting implements CmsRouting
+class ImageSetRouting extends CmsRouting
 {
+    protected static $routes = array(
+        '/configuration/image-set' => 'overviewRoute',
+        '/configuration/image-set/new' => 'newRoute',
+        '/configuration/image-set/edit' => 'editRoute',
+        '/configuration/image-set/delete' => 'deleteRoute',
+    );
 
     /**
      * CmsRouting constructor.
@@ -22,24 +28,18 @@ class ImageSetRouting implements CmsRouting
      * @param Request $request
      * @param string $relativeCmsUri
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/configuration/image-set') {
-            $this->overviewRoute($cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/image-set/edit' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->editRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/image-set/new') {
-            $this->newRoute($request, $cmsComponent);
-        } elseif ($relativeCmsUri == '/configuration/image-set/delete' && isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $this->deleteRoute($request, $cmsComponent);
-        }
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
+     * @param $request
      * @param CmsComponent $cmsComponent
      */
-    private function overviewRoute($cmsComponent)
+    protected function overviewRoute(/** @scrutinizer ignore-unused */ $request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/image-set';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -50,8 +50,9 @@ class ImageSetRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function editRoute($request, $cmsComponent)
+    protected function editRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/image-set-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -68,8 +69,9 @@ class ImageSetRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function newRoute($request, $cmsComponent)
+    protected function newRoute($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'configuration/image-set-form';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_CONFIGURATION);
@@ -83,8 +85,9 @@ class ImageSetRouting implements CmsRouting
     /**
      * @param Request $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function deleteRoute($request, $cmsComponent)
+    protected function deleteRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getImageSet()->deleteImageSetBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/image-set');

@@ -9,14 +9,41 @@ namespace CloudControl\Cms\components\cms;
 
 
 use CloudControl\Cms\cc\Request;
+use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\cms\document\FolderRouting;
+use CloudControl\Cms\components\cms\document\InfoMessagesHandler;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\entities\Document;
 
-class DocumentRouting implements CmsRouting
+class DocumentRouting extends CmsRouting
 {
+    protected static $routes = array(
+        '/documents' => 'overviewRouting',
+        '/documents/new-document' => 'documentNewRoute',
+        '/documents/edit-document' => 'editDocumentRoute',
+        '/documents/get-brick' => 'getBrickRoute',
+        '/documents/delete-document' => 'deleteDocumentRoute',
+        '/documents/publish-document' => 'publishDocumentRoute',
+        '/documents/unpublish-document' => 'unpublishDocumentRoute',
+    );
+    const GET_PARAMETER_NOT_FOUND = 'not-found';
+    const GET_PARAMETER_PUBLISHED = 'published';
+    const GET_PARAMETER_UNPUBLISHED = 'unpublished';
+    const GET_PARAMETER_FOLDER_DELETE = 'folder-delete';
+    const GET_PARAMETER_DOCUMENT_DELETE = 'document-delete';
+    const GET_PARAMETER_NO_DOCUMENT_TYPES = 'no-document-types';
+
+    private static $infoMessageHandlers = array(
+        self::GET_PARAMETER_NOT_FOUND => 'notFound',
+        self::GET_PARAMETER_PUBLISHED => 'published',
+        self::GET_PARAMETER_UNPUBLISHED => 'unpublished',
+        self::GET_PARAMETER_FOLDER_DELETE => 'folderDelete',
+        self::GET_PARAMETER_DOCUMENT_DELETE => 'documentDelete',
+        self::GET_PARAMETER_NO_DOCUMENT_TYPES => 'noDocumentTypes',
+    );
+
     /**
      * DocumentRouting constructor.
      * @param $request
@@ -26,33 +53,8 @@ class DocumentRouting implements CmsRouting
      */
     public function __construct(Request $request, $relativeCmsUri, CmsComponent $cmsComponent)
     {
-        if ($relativeCmsUri == '/documents') {
-            $this->overviewRouting($cmsComponent, $request);
-        }
-        $this->documentRouting($request, $relativeCmsUri, $cmsComponent);
+        $this->doRouting($request, $relativeCmsUri, $cmsComponent);
         new FolderRouting($request, $relativeCmsUri, $cmsComponent);
-    }
-
-
-    /**
-     * @param Request $request
-     * @param string $relativeCmsUri
-     * @param CmsComponent $cmsComponent
-     * @throws \Exception
-     */
-    private function documentRouting($request, $relativeCmsUri, $cmsComponent)
-    {
-        if ($relativeCmsUri == '/documents/new-document' && isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
-            $this->documentNewRoute($request, $cmsComponent);
-        } elseif (isset($request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            switch ($relativeCmsUri) {
-                case '/documents/edit-document': $this->editDocumentRoute($request, $cmsComponent); break;
-                case '/documents/get-brick': $this->getBrickRoute($request, $cmsComponent); break;
-                case '/documents/delete-document': $this->deleteDocumentRoute($request, $cmsComponent); break;
-                case '/documents/publish-document': $this->publishDocumentRoute($request, $cmsComponent); break;
-                case '/documents/unpublish-document': $this->unpublishDocumentRoute($request, $cmsComponent); break;
-            }
-        }
     }
 
     /**
@@ -61,24 +63,17 @@ class DocumentRouting implements CmsRouting
      *
      * @throws \Exception
      */
-    private function documentNewRoute($request, $cmsComponent)
+    protected function documentNewRoute($request, $cmsComponent)
     {
-        $cmsComponent->subTemplate = 'documents/document-form';
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
-            $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
-        if (isset($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE])) {
-            if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsConstants::GET_PARAMETER_PATH])) {
-                $this->createNewDocument($request, $cmsComponent);
+        if (isset($request::$get[CmsConstants::GET_PARAMETER_PATH])) {
+            $this->setDocumentFormParameters($cmsComponent);
+            if (isset($request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE])) {
+                $this->newDocumentRoute($request, $cmsComponent);
+            } else {
+                $this->selectDocumentTypesRoute($request, $cmsComponent);
             }
-            $this->putDocumentTypeOnRequest($request, $cmsComponent);
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
-                $cmsComponent->storage->getBricks()->getBricks());
-        } else {
-            $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-            $this->checkDocumentType($request, $cmsComponent, $documentTypes);
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
         }
+
     }
 
     /**
@@ -86,43 +81,27 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function editDocumentRoute($request, $cmsComponent)
+    protected function editDocumentRoute($request, $cmsComponent)
     {
-        $cmsComponent->subTemplate = 'documents/document-form';
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
-            $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
-        if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
-            $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
-            $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-            $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
-                'pencil');
-            if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
-            } else {
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
-            }
-            exit;
-        }
         $document = $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG],
-            'unpublished');
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT, $document);
-
-        $request::$get[CmsConstants::GET_PARAMETER_PATH] = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
-        if ($document instanceof Document) {
-            $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug,
-                true);
-            if ($documentType === null) {
-                $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
-                $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
-            }
-            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
-        } else {
+            self::GET_PARAMETER_UNPUBLISHED);
+        if (!$document instanceof Document) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?not-found');
             exit;
         }
 
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS, $cmsComponent->storage->getBricks()->getBricks());
+        $this->setDocumentFormParameters($cmsComponent);
+
+        if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::GET_PARAMETER_SLUG])) {
+            $this->saveDocument($request, $cmsComponent);
+        }
+
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT, $document);
+
+        $request::$get[CmsConstants::GET_PARAMETER_PATH] = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
+        $this->setDocumentTypeParameter($cmsComponent, $document);
+
+
     }
 
     /**
@@ -130,7 +109,7 @@ class DocumentRouting implements CmsRouting
      * @param CmsComponent $cmsComponent
      * @throws \Exception
      */
-    private function getBrickRoute($request, $cmsComponent)
+    protected function getBrickRoute($request, $cmsComponent)
     {
         $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
             $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
@@ -147,15 +126,17 @@ class DocumentRouting implements CmsRouting
         $result->body = $cmsComponent->renderTemplate('documents/brick');
         $result->rteList = isset($GLOBALS['rteList']) ? $GLOBALS['rteList'] : array();
         ob_clean();
-        header(CmsConstants::CONTENT_TYPE_APPLICATION_JSON);
+        ResponseHeaders::add(ResponseHeaders::HEADER_CONTENT_TYPE, ResponseHeaders::HEADER_CONTENT_TYPE_CONTENT_APPLICATION_JSON);
+        ResponseHeaders::sendAllHeaders();
         die(json_encode($result));
     }
 
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function deleteDocumentRoute($request, $cmsComponent)
+    protected function deleteDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->deleteDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         $cmsComponent->storage->getActivityLog()->add('deleted document /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
@@ -167,8 +148,9 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function publishDocumentRoute($request, $cmsComponent)
+    protected function publishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
         $this->clearCacheAndLogActivity($request, $cmsComponent);
@@ -178,12 +160,13 @@ class DocumentRouting implements CmsRouting
     /**
      * @param $request
      * @param CmsComponent $cmsComponent
+     * @throws \Exception
      */
-    private function unpublishDocumentRoute($request, $cmsComponent)
+    protected function unpublishDocumentRoute($request, $cmsComponent)
     {
         $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        $this->clearCacheAndLogActivity($request, $cmsComponent, 'times-circle-o', 'unpublished');
-        $this->doAfterPublishRedirect($request, $cmsComponent, 'unpublished');
+        $this->clearCacheAndLogActivity($request, $cmsComponent, 'times-circle-o', self::GET_PARAMETER_UNPUBLISHED);
+        $this->doAfterPublishRedirect($request, $cmsComponent, self::GET_PARAMETER_UNPUBLISHED);
     }
 
     /**
@@ -191,7 +174,7 @@ class DocumentRouting implements CmsRouting
      * @param Request $request
      * @throws \Exception
      */
-    private function overviewRouting($cmsComponent, $request)
+    protected function overviewRouting($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENTS,
@@ -203,38 +186,28 @@ class DocumentRouting implements CmsRouting
         $indexedDocuments = $indexer->getIndexedDocuments();
         $cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
 
-        $this->handleInfoMessages($cmsComponent, $request);
+        $this->handleInfoMessages($cmsComponent);
     }
 
     /**
      * @param CmsComponent $cmsComponent
-     * @param Request $request
+     * @internal param Request $request
      */
-    private function handleInfoMessages($cmsComponent, $request)
+    private function handleInfoMessages($cmsComponent)
     {
-        if (isset($_GET['not-found'])) {
-            $cmsComponent->setParameter('infoMessage', 'Document could not be found. It might have been removed.');
-            $cmsComponent->setParameter('infoMessageClass', 'error');
-        } elseif (isset($_GET['published'])) {
-            $cmsComponent->setParameter('infoMessage',
-                '<i class="fa fa-check-circle-o"></i> Document ' . $_GET['published'] . ' published');
-        } elseif (isset($_GET['unpublished'])) {
-            $cmsComponent->setParameter('infoMessage',
-                '<i class="fa fa-times-circle-o"></i> Document ' . $_GET['unpublished'] . ' unpublished');
-        } elseif (isset($_GET['folder-delete'])) {
-            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Folder deleted');
-        } elseif (isset($_GET['document-delete'])) {
-            $cmsComponent->setParameter('infoMessage', '<i class="fa fa-trash"></i> Document deleted');
-        } elseif (isset($_GET['no-document-types'])) {
-            $documentTypesLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/configuration/document-types/new';
-            $cmsComponent->setParameter('infoMessage',
-                '<i class="fa fa-exclamation-circle"></i> No document types defined yet. Please do so first, <a href="' . $documentTypesLink . '">here</a>.');
+        $getParameters = array_keys($_GET);
+        $infoMessageKeys = array_keys(self::$infoMessageHandlers);
+        foreach ($getParameters as $parameter) {
+            if (in_array($parameter, $infoMessageKeys, true)) {
+                $method = self::$infoMessageHandlers[$parameter];
+                InfoMessagesHandler::$method($cmsComponent);
+            }
         }
     }
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param string $param
      */
     private function doAfterPublishRedirect($request, $cmsComponent, $param = 'published')
@@ -249,7 +222,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param string $icon
      * @param string $activity
      */
@@ -258,7 +231,8 @@ class DocumentRouting implements CmsRouting
         $cmsComponent,
         $icon = 'check-circle-o',
         $activity = 'published'
-    ) {
+    )
+    {
         Cache::getInstance()->clearCache();
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
@@ -286,8 +260,8 @@ class DocumentRouting implements CmsRouting
     }
 
     /**
-     * @param $request
-     * @param $cmsComponent
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
      */
     private function putDocumentTypeOnRequest($request, $cmsComponent)
     {
@@ -302,7 +276,7 @@ class DocumentRouting implements CmsRouting
 
     /**
      * @param $request
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      * @param $documentTypes
      */
     private function checkDocumentType($request, $cmsComponent, $documentTypes)
@@ -311,9 +285,82 @@ class DocumentRouting implements CmsRouting
         if ($docTypesCount < 1) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?no-document-types');
             exit;
-        } elseif ($docTypesCount == 1) {
+        }
+
+        if ($docTypesCount === 1) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/new-document?path=' . urlencode($_GET['path']) . '&documentType=' . $documentTypes[0]->slug);
             exit;
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    private function newDocumentRoute($request, $cmsComponent)
+    {
+        if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$get[CmsConstants::PARAMETER_DOCUMENT_TYPE], $request::$get[CmsConstants::GET_PARAMETER_PATH])) {
+            $this->createNewDocument($request, $cmsComponent);
+        }
+        $this->putDocumentTypeOnRequest($request, $cmsComponent);
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     */
+    private function selectDocumentTypesRoute($request, $cmsComponent)
+    {
+        $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+        $this->checkDocumentType($request, $cmsComponent, $documentTypes);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    protected function saveDocument($request, $cmsComponent)
+    {
+        $path = substr($cmsComponent->storage->getDocuments()->saveDocument($request::$post), 1);
+        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
+        $cmsComponent->storage->getActivityLog()->add('edited document <a href="' . $docLink . '">' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . '</a> in path /' . $request::$get[CmsConstants::GET_PARAMETER_SLUG],
+            'pencil');
+        if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
+        } else {
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+        }
+        exit;
+    }
+
+    /**
+     * @param CmsComponent $cmsComponent
+     * @param Document $document
+     */
+    protected function setDocumentTypeParameter($cmsComponent, $document)
+    {
+        $documentType = $cmsComponent->storage->getDocumentTypes()->getDocumentTypeBySlug($document->documentTypeSlug,
+            true);
+        if ($documentType === null) {
+            $documentTypes = $cmsComponent->storage->getDocumentTypes()->getDocumentTypes();
+            $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPES, $documentTypes);
+        }
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENT_TYPE, $documentType);
+    }
+
+    /**
+     * @param $cmsComponent
+     */
+    protected function setDocumentFormParameters($cmsComponent)
+    {
+        $cmsComponent->subTemplate = 'documents/document-form';
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SMALLEST_IMAGE,
+            $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
+            $cmsComponent->storage->getBricks()->getBricks());
     }
 }

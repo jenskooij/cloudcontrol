@@ -2,7 +2,7 @@
 
 namespace CloudControl\Cms\images {
 
-    use CloudControl\Cms\cc\StringUtil;
+    use CloudControl\Cms\util\StringUtil;
 
     /**
      * Class ImageResizer

@@ -35,7 +35,7 @@ class ComposerScripts
      * @param Event $event
      * @throws \Exception
      */
-    private static function checkInstall($event)
+    public static function checkInstall($event)
     {
         $event->getIO()->write('');
         $event->getIO()->write('********************************************************');

@@ -58,7 +58,7 @@ class Search extends SearchDbConnected
 
         $flatResults = $this->flattenResults($resultsPerTokens);
         $flatResults = $this->applyQueryCoordination($flatResults);
-        usort($flatResults, array($this, "scoreCompare"));
+        usort($flatResults, array($this, 'scoreCompare'));
 
         $flatResults = array_merge($this->getSearchSuggestions(), $flatResults);
 
@@ -81,13 +81,13 @@ class Search extends SearchDbConnected
         if (!$stmt = $db->query($sql)) {
             $errorInfo = $db->errorInfo();
             $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
         }
         $result = $stmt->fetch(\PDO::FETCH_COLUMN);
         if (false === $result) {
             $errorInfo = $db->errorInfo();
             $errorMsg = $errorInfo[2];
-            throw new \Exception('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
         }
         return (int)$result;
     }
@@ -159,13 +159,13 @@ class Search extends SearchDbConnected
 		  ORDER BY score DESC
 		';
         if (!$stmt = $db->prepare($sql)) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
                     true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         $stmt->bindValue(':query', $token);
         $stmt->bindValue(':queryNorm', $queryNorm);
         if (!$stmt->execute()) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
                     true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         return $stmt->fetchAll(\PDO::FETCH_CLASS, SearchResult::class);
@@ -197,9 +197,14 @@ class Search extends SearchDbConnected
         return $finalResults;
     }
 
+    /**
+     * @param $a
+     * @param $b
+     * @return int
+     */
     private function scoreCompare($a, $b)
     {
-        if ($a->score == $b->score) {
+        if ($a->score === $b->score) {
             return 0;
         }
         return ($a->score > $b->score) ? -1 : 1;
@@ -227,11 +232,11 @@ class Search extends SearchDbConnected
 			 WHERE term IN (' . $terms . ') 
 		';
         if (!$stmt = $db->prepare($sql)) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
                     true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         if (!$stmt->execute()) {
-            throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
                     true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
         }
         $result = $stmt->fetch(\PDO::FETCH_OBJ);
@@ -268,31 +273,7 @@ class Search extends SearchDbConnected
         $tokens = $this->getTokens();
         $allResults = array();
         foreach ($tokens as $token) {
-            $db = $this->getSearchDbHandle();
-            $db->/** @scrutinizer ignore-call */
-            sqliteCreateFunction('levenshtein', 'levenshtein', 2);
-            $sql = '
-				SELECT *
-				  FROM (
-				  	SELECT :token AS original, term, levenshtein(term, :token) AS editDistance
-				  	  FROM inverse_document_frequency
-			  	  ORDER BY editDistance ASC
-			  	     LIMIT 0, 1
-			  	     )
-			  	   WHERE editDistance > 0
-			';
-            $stmt = $db->prepare($sql);
-            if ($stmt === false) {
-                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
-                        true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
-            }
-            $stmt->bindValue(':token', $token);
-            if (($stmt === false) || (!$stmt->execute())) {
-                throw new \Exception('SQLite exception: <pre>' . print_r($db->errorInfo(),
-                        true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
-            }
-            $result = $stmt->fetchAll(\PDO::FETCH_CLASS, results\SearchSuggestion::class);
-            $allResults = array_merge($result, $allResults);
+            $allResults = $this->getSearchSuggestion($token, $allResults);
         }
         return $allResults;
     }
@@ -313,5 +294,53 @@ class Search extends SearchDbConnected
         }
 
         return $tokens;
+    }
+
+    /**
+     * @param \PDO $db
+     * @param $sql
+     * @param $token
+     * @return mixed
+     * @throws \Exception
+     */
+    private function getSearchSuggestionStatement($db, $sql, $token)
+    {
+        $stmt = $db->prepare($sql);
+        if ($stmt === false) {
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+        }
+        $stmt->bindValue(':token', $token);
+        if (($stmt === false) || (!$stmt->execute())) {
+            throw new \RuntimeException('SQLite exception: <pre>' . print_r($db->errorInfo(),
+                    true) . '</pre> for SQL:<pre>' . $sql . '</pre>');
+        }
+        return $stmt;
+    }
+
+    /**
+     * @param $token
+     * @param $allResults
+     * @return array
+     */
+    private function getSearchSuggestion($token, $allResults)
+    {
+        $db = $this->getSearchDbHandle();
+        $db->/** @scrutinizer ignore-call */
+        sqliteCreateFunction('levenshtein', 'levenshtein', 2);
+        $sql = '
+				SELECT *
+				  FROM (
+				  	SELECT :token AS original, term, levenshtein(term, :token) AS editDistance
+				  	  FROM inverse_document_frequency
+			  	  ORDER BY editDistance ASC
+			  	     LIMIT 0, 1
+			  	     )
+			  	   WHERE editDistance > 0
+			';
+        $stmt = $this->getSearchSuggestionStatement($db, $sql, $token);
+        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, results\SearchSuggestion::class);
+        $allResults = array_merge($result, $allResults);
+        return $allResults;
     }
 }

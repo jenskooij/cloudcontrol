@@ -7,16 +7,14 @@
 
 namespace CloudControl\Cms\storage\factories;
 
-use CloudControl\Cms\cc\StringUtil;
 use CloudControl\Cms\storage\entities\Document;
+use CloudControl\Cms\storage\factories\documentfactory\Sanitizer;
 use CloudControl\Cms\storage\storage\DocumentTypesStorage;
-use HTMLPurifier;
-use HTMLPurifier_Config;
+use CloudControl\Cms\util\GlobalFunctions;
+use CloudControl\Cms\util\StringUtil;
 
 class DocumentFactory
 {
-    private static $purifier;
-
     /**
      * @param array $postValues
      * @param DocumentTypesStorage $documentTypesStorage
@@ -25,14 +23,14 @@ class DocumentFactory
      */
     public static function createDocumentFromPostValues($postValues, DocumentTypesStorage $documentTypesStorage)
     {
-        $postValues = utf8Convert($postValues);
+        $postValues = GlobalFunctions::utf8Convert($postValues);
         $documentType = $documentTypesStorage->getDocumentTypeBySlug($postValues['documentType']);
 
         $staticBricks = $documentType->bricks;
 
         $documentObj = self::createInitialDocumentObject($postValues, $documentType);
 
-        $fields = self::sanitizeFields($postValues, $documentType);
+        $fields = Sanitizer::sanitizeFields($postValues, $documentType);
 
         $documentObj->fields = $fields;
         $documentObj->bricks = array();
@@ -103,7 +101,7 @@ class DocumentFactory
                 foreach ($brick as $brickContent) {
                     $brickObj = new \stdClass();
                     $brickObj->type = $brickTypeSlug;
-                    $brickObj->fields = self::sanitizeBrickContent($brickContent);
+                    $brickObj->fields = Sanitizer::sanitizeBrickContent($brickContent);
                     $dynamicBricks = $documentObj->dynamicBricks;
                     $dynamicBricks[] = $brickObj;
                     $documentObj->dynamicBricks = $dynamicBricks;
@@ -146,7 +144,7 @@ class DocumentFactory
         $brickObj->type = $staticBrick->brickSlug;
 
         foreach ($brickInstance['fields'] as $fieldName => $fieldValues) {
-            $purifier = self::getPurifier();
+            $purifier = Sanitizer::getPurifier();
             foreach ($fieldValues as $fieldKey => $value) {
                 $fieldValues[$fieldKey] = $purifier->purify($value);
             }
@@ -190,7 +188,7 @@ class DocumentFactory
     {
         $bricks = $documentObj->bricks;
 
-        $purifier = self::getPurifier();
+        $purifier = Sanitizer::getPurifier();
         foreach ($brick['fields'] as $fieldKey => $values) {
             foreach ($values as $valueKey => $value) {
                 $values[$valueKey] = $purifier->purify($value);
@@ -203,80 +201,11 @@ class DocumentFactory
         return $documentObj;
     }
 
-    /**
-     * @return HTMLPurifier
-     */
-    private static function getPurifier()
-    {
-        if (self::$purifier instanceof HTMLPurifier) {
-            return self::$purifier;
-        }
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('URI.DisableExternalResources', false);
-        $config->set('URI.DisableResources', false);
-        $config->set('HTML.Allowed',
-            'u,p,b,i,a,p,strong,em,li,ul,ol,div[align],br,img,table,tr,td,th,tbody,thead,strike,sub,sup,iframe');
-        $config->set('HTML.SafeIframe', true);
-        $config->set('URI.SafeIframeRegexp',
-            '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%'); //allow YouTube and Vimeo
-        $config->set('Attr.AllowedFrameTargets', array('_blank'));
-        $config->set('HTML.AllowedAttributes', 'src, alt, href, target, frameborder, data-original');
-        $config->set('URI.AllowedSchemes', array('data' => true, 'http' => true, 'https' => true));
-        $config->set('Cache.DefinitionImpl', null); // remove this later!
-        $def = $config->getHTMLDefinition(true);
-        $def->addAttribute('img', 'data-original', 'Text');
-        self::$purifier = new HTMLPurifier($config);
-        return self::$purifier;
-    }
 
-    private static function isRichTextField($key, $documentType)
-    {
-        foreach ($documentType->fields as $fieldObj) {
-            if ($fieldObj->slug === $key && $fieldObj->type === 'Rich Text') {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    /**
-     * @param $postValues
-     * @param $documentType
-     * @return array
-     */
-    private static function sanitizeFields($postValues, $documentType)
-    {
-        $fields = array();
-        if (isset($postValues['fields'])) {
-            $purifier = self::getPurifier();
-            foreach ($postValues['fields'] as $key => $field) {
-                if (self::isRichTextField($key, $documentType)) {
-                    foreach ($field as $fieldKey => $value) {
-                        $newValue = $purifier->purify($value);
-                        $field[$fieldKey] = $newValue;
-                    }
-                    $postValues['fields'][$key] = $field;
-                }
 
-            }
-            $fields = $postValues['fields'];
-        }
-        return $fields;
-    }
 
-    /**
-     * @param $brickContent
-     * @return mixed
-     */
-    private static function sanitizeBrickContent($brickContent)
-    {
-        $purifier = self::getPurifier();
-        foreach ($brickContent as $fieldKey => $fieldValues) {
-            foreach ($fieldValues as $valueKey => $value) {
-                $fieldValues[$valueKey] = $purifier->purify($value);
-            }
-            $brickContent[$fieldKey] = $fieldValues;
-        }
-        return $brickContent;
-    }
+
+
+
 }

@@ -10,9 +10,6 @@ namespace CloudControl\Cms\components\cms;
 
 interface CmsConstants
 {
-
-    const CONTENT_TYPE_APPLICATION_JSON = 'Content-type:application/json';
-
     const INVALID_CREDENTIALS_MESSAGE = 'Invalid username / password combination';
     const LOGIN_TEMPLATE_PATH = 'login';
     const MAIN_NAV_CLASS = 'default';
@@ -48,8 +45,8 @@ interface CmsConstants
     const PARAMETER_RETURN_URL = 'returnUrl';
     const PARAMETER_SAVE_AND_PUBLISH = 'btn_save_and_publish';
     const PARAMETER_SEARCH = 'search';
-    const PARAMETER_SEARCH_LOG = "searchLog";
-    const PARAMETER_SEARCH_NEEDS_UPDATE = "searchNeedsUpdate";
+    const PARAMETER_SEARCH_LOG = 'searchLog';
+    const PARAMETER_SEARCH_NEEDS_UPDATE = 'searchNeedsUpdate';
     const PARAMETER_SITEMAP = 'sitemap';
     const PARAMETER_SITEMAP_ITEM = 'sitemapItem';
     const PARAMETER_SMALLEST_IMAGE = 'smallestImage';
@@ -57,17 +54,17 @@ interface CmsConstants
     const PARAMETER_USER = 'user';
     const PARAMETER_USERS = 'users';
     const PARAMETER_USER_RIGHTS = 'userRights';
-    const PARAMETER_VALUELIST = "valuelist";
-    const PARAMETER_VALUELISTS = "valuelists";
+    const PARAMETER_VALUELIST = 'valuelist';
+    const PARAMETER_VALUELISTS = 'valuelists';
     const PARAMETER_WHITELIST_IPS = 'whitelistIps';
 
     const POST_PARAMETER_COMPONENT = 'component';
-    const POST_PARAMETER_FROM_URL = "fromUrl";
+    const POST_PARAMETER_FROM_URL = 'fromUrl';
     const POST_PARAMETER_PASSWORD = 'password';
     const POST_PARAMETER_SAVE = 'save';
     const POST_PARAMETER_TEMPLATE = 'template';
     const POST_PARAMETER_TITLE = 'title';
-    const POST_PARAMETER_TO_URL = "toUrl";
+    const POST_PARAMETER_TO_URL = 'toUrl';
     const POST_PARAMETER_USERNAME = 'username';
 
     const SESSION_PARAMETER_CLOUD_CONTROL = 'cloudcontrol';

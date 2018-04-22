@@ -21,8 +21,8 @@ class DocumentStorage extends AbstractStorage
      */
     public function getDocuments($state = 'published')
     {
-        if (!in_array($state, Document::$DOCUMENT_STATES)) {
-            throw new \Exception('Unsupported document state: ' . $state);
+        if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+            throw new \RuntimeException('Unsupported document state: ' . $state);
         }
         return $this->repository->getContentRepository()->getDocumentsByPath($this->repository, '/', $state);
     }
@@ -51,8 +51,8 @@ class DocumentStorage extends AbstractStorage
      */
     public function getDocumentBySlug($slug, $state = 'published')
     {
-        if (!in_array($state, Document::$DOCUMENT_STATES)) {
-            throw new \Exception('Unsupported document state: ' . $state);
+        if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+            throw new \RuntimeException('Unsupported document state: ' . $state);
         }
         $path = '/' . $slug;
 
@@ -68,8 +68,8 @@ class DocumentStorage extends AbstractStorage
      */
     public function saveDocument($postValues, $state = 'unpublished')
     {
-        if (!in_array($state, Document::$DOCUMENT_STATES)) {
-            throw new \Exception('Unsupported document state: ' . $state);
+        if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+            throw new \RuntimeException('Unsupported document state: ' . $state);
         }
         $oldPath = '/' . $postValues['path'];
 
@@ -213,7 +213,23 @@ class DocumentStorage extends AbstractStorage
             $path = '/' . $slug;
         }
 
-        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path);
+        return $this->repository->getContentRepository()->getDocumentByPath($this->repository, $path, 'unpublished');
+    }
+
+    /**
+     * @param $slug
+     * @param string $state
+     * @return array
+     * @throws \Exception
+     */
+    public function getDocumentsBySlug($slug, $state = 'published')
+    {
+        if (!in_array($state, Document::$DOCUMENT_STATES, true)) {
+            throw new \RuntimeException('Unsupported document state: ' . $state);
+        }
+        $path = '/' . $slug;
+
+        return $this->repository->getContentRepository()->getDocumentsByPath($this->repository, $path, $state);
     }
 
 }
