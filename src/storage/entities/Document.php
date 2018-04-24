@@ -9,6 +9,7 @@ namespace CloudControl\Cms\storage\entities;
 
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\storage\storage\DocumentStorage;
+use CloudControl\Cms\util\DocumentSorter;
 
 /**
  * Class Document
@@ -35,11 +36,16 @@ class Document
     public $lastModificationDate;
     public $creationDate;
     public $lastModifiedBy;
+    public $publicationDate;
+    public $unpublishedChanges;
     protected $documentStorage;
     protected $fields;
     protected $bricks;
     protected $dynamicBricks;
     protected $content;
+
+    protected $order = 'ASC';
+    protected $orderByField;
 
     protected $dbHandle;
 
@@ -103,10 +109,21 @@ class Document
                 $docs = $this->documentStorage->getDocumentsBySlug($slug);
             }
 
+            if ($this->orderByField !== null) {
+                $docs = $this->orderContentByField($docs);
+            }
+
             $this->content = $docs;
         }
 
         return $this->content;
+    }
+
+    public function orderByField($fieldName, $order = 'ASC')
+    {
+        $this->orderByField = $fieldName;
+        $this->order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
+        return $this;
     }
 
     /**
@@ -152,5 +169,12 @@ class Document
         return $this->getPropertyIfExists($name);
     }
 
-
+    /**
+     * @param array $docs
+     * @return array
+     */
+    protected function orderContentByField($docs)
+    {
+        return DocumentSorter::sortDocumentsByField($docs, $this->orderByField, $this->order);
+    }
 }
