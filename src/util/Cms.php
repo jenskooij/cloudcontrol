@@ -39,7 +39,7 @@ class Cms
     public static function editDocumentLink($path)
     {
         if (self::isLoggedIn()) {
-            $path = $path === '/' ? '/' : substr($path, 1);
+            $path = substr($path,0,1) === '/' ? substr($path, 1) : $path;
             return Request::$subfolders . 'cms/documents/edit-document?slug=' . urlencode($path);
         } else {
             return '';
@@ -74,7 +74,7 @@ class Cms
     public static function newDocumentLink($path = '/', $documentType = '')
     {
         if (self::isLoggedIn()) {
-            $path = $path === '/' ? '/' : substr($path, 1);
+            $path = substr($path,0,1) === '/' ? $path : '/' . $path;
             $linkPostFix = '';
             if ($documentType !== '') {
                 $linkPostFix = '&amp;documentType=' . $documentType;
