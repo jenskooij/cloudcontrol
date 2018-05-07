@@ -177,9 +177,13 @@ class DocumentRouting extends CmsRouting
     protected function overviewRouting($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents';
+
+        $path = isset($request::$get['path']) ? $request::$get['path'] : '/';
+
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENTS,
-            $cmsComponent->storage->getDocuments()->getDocumentsWithState());
+            $cmsComponent->storage->getDocuments()->getDocumentsWithState($path));
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
+        $cmsComponent->setParameter('path', $path);
 
         $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
         $indexer = new Search($cmsComponent->storage);
