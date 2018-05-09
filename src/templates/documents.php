@@ -1,6 +1,6 @@
-<?php include('documents/function.renderAction.php'); ?>
 <?php include('documents/function.renderDocument.php'); ?>
 <?php include('documents/function.renderFolder.php'); ?>
+<?php include('documents/function.renderDocumentBreadcrumb.php'); ?>
 <section class="documents">
   <h2>
     <i class="fa fa-file-text-o"></i>
@@ -43,133 +43,26 @@
   </nav>
   <table class="documents">
     <tr>
-      <th colspan="4">
-          <?php
-          $pathParts = explode('/', $path);
-          array_shift($pathParts);
-          $pathPartsReconstruction = '';
-          $parentPath = substr($path, 0, strrpos( $path, '/'));
-          if ($path !== '/' && substr_count($path, '/') === 1) {
-              $parentPath = '/';
-          }
-          ?>
-        <a href="?path=/">
-          Documents
-        </a>
-          <?php foreach ($pathParts as $part) : ?>
-              <?php if (!empty($part)) : ?>
-                  <?php $pathPartsReconstruction .= (substr($pathPartsReconstruction, -1) === '/' ? '' : '/') . $part ?>
-              &raquo;
-              <a href="?path=<?= $pathPartsReconstruction ?>">
-                  <?= $part ?>
-              </a>
-              <?php endif ?>
-          <?php endforeach ?>
-      </th>
+        <?php renderDocumentBreadcrumb($path) ?>
     </tr>
-    <?php if (!empty($parentPath)) :  ?>
-    <tr>
-      <td class="icon" title="folder">
-        <i class="fa fa-folder-o"></i>
-      </td>
-      <td class="icon"></td>
-      <td>
-        <a href="?path=<?=$parentPath?>">..</a>
-      </td>
-      <td class="icon context-menu-container"></td>
-    </tr>
-    <?php endif ?>
+      <?php if (!empty($parentPath)) : ?>
+        <tr>
+          <td class="icon" title="folder">
+            <i class="fa fa-folder-o"></i>
+          </td>
+          <td class="icon"></td>
+          <td>
+            <a href="?path=<?= $parentPath ?>">..</a>
+          </td>
+          <td class="icon context-menu-container"></td>
+        </tr>
+      <?php endif ?>
       <?php foreach ($documents as $document) : ?>
         <tr>
             <?php if ($document->type === 'folder') : ?>
-                <?php
-                $folderPath = $path . ($path === '/' ? '' : '/') . $document->slug;
-                $folderSlug = substr($path, 1);
-                $openFolderLink = '?path=' . $folderPath;
-                $editFolderLink = $request::$subfolders . $cmsPrefix . '/documents/edit-folder?slug=' . $folderSlug . ($path === '/' ? '' : '/') . $document->slug;
-                $deleteFolderLink = $request::$subfolders . $cmsPrefix . '/documents/delete-folder?slug=' . $folderSlug . ($path === '/' ? '' : '/') . $document->slug;
-                ?>
-              <td class="icon" title="<?= $document->type ?>">
-                <i class="fa fa-folder-o"></i>
-              </td>
-              <td class="icon"></td>
-              <td>
-                <a href="<?= $openFolderLink ?>"><?= $document->title ?></a>
-              </td>
-              <td class="icon context-menu-container">
-                <div class="context-menu">
-                  <i class="fa fa-ellipsis-v"></i>
-                  <ul>
-                    <li>
-                      <a href="<?= $editFolderLink ?>">
-                        <i class="fa fa-pencil"></i>
-                        Rename
-                      </a>
-                    </li>
-                    <li>
-                      <a href="<?= $deleteFolderLink ?>" onclick="return confirm('Are you sure you want to delete this folder?');">
-                        <i class="fa fa-trash"></i>
-                        Delete
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </td>
+                <?php renderFolder($document, $path, $request, $cmsPrefix) ?>
             <?php else : ?>
-                <?php
-                $documentSlug = substr($path, 1) . ($path === '/' ? '' : '/') . $document->slug;
-                $editDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $documentSlug;
-                $deleteDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $documentSlug;
-                ?>
-              <td class="icon" title="<?= $document->type ?>">
-                <i class="fa fa-file-text-o"></i>
-              </td>
-              <td class="icon" title="<?= $document->state ?>">
-                <i class="fa <?= $document->state === 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
-              </td>
-              <td>
-                <a href="<?= $editDocumentLink ?>"><?= $document->title ?></a>
-                  <?php if ($document->unpublishedChanges) : ?>
-                    <small class="small unpublished-changes">Unpublished Changes</small>
-                  <?php endif ?>
-              </td>
-              <td class="icon context-menu-container">
-                <div class="context-menu">
-                  <i class="fa fa-ellipsis-v"></i>
-                  <ul>
-                    <li>
-                      <a href="<?= $editDocumentLink ?>">
-                        <i class="fa fa-pencil"></i>
-                        Edit
-                      </a>
-                    </li>
-                      <?php if ($document->state === 'unpublished' || $document->unpublishedChanges) : ?>
-                        <li>
-                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $documentSlug ?>">
-                            <i class="fa fa-check"></i>
-                            Publish
-                          </a>
-                        </li>
-                      <?php endif ?>
-                      <?php if ($document->state === 'published') : ?>
-                        <li>
-                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $documentSlug ?>">
-                            <i class="fa fa-times"></i>
-                            Unpublish
-                          </a>
-                        </li>
-                      <?php endif ?>
-                      <?php if ($document->state === 'unpublished') : ?>
-                        <li>
-                          <a href="<?= $deleteDocumentLink ?>" onclick="return confirm('Are you sure you want to delete this document?');">
-                            <i class="fa fa-trash"></i>
-                            Delete
-                          </a>
-                        </li>
-                      <?php endif ?>
-                  </ul>
-                </div>
-              </td>
+                <?php renderDocument($document, $path, $request, $cmsPrefix) ?>
             <?php endif ?>
         </tr>
       <?php endforeach ?>
