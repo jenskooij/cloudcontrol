@@ -10,10 +10,6 @@ function renderDocumentBreadcrumb($path)
         $pathParts = explode('/', $path);
         array_shift($pathParts);
         $pathPartsReconstruction = '';
-        $parentPath = substr($path, 0, strrpos( $path, '/'));
-        if ($path !== '/' && substr_count($path, '/') === 1) {
-            $parentPath = '/';
-        }
         ?>
         <a href="?path=/">
             Documents

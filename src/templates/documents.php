@@ -45,7 +45,12 @@
     <tr>
         <?php renderDocumentBreadcrumb($path) ?>
     </tr>
-      <?php if (!empty($parentPath)) : ?>
+      <?php
+      $parentPath = substr($path, 0, strrpos( $path, '/'));
+      if ($path !== '/' && substr_count($path, '/') === 1) {
+          $parentPath = '/';
+      }
+      if (!empty($parentPath)) : ?>
         <tr>
           <td class="icon" title="folder">
             <i class="fa fa-folder-o"></i>
