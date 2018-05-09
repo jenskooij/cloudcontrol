@@ -59,7 +59,7 @@
               <td>
                 <a href="<?= $openFolderLink ?>"><?= $document->title ?></a>
               </td>
-              <td class="icon">
+              <td class="icon context-menu-container">
                 <div class="context-menu">
                   <i class="fa fa-ellipsis-v"></i>
                   <ul>
@@ -87,7 +87,7 @@
               <td class="icon" title="<?= $document->type ?>">
                 <i class="fa fa-file-text-o"></i>
               </td>
-              <td class="icon">
+              <td class="icon" title="<?=$document->state?>">
                 <i class="fa <?= $document->state === 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
               </td>
               <td>
@@ -96,7 +96,7 @@
                     <small class="small unpublished-changes">Unpublished Changes</small>
                   <?php endif ?>
               </td>
-              <td class="icon">
+              <td class="icon context-menu-container">
                 <div class="context-menu">
                   <i class="fa fa-ellipsis-v"></i>
                   <ul>
@@ -108,7 +108,7 @@
                     </li>
                       <?php if ($document->state === 'unpublished' || $document->unpublishedChanges) : ?>
                         <li>
-                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . ($path === '/' ? '' : '/') . $document->slug ?>">
+                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $documentSlug ?>">
                             <i class="fa fa-check"></i>
                             Publish
                           </a>
@@ -116,7 +116,7 @@
                       <?php endif ?>
                       <?php if ($document->state === 'published') : ?>
                         <li>
-                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . ($path === '/' ? '' : '/') . $document->slug ?>">
+                          <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $documentSlug ?>">
                             <i class="fa fa-times"></i>
                             Unpublish
                           </a>
