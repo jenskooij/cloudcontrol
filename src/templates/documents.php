@@ -42,6 +42,43 @@
     </ul>
   </nav>
   <table class="documents">
+    <tr>
+      <th colspan="4">
+          <?php
+          $pathParts = explode('/', $path);
+          array_shift($pathParts);
+          $pathPartsReconstruction = '';
+          $parentPath = substr($path, 0, strrpos( $path, '/'));
+          if ($path !== '/' && substr_count($path, '/') === 1) {
+              $parentPath = '/';
+          }
+          ?>
+        <a href="?path=/">
+          Documents
+        </a>
+          <?php foreach ($pathParts as $part) : ?>
+              <?php if (!empty($part)) : ?>
+                  <?php $pathPartsReconstruction .= (substr($pathPartsReconstruction, -1) === '/' ? '' : '/') . $part ?>
+              &raquo;
+              <a href="?path=<?= $pathPartsReconstruction ?>">
+                  <?= $part ?>
+              </a>
+              <?php endif ?>
+          <?php endforeach ?>
+      </th>
+    </tr>
+    <?php if (!empty($parentPath)) :  ?>
+    <tr>
+      <td class="icon" title="folder">
+        <i class="fa fa-folder-o"></i>
+      </td>
+      <td class="icon"></td>
+      <td>
+        <a href="?path=<?=$parentPath?>">..</a>
+      </td>
+      <td class="icon context-menu-container"></td>
+    </tr>
+    <?php endif ?>
       <?php foreach ($documents as $document) : ?>
         <tr>
             <?php if ($document->type === 'folder') : ?>
@@ -87,7 +124,7 @@
               <td class="icon" title="<?= $document->type ?>">
                 <i class="fa fa-file-text-o"></i>
               </td>
-              <td class="icon" title="<?=$document->state?>">
+              <td class="icon" title="<?= $document->state ?>">
                 <i class="fa <?= $document->state === 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
               </td>
               <td>
@@ -136,5 +173,12 @@
             <?php endif ?>
         </tr>
       <?php endforeach ?>
+      <?php if (count($documents) === 0) : ?>
+        <tr>
+          <td class="icon" colspan="4">
+            <i>&lt;Empty&gt;</i>
+          </td>
+        </tr>
+      <?php endif ?>
   </table>
 </section>
