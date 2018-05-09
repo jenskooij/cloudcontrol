@@ -264,8 +264,8 @@
 		<div class="form-element">
 			<label for="documentType">Document Type</label>
 			<select id="documentType" name="documentType">
-				<?php foreach ($documentTypes as $documentType) : ?>
-				<option value="<?=$documentType->slug?>"><?=$documentType->title?></option>
+				<?php foreach ($documentTypes as $singleDocumentType) : ?>
+				<option value="<?=$singleDocumentType->slug?>"><?=$singleDocumentType->title?></option>
 				<?php endforeach ?>
 			</select>
 		</div>
