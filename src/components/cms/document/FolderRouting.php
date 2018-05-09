@@ -42,11 +42,12 @@ namespace CloudControl\Cms\components\cms\document {
         {
             $cmsComponent->subTemplate = 'documents/folder-form';
             $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
-            if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $request::$post[CmsConstants::GET_PARAMETER_PATH])) {
+            $path = $request::$get[CmsConstants::GET_PARAMETER_PATH];
+            if (isset($request::$post[CmsConstants::POST_PARAMETER_TITLE], $path)) {
                 $cmsComponent->storage->getDocuments()->addDocumentFolder($request::$post);
-                $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $request::$get[CmsConstants::GET_PARAMETER_PATH],
+                $cmsComponent->storage->getActivityLog()->add('created folder ' . $request::$post[CmsConstants::POST_PARAMETER_TITLE] . ' in path ' . $path,
                     'plus');
-                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+                header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?path=' . $path);
                 exit;
             }
         }
