@@ -1,59 +1,64 @@
-<?php /**
+<?php
+/**
  * @param \CloudControl\Cms\storage\entities\Document $document
- * @param string $cmsPrefix
- * @param string $slugPrefix
+ * @param string $path
  * @param \CloudControl\Cms\cc\Request $request
+ * @param string $cmsPrefix
  */
-function renderDocument($document, $cmsPrefix, $slugPrefix = '', $request)
+function renderDocument($document, $path, $request, $cmsPrefix)
 { ?>
-  <div class="grid-box-10">
-    <h3>
-      <a class="btn documentTitle" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/edit-document?slug=<?= $slugPrefix . $document->slug ?>" title="Edit">
-        <i class="fa fa-file-text-o"></i>
-        <small class="state <?= strtolower($document->state) ?>">
-          <i class="fa <?= $document->state == 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
-        </small>
-          <?= $document->title ?>
-      </a>
-        <?php if ($document->unpublishedChanges) : ?>
-          <small class="small unpublished-changes">Unpublished Changes</small>
-        <?php endif ?>
-      <small class="small documentType"><?= $document->documentType ?></small>
-      <small class="small lastModified" title="<?= date('r', $document->lastModificationDate) ?>">
-        <span class="label">Modified:</span>
-          <?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->lastModificationDate) ?>
-      </small>
-      <small class="small lastModifiedBy">
-        <span class="label">By:</span>
-          <?= $document->lastModifiedBy ?>
-      </small>
-    </h3>
-  </div>
-  <div class="documentActions grid-box-2">
-      <?php renderAction(
-          $document->state == 'unpublished' || $document->unpublishedChanges,
-          'Publish',
-          'publish',
-          $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $slugPrefix . $document->slug,
-          'check'); ?>
-      <?php renderAction(
-          $document->state == 'published',
-          'Unpublish',
-          'unpublish',
-          $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $slugPrefix . $document->slug,
-          'times'); ?>
-      <?php renderAction(
-          true,
-          'Edit',
-          '',
-          $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $slugPrefix . $document->slug,
-          'pencil'); ?>
-      <?php renderAction(
-          $document->state == 'unpublished',
-          'Delete',
-          'error',
-          $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $slugPrefix . $document->slug,
-          'trash',
-          'return confirm(\'Are you sure you want to delete this document?\');'); ?>
-  </div>
+    <?php
+    $documentSlug = substr($path, 1) . ($path === '/' ? '' : '/') . $document->slug;
+    $editDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $documentSlug;
+    $deleteDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $documentSlug;
+    ?>
+  <td class="icon" title="<?= $document->type ?>">
+    <i class="fa fa-file-text-o"></i>
+  </td>
+  <td class="icon" title="<?= $document->state ?>">
+    <i class="fa <?= $document->state === 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
+  </td>
+  <td>
+    <a href="<?= $editDocumentLink ?>"><?= $document->title ?></a>
+      <?php if ($document->unpublishedChanges) : ?>
+        <small class="small unpublished-changes">Unpublished Changes</small>
+      <?php endif ?>
+  </td>
+  <td class="icon context-menu-container">
+    <div class="context-menu">
+      <i class="fa fa-ellipsis-v"></i>
+      <ul>
+        <li>
+          <a href="<?= $editDocumentLink ?>">
+            <i class="fa fa-pencil"></i>
+            Edit
+          </a>
+        </li>
+          <?php if ($document->state === 'unpublished' || $document->unpublishedChanges) : ?>
+            <li>
+              <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $documentSlug ?>">
+                <i class="fa fa-check"></i>
+                Publish
+              </a>
+            </li>
+          <?php endif ?>
+          <?php if ($document->state === 'published') : ?>
+            <li>
+              <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $documentSlug ?>">
+                <i class="fa fa-times"></i>
+                Unpublish
+              </a>
+            </li>
+          <?php endif ?>
+          <?php if ($document->state === 'unpublished') : ?>
+            <li>
+              <a href="<?= $deleteDocumentLink ?>" onclick="return confirm('Are you sure you want to delete this document?');">
+                <i class="fa fa-trash"></i>
+                Delete
+              </a>
+            </li>
+          <?php endif ?>
+      </ul>
+    </div>
+  </td>
 <?php } ?>

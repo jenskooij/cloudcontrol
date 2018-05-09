@@ -1,3 +1,8 @@
+<?php
+$returnPathParts = explode('/', $request::$get['path']);
+array_pop($returnPathParts);
+$returnPath = '/' . implode('/', $returnPathParts);
+?>
 <script id="jqueryScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
@@ -12,7 +17,7 @@
   <nav class="actions">
     <ul>
       <li>
-        <a id="backButton" class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents" title="Back">
+        <a id="backButton" class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents?path=<?=$returnPath?>" title="Back">
           Back
         </a>
       </li>

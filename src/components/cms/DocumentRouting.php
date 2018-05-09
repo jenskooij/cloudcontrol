@@ -177,9 +177,13 @@ class DocumentRouting extends CmsRouting
     protected function overviewRouting($request, $cmsComponent)
     {
         $cmsComponent->subTemplate = 'documents';
+
+        $path = isset($request::$get['path']) ? $request::$get['path'] : '/';
+
         $cmsComponent->setParameter(CmsConstants::PARAMETER_DOCUMENTS,
-            $cmsComponent->storage->getDocuments()->getDocumentsWithState());
+            $cmsComponent->storage->getDocuments()->getDocumentsWithState($path));
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
+        $cmsComponent->setParameter('path', $path);
 
         $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
         $indexer = new Search($cmsComponent->storage);
@@ -213,9 +217,9 @@ class DocumentRouting extends CmsRouting
     private function doAfterPublishRedirect($request, $cmsComponent, $param = 'published')
     {
         if ($cmsComponent->autoUpdateSearchIndex) {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG])));
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]) . '&path=' . $this->getReturnPath($request)));
         } else {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]));
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]) . '&path=' . $this->getReturnPath($request));
         }
         exit;
     }
@@ -331,7 +335,7 @@ class DocumentRouting extends CmsRouting
         if (isset($request::$post[CmsConstants::PARAMETER_SAVE_AND_PUBLISH])) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/publish-document?slug=' . $path);
         } else {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents');
+            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?path=' . $this->getReturnPath($request));
         }
         exit;
     }
@@ -362,5 +366,16 @@ class DocumentRouting extends CmsRouting
             $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
             $cmsComponent->storage->getBricks()->getBricks());
+    }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    protected function getReturnPath($request)
+    {
+        $returnPathParts = explode('/', $request::$get['slug']);
+        array_pop($returnPathParts);
+        return '/' . implode('/', $returnPathParts);
     }
 }

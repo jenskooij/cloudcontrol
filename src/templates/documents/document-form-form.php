@@ -12,7 +12,7 @@
                 <input type="hidden" name="creationDate" value="<?=$document->creationDate?>" />
                 <?php endif ?>
                 <input type="hidden" name="state" value="<?=isset($document) ? $document->state : 'unpublished' ?>" />
-                <div class="title">
+                <div class="title<?= isset($document, $document->title) && !empty($document->title) ? ' readonly' : '' ?>">
                     <label for="title">Document Title</label>
                     <input required="required" value="<?=isset($document) ? $document->title : '' ?>"<?= isset($document, $document->title) && !empty($document->title) ? ' readonly="readonly"' : '' ?> type="text" id="title" name="title" placeholder="Title" />
                 </div>
@@ -264,8 +264,8 @@
 		<div class="form-element">
 			<label for="documentType">Document Type</label>
 			<select id="documentType" name="documentType">
-				<?php foreach ($documentTypes as $documentType) : ?>
-				<option value="<?=$documentType->slug?>"><?=$documentType->title?></option>
+				<?php foreach ($documentTypes as $singleDocumentType) : ?>
+				<option value="<?=$singleDocumentType->slug?>"><?=$singleDocumentType->title?></option>
 				<?php endforeach ?>
 			</select>
 		</div>

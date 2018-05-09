@@ -118,7 +118,7 @@ namespace CloudControl\Cms\storage\repository {
             $sql = 'SELECT *
               FROM documents_' . $state . '
              WHERE `path` LIKE ' . $db->quote($folderPathWithWildcard) . '
-               AND substr(`path`, ' . (strlen($folderPath) + 1) . ') NOT LIKE "%/%"
+               AND instr(substr(`path`, ' . (strlen($folderPath) + 2) . '), \'/\') = 0
                AND path != ' . $db->quote($folderPath) . '
           ORDER BY `type` DESC, `path` ASC';
             $stmt = $this->getDbStatement($sql);
