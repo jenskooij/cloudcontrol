@@ -12,9 +12,9 @@ use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\cms\document\FolderRouting;
 use CloudControl\Cms\components\cms\document\InfoMessagesHandler;
+use CloudControl\Cms\components\cms\document\PublicationRouting;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Search;
-use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\entities\Document;
 
 class DocumentRouting extends CmsRouting
@@ -25,23 +25,20 @@ class DocumentRouting extends CmsRouting
         '/documents/edit-document' => 'editDocumentRoute',
         '/documents/get-brick' => 'getBrickRoute',
         '/documents/delete-document' => 'deleteDocumentRoute',
-        '/documents/publish-document' => 'publishDocumentRoute',
-        '/documents/unpublish-document' => 'unpublishDocumentRoute',
     );
     const GET_PARAMETER_NOT_FOUND = 'not-found';
-    const GET_PARAMETER_PUBLISHED = 'published';
-    const GET_PARAMETER_UNPUBLISHED = 'unpublished';
+
     const GET_PARAMETER_FOLDER_DELETE = 'folder-delete';
     const GET_PARAMETER_DOCUMENT_DELETE = 'document-delete';
     const GET_PARAMETER_NO_DOCUMENT_TYPES = 'no-document-types';
 
     private static $infoMessageHandlers = array(
         self::GET_PARAMETER_NOT_FOUND => 'notFound',
-        self::GET_PARAMETER_PUBLISHED => 'published',
-        self::GET_PARAMETER_UNPUBLISHED => 'unpublished',
         self::GET_PARAMETER_FOLDER_DELETE => 'folderDelete',
         self::GET_PARAMETER_DOCUMENT_DELETE => 'documentDelete',
         self::GET_PARAMETER_NO_DOCUMENT_TYPES => 'noDocumentTypes',
+        PublicationRouting::GET_PARAMETER_PUBLISHED => 'published',
+        PublicationRouting::GET_PARAMETER_UNPUBLISHED => 'unpublished',
     );
 
     /**
@@ -55,6 +52,7 @@ class DocumentRouting extends CmsRouting
     {
         $this->doRouting($request, $relativeCmsUri, $cmsComponent);
         new FolderRouting($request, $relativeCmsUri, $cmsComponent);
+        new PublicationRouting($request, $relativeCmsUri, $cmsComponent);
     }
 
     /**
@@ -84,7 +82,7 @@ class DocumentRouting extends CmsRouting
     protected function editDocumentRoute($request, $cmsComponent)
     {
         $document = $cmsComponent->storage->getDocuments()->getDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG],
-            self::GET_PARAMETER_UNPUBLISHED);
+            PublicationRouting::GET_PARAMETER_UNPUBLISHED);
         if (!$document instanceof Document) {
             header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?not-found');
             exit;
@@ -145,29 +143,7 @@ class DocumentRouting extends CmsRouting
         exit;
     }
 
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     * @throws \Exception
-     */
-    protected function publishDocumentRoute($request, $cmsComponent)
-    {
-        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        $this->clearCacheAndLogActivity($request, $cmsComponent);
-        $this->doAfterPublishRedirect($request, $cmsComponent);
-    }
 
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     * @throws \Exception
-     */
-    protected function unpublishDocumentRoute($request, $cmsComponent)
-    {
-        $cmsComponent->storage->getDocuments()->unpublishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        $this->clearCacheAndLogActivity($request, $cmsComponent, 'times-circle-o', self::GET_PARAMETER_UNPUBLISHED);
-        $this->doAfterPublishRedirect($request, $cmsComponent, self::GET_PARAMETER_UNPUBLISHED);
-    }
 
     /**
      * @param CmsComponent $cmsComponent
@@ -209,40 +185,7 @@ class DocumentRouting extends CmsRouting
         }
     }
 
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     * @param string $param
-     */
-    private function doAfterPublishRedirect($request, $cmsComponent, $param = 'published')
-    {
-        if ($cmsComponent->autoUpdateSearchIndex) {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/search/update-index?returnUrl=' . urlencode($request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]) . '&path=' . $this->getReturnPath($request)));
-        } else {
-            header('Location: ' . $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents?' . $param . '=' . urlencode($request::$get[CmsConstants::GET_PARAMETER_SLUG]) . '&path=' . $this->getReturnPath($request));
-        }
-        exit;
-    }
 
-    /**
-     * @param $request
-     * @param CmsComponent $cmsComponent
-     * @param string $icon
-     * @param string $activity
-     */
-    private function clearCacheAndLogActivity(
-        $request,
-        $cmsComponent,
-        $icon = 'check-circle-o',
-        $activity = 'published'
-    )
-    {
-        Cache::getInstance()->clearCache();
-        $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
-        $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
-        $cmsComponent->storage->getActivityLog()->add($activity . ' document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>',
-            $icon);
-    }
 
     /**
      * @param $request
@@ -356,7 +299,7 @@ class DocumentRouting extends CmsRouting
     }
 
     /**
-     * @param $cmsComponent
+     * @param CmsComponent $cmsComponent
      */
     protected function setDocumentFormParameters($cmsComponent)
     {
@@ -366,16 +309,5 @@ class DocumentRouting extends CmsRouting
             $cmsComponent->storage->getImageSet()->getSmallestImageSet()->slug);
         $cmsComponent->setParameter(CmsConstants::PARAMETER_BRICKS,
             $cmsComponent->storage->getBricks()->getBricks());
-    }
-
-    /**
-     * @param $request
-     * @return string
-     */
-    protected function getReturnPath($request)
-    {
-        $returnPathParts = explode('/', $request::$get['slug']);
-        array_pop($returnPathParts);
-        return '/' . implode('/', $returnPathParts);
     }
 }
