@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="<?= $request::$subfolders ?>css/cms.css"/>
     <link rel="shortcut icon" type="image/png" href="<?= $request::$subfolders ?>favicon.ico"/>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=2">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta charset="UTF-8">
   </head>
   <body>

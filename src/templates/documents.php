@@ -1,10 +1,6 @@
-<?php include('documents/function.renderAction.php'); ?>
 <?php include('documents/function.renderDocument.php'); ?>
 <?php include('documents/function.renderFolder.php'); ?>
-<script>window.onload = function () {
-    History.init();
-    History.replaceState(null, 'Cloud Control CMS', '/<?=$request::$subfolders . $cmsPrefix?>/documents?path=/');
-  };</script>
+<?php include('documents/function.renderDocumentBreadcrumb.php'); ?>
 <section class="documents">
   <h2>
     <i class="fa fa-file-text-o"></i>
@@ -34,34 +30,53 @@
   <nav class="actions">
     <ul>
       <li>
-        <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-document?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-document" title="New Document">
+        <a class="btn" href="<?= $request::$subfolders . $cmsPrefix ?>/documents/new-document?path=<?= $path ?>" title="New Document">
           +
           <i class="fa fa-file-text-o"></i>
         </a>
-        <a class="btn" onmousedown="this.setAttribute('href', '<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder?path=' + getParameterByName('path'));" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/documents/new-folder" title="New Folder">
+        <a class="btn" href="<?= $request::$subfolders . $cmsPrefix ?>/documents/new-folder?path=<?= $path ?>" title="New Folder">
           +
           <i class="fa fa-folder-o"></i>
         </a>
       </li>
     </ul>
   </nav>
-    <?php if (isset($documents)) : ?>
-      <ul class="documents grid-wrapper">
-        <li class="grid-container">
-          <div class="grid-box-12">
-            <i class="fa fa-terminal" title="Path"></i>
-            <i id="pathHolder">/</i>
-          </div>
-        </li>
-          <?php foreach ($documents as $document) : ?>
-            <li class="grid-container">
-                <?php if ($document->type == 'document') : ?>
-                    <?php renderDocument($document, $cmsPrefix, '', $request); ?>
-                <?php elseif ($document->type == 'folder') : ?>
-                    <?php renderFolder($document, $cmsPrefix, '', true, $request); ?>
-                <?php endif ?>
-            </li>
-          <?php endforeach ?>
-      </ul>
-    <?php endif ?>
+  <table class="documents">
+    <tr>
+        <?php renderDocumentBreadcrumb($path) ?>
+    </tr>
+      <?php
+      $parentPath = substr($path, 0, strrpos( $path, '/'));
+      if ($path !== '/' && substr_count($path, '/') === 1) {
+          $parentPath = '/';
+      }
+      if (!empty($parentPath)) : ?>
+        <tr>
+          <td class="icon" title="folder">
+            <i class="fa fa-folder-o"></i>
+          </td>
+          <td class="icon"></td>
+          <td>
+            <a href="?path=<?= $parentPath ?>">..</a>
+          </td>
+          <td class="icon context-menu-container"></td>
+        </tr>
+      <?php endif ?>
+      <?php foreach ($documents as $document) : ?>
+        <tr>
+            <?php if ($document->type === 'folder') : ?>
+                <?php renderFolder($document, $path, $request, $cmsPrefix) ?>
+            <?php else : ?>
+                <?php renderDocument($document, $path, $request, $cmsPrefix) ?>
+            <?php endif ?>
+        </tr>
+      <?php endforeach ?>
+      <?php if (count($documents) === 0) : ?>
+        <tr>
+          <td class="icon" colspan="4">
+            <i>&lt;Empty&gt;</i>
+          </td>
+        </tr>
+      <?php endif ?>
+  </table>
 </section>

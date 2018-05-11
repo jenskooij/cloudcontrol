@@ -41,7 +41,7 @@ class ResponseHeaders
     const HEADER_X_CONTENT_SECURITY_POLICY = 'X-Content-Security-Policy'; // For IE
     const HEADER_X_CONTENT_TYPE_OPTIONS = 'X-Content-Type-Options';
     const HEADER_X_CONTENT_TYPE_OPTIONS_CONTENT = 'nosniff;';
-    const HEADER_X_FRAME_OPTIONS = 'X-Frame-Options: ';
+    const HEADER_X_FRAME_OPTIONS = 'X-Frame-Options';
     const HEADER_X_FRAME_OPTIONS_CONTENT = 'SAMEORIGIN';
     const HEADER_X_POWERED_BY = 'X-Powered-By';
     const HEADER_X_POWERED_BY_CONTENT = 'Cloud Control - https://getcloudcontrol.org';
