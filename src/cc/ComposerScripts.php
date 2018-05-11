@@ -68,8 +68,8 @@ class ComposerScripts
         self::copyInstallFile($event, 'public.htaccess', $configObject->{'publicDir'}, '.htaccess');
         self::copyInstallFile($event, 'root.htaccess', $rootDir, '.htaccess');
         self::copyInstallFile($event, 'base.php', $configObject->{'templateDir'});
-        self::copyInstallFile($event, 'cms.css', $configObject->{'cssDir'});
-        self::copyInstallFile($event, 'cms.js', $configObject->{'jsDir'});
+        self::copyAndOverwriteInstallFile($event, 'cms.css', $configObject->{'cssDir'});
+        self::copyAndOverwriteInstallFile($event, 'cms.js', $configObject->{'jsDir'});
         self::copyInstallFile($event, 'index.php', $configObject->{'publicDir'});
         self::copyInstallFile($event, 'CustomComponent.php', $componentsDir);
 
@@ -87,6 +87,17 @@ class ComposerScripts
     {
         file_put_contents($baseConfigTargetPath, json_encode($configObject));
         $event->getIO()->write("[INFO] Saved config to: " . $baseConfigTargetPath);
+    }
+
+    private static function copyAndOverwriteInstallFile($event, $sourceFileName, $destinationPath, $destinationFileName = null) {
+        if ($destinationFileName === null) {
+            $destinationFileName = $sourceFileName;
+        }
+        $destinationFullPath = realpath($destinationPath) . DIRECTORY_SEPARATOR . $destinationFileName;
+        if (file_exists($destinationFullPath)) {
+            unlink($destinationFullPath);
+        }
+        self::copyInstallFile($event, $sourceFileName, $destinationPath, $destinationFileName);
     }
 
     /**
