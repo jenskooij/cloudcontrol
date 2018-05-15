@@ -38,4 +38,15 @@ abstract class CmsRouting
             $this->$method($request, $cmsComponent);
         }
     }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    protected function getReturnPath($request)
+    {
+        $returnPathParts = explode('/', $request::$get['slug']);
+        array_pop($returnPathParts);
+        return '/' . implode('/', $returnPathParts);
+    }
 }

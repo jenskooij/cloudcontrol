@@ -18,6 +18,35 @@ function renderDocument($document, $path, $request, $cmsPrefix)
       <?php if ($document->unpublishedChanges) : ?>
         <small class="small unpublished-changes">Unpublished Changes</small>
       <?php endif ?>
+    <small class="small document-type"><?= $document->documentType ?></small>
+    <div class="details">
+      <table>
+        <tr>
+          <th>Document Type</th>
+          <td><?= $document->documentType ?></td>
+          <th>Last Modified By</th>
+          <td><?= $document->lastModifiedBy ?></td>
+        </tr>
+        <tr>
+          <th>Created</th>
+          <td title="<?= date('d-m-Y H:i:s',
+              $document->creationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->creationDate) ?></td>
+          <th>Last Modified</th>
+          <td title="<?= date('d-m-Y H:i:s',
+              $document->lastModificationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->lastModificationDate) ?></td>
+        </tr>
+        <tr>
+          <td colspan="2">&nbsp;</td>
+          <th>Published</th>
+            <?php if ($document->state === 'published') : ?>
+              <td title="<?= date('d-m-Y H:i:s',
+                  $document->publicationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->publicationDate) ?></td>
+            <?php else : ?>
+              <td>Not yet</td>
+            <?php endif ?>
+        </tr>
+      </table>
+    </div>
   </td>
   <td class="icon context-menu-container">
     <div class="context-menu">
@@ -53,6 +82,12 @@ function renderDocument($document, $path, $request, $cmsPrefix)
               </a>
             </li>
           <?php endif ?>
+        <li>
+          <a href="#" onclick="return showDocumentDetails(this);">
+            <i class="fa fa-list-alt"></i>
+            Details
+          </a>
+        </li>
       </ul>
     </div>
   </td>

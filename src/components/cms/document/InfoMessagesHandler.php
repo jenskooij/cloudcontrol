@@ -39,7 +39,7 @@ class InfoMessagesHandler
     public static function published(CmsComponent $cmsComponent)
     {
         $cmsComponent->setParameter(self::PARAMETER_INFO_MESSAGE,
-            '<i class="fa fa-check-circle-o"></i> Document ' . $_GET[DocumentRouting::GET_PARAMETER_PUBLISHED] . ' published');
+            '<i class="fa fa-check-circle-o"></i> Document ' . $_GET[PublicationRouting::GET_PARAMETER_PUBLISHED] . ' published');
     }
 
     /**
@@ -48,7 +48,7 @@ class InfoMessagesHandler
     public static function unpublished(CmsComponent $cmsComponent)
     {
         $cmsComponent->setParameter(self::PARAMETER_INFO_MESSAGE,
-            '<i class="fa fa-times-circle-o"></i> Document ' . $_GET[DocumentRouting::GET_PARAMETER_UNPUBLISHED] . ' unpublished');
+            '<i class="fa fa-times-circle-o"></i> Document ' . $_GET[PublicationRouting::GET_PARAMETER_UNPUBLISHED] . ' unpublished');
     }
 
     /**
