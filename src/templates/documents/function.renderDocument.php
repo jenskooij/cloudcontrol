@@ -7,11 +7,6 @@
  */
 function renderDocument($document, $path, $request, $cmsPrefix)
 { ?>
-    <?php
-    $documentSlug = substr($path, 1) . ($path === '/' ? '' : '/') . $document->slug;
-    $editDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . $documentSlug;
-    $deleteDocumentLink = $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . $documentSlug;
-    ?>
   <td class="icon" title="<?= $document->type ?>">
     <i class="fa fa-file-text-o"></i>
   </td>
@@ -19,7 +14,7 @@ function renderDocument($document, $path, $request, $cmsPrefix)
     <i class="fa <?= $document->state === 'published' ? 'fa-check-circle-o' : 'fa-times-circle-o' ?>"></i>
   </td>
   <td>
-    <a href="<?= $editDocumentLink ?>"><?= $document->title ?></a>
+    <a href="<?= getEditDocumentLink($request, $cmsPrefix, $path, $document) ?>"><?= $document->title ?></a>
       <?php if ($document->unpublishedChanges) : ?>
         <small class="small unpublished-changes">Unpublished Changes</small>
       <?php endif ?>
@@ -29,14 +24,14 @@ function renderDocument($document, $path, $request, $cmsPrefix)
       <i class="fa fa-ellipsis-v"></i>
       <ul>
         <li>
-          <a href="<?= $editDocumentLink ?>">
+          <a href="<?= getEditDocumentLink($request, $cmsPrefix, $path, $document) ?>">
             <i class="fa fa-pencil"></i>
             Edit
           </a>
         </li>
           <?php if ($document->state === 'unpublished' || $document->unpublishedChanges) : ?>
             <li>
-              <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . $documentSlug ?>">
+              <a href="<?= getPublishDocumentLink($request, $cmsPrefix, $path, $document) ?>">
                 <i class="fa fa-check"></i>
                 Publish
               </a>
@@ -44,7 +39,7 @@ function renderDocument($document, $path, $request, $cmsPrefix)
           <?php endif ?>
           <?php if ($document->state === 'published') : ?>
             <li>
-              <a href="<?= $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . $documentSlug ?>">
+              <a href="<?= getUnpublishDocumentLink($request, $cmsPrefix, $path, $document) ?>">
                 <i class="fa fa-times"></i>
                 Unpublish
               </a>
@@ -52,7 +47,7 @@ function renderDocument($document, $path, $request, $cmsPrefix)
           <?php endif ?>
           <?php if ($document->state === 'unpublished') : ?>
             <li>
-              <a href="<?= $deleteDocumentLink ?>" onclick="return confirm('Are you sure you want to delete this document?');">
+              <a href="<?= getDeleteDocumentLink($request, $cmsPrefix, $path, $document) ?>" onclick="return confirm('Are you sure you want to delete this document?');">
                 <i class="fa fa-trash"></i>
                 Delete
               </a>
@@ -61,4 +56,24 @@ function renderDocument($document, $path, $request, $cmsPrefix)
       </ul>
     </div>
   </td>
-<?php } ?>
+<?php }
+
+function getDocumentSlug($path, $document) {
+    return substr($path, 1) . ($path === '/' ? '' : '/') . $document->slug;
+}
+
+function getEditDocumentLink($request, $cmsPrefix, $path, $document) {
+    return $request::$subfolders . $cmsPrefix . '/documents/edit-document?slug=' . getDocumentSlug($path, $document);
+}
+
+function getDeleteDocumentLink($request, $cmsPrefix, $path, $document) {
+    return $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . getDocumentSlug($path, $document);
+}
+
+function getPublishDocumentLink($request, $cmsPrefix, $path, $document) {
+    return $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . getDocumentSlug($path, $document);
+}
+
+function getUnpublishDocumentLink($request, $cmsPrefix, $path, $document) {
+    return $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . getDocumentSlug($path, $document);
+}?>
