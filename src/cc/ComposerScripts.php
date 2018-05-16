@@ -70,7 +70,7 @@ class ComposerScripts
         self::copyInstallFile($event, 'base.php', $configObject->{'templateDir'});
         self::copyAndOverwriteInstallFile($event, 'cms.css', $configObject->{'cssDir'});
         self::copyAndOverwriteInstallFile($event, 'cms.js', $configObject->{'jsDir'});
-        self::copyInstallFile($event, 'index.php', $configObject->{'publicDir'});
+        self::copyAndOverwriteInstallFile($event, 'index.php', $configObject->{'publicDir'});
         self::copyInstallFile($event, 'CustomComponent.php', $componentsDir);
 
         $event->getIO()->write("");
