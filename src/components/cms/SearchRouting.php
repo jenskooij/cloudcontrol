@@ -12,7 +12,6 @@ use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Indexer;
-use CloudControl\Cms\search\Search;
 
 class SearchRouting extends CmsRouting
 {
@@ -45,10 +44,7 @@ class SearchRouting extends CmsRouting
     {
         $cmsComponent->subTemplate = 'search';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
-        $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
-        $indexer = new Search($cmsComponent->storage);
-        $indexedDocuments = $indexer->getIndexedDocuments();
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
+        $this->setSearchNeedsUpdateParameter($cmsComponent);
     }
 
     /**

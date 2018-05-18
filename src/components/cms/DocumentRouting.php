@@ -14,7 +14,6 @@ use CloudControl\Cms\components\cms\document\FolderRouting;
 use CloudControl\Cms\components\cms\document\InfoMessagesHandler;
 use CloudControl\Cms\components\cms\document\PublicationRouting;
 use CloudControl\Cms\components\CmsComponent;
-use CloudControl\Cms\search\Search;
 use CloudControl\Cms\storage\entities\Document;
 
 class DocumentRouting extends CmsRouting
@@ -161,10 +160,7 @@ class DocumentRouting extends CmsRouting
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_DOCUMENTS);
         $cmsComponent->setParameter('path', $path);
 
-        $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
-        $indexer = new Search($cmsComponent->storage);
-        $indexedDocuments = $indexer->getIndexedDocuments();
-        $cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
+        $this->setSearchNeedsUpdateParameter($cmsComponent);
 
         $this->handleInfoMessages($cmsComponent);
     }

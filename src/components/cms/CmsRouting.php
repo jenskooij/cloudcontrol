@@ -11,6 +11,7 @@ namespace CloudControl\Cms\components\cms;
 
 use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\components\CmsComponent;
+use CloudControl\Cms\search\Search;
 
 abstract class CmsRouting
 {
@@ -48,5 +49,17 @@ abstract class CmsRouting
         $returnPathParts = explode('/', $request::$get['slug']);
         array_pop($returnPathParts);
         return '/' . implode('/', $returnPathParts);
+    }
+
+    /**
+     * @param CmsComponent $cmsComponent
+     * @throws \Exception
+     */
+    protected function setSearchNeedsUpdateParameter($cmsComponent)
+    {
+        $documentCount = $cmsComponent->storage->getDocuments()->getTotalDocumentCount();
+        $indexer = new Search($cmsComponent->storage);
+        $indexedDocuments = $indexer->getIndexedDocuments();
+        $cmsComponent->setParameter(CmsConstants::PARAMETER_SEARCH_NEEDS_UPDATE, $documentCount !== $indexedDocuments);
     }
 }
