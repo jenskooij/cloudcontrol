@@ -12,6 +12,7 @@ use CloudControl\Cms\cc\Request;
 use CloudControl\Cms\cc\ResponseHeaders;
 use CloudControl\Cms\components\CmsComponent;
 use CloudControl\Cms\search\Indexer;
+use CloudControl\Cms\search\SearchAnalyzer;
 
 class SearchRouting extends CmsRouting
 {
@@ -45,6 +46,10 @@ class SearchRouting extends CmsRouting
         $cmsComponent->subTemplate = 'search';
         $cmsComponent->setParameter(CmsConstants::PARAMETER_MAIN_NAV_CLASS, CmsConstants::PARAMETER_SEARCH);
         $this->setSearchNeedsUpdateParameter($cmsComponent);
+
+        $searchAnalyzer = new SearchAnalyzer($cmsComponent->storage);
+        $searchAnalysis = $searchAnalyzer->getSearchAnalysis();
+        $cmsComponent->setParameter('searchAnalysis', $searchAnalysis);
     }
 
     /**

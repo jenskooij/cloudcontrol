@@ -42,7 +42,7 @@ class SearchAnalyzer extends SearchDbConnected
      *
      * @return bool
      */
-    public function backOnResults()
+    protected function backOnResults()
     {
         /** @var SearchSession $searchSession */
         $searchSession = $_SESSION[self::class];
@@ -206,5 +206,13 @@ class SearchAnalyzer extends SearchDbConnected
         );
 
         return $this->executeInsertQuery($sql, $parameters);
+    }
+
+    public function getSearchAnalysis()
+    {
+        $stmt = $this->getSearchDbHandle()->query('
+            SELECT `rowid`, * FROM `search_analysis` WHERE `query` != "" ORDER BY `timestamp` DESC
+        ');
+        return $stmt->fetchAll(\PDO::FETCH_CLASS);
     }
 }

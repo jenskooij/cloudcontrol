@@ -63,10 +63,11 @@ class Search extends SearchDbConnected
         $flatResults = $this->applyQueryCoordination($flatResults);
         usort($flatResults, array($this, 'scoreCompare'));
 
+        $this->results = $flatResults;
+
         $flatResults = array_merge($this->getSearchSuggestions(), $flatResults);
 
-        $this->results = $flatResults;
-        return $this->results;
+        return $flatResults;
     }
 
     /**
