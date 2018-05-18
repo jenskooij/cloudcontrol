@@ -7,6 +7,7 @@ use CloudControl\Cms\cc\application\ApplicationRunner;
 use CloudControl\Cms\cc\application\UrlMatcher;
 use CloudControl\Cms\services\FileService;
 use CloudControl\Cms\services\ImageService;
+use CloudControl\Cms\services\SearchService;
 use CloudControl\Cms\services\ValuelistService;
 use CloudControl\Cms\storage\Cache;
 use CloudControl\Cms\storage\Storage;
@@ -191,6 +192,7 @@ class Application
         FileService::getInstance()->init($this->storage);
         ImageService::getInstance()->init($this->storage);
         ValuelistService::getInstance()->init($this->storage);
+        SearchService::getInstance()->init($this->storage);
     }
 
     public function addMatchedSitemapItem($matchedClone)

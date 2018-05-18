@@ -53,6 +53,9 @@ class Search extends SearchDbConnected
      */
     public function getDocumentsForTokenizer(Tokenizer $tokenizer)
     {
+        if (!empty($this->results)) {
+            return $this->results;
+        }
         $this->tokenizer = $tokenizer;
         $resultsPerTokens = $this->queryTokens();
 
@@ -62,7 +65,8 @@ class Search extends SearchDbConnected
 
         $flatResults = array_merge($this->getSearchSuggestions(), $flatResults);
 
-        return $flatResults;
+        $this->results = $flatResults;
+        return $this->results;
     }
 
     /**
@@ -322,6 +326,7 @@ class Search extends SearchDbConnected
      * @param $token
      * @param $allResults
      * @return array
+     * @throws \Exception
      */
     private function getSearchSuggestion($token, $allResults)
     {
@@ -342,5 +347,29 @@ class Search extends SearchDbConnected
         $result = $stmt->fetchAll(\PDO::FETCH_CLASS, results\SearchSuggestion::class);
         $allResults = array_merge($result, $allResults);
         return $allResults;
+    }
+
+    /**
+     * @return Tokenizer
+     */
+    public function getTokenizer()
+    {
+        return $this->tokenizer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    /**
+     * @return int
+     */
+    public function getResultCount()
+    {
+        return count($this->getResults());
     }
 }

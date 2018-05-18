@@ -21,17 +21,17 @@
             <tr>
                 <th>Created</th>
                 <td title="<?= date('d-m-Y H:i:s',
-                    $document->creationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->creationDate) ?></td>
+                    $document->creationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->creationDate) ?> ago</td>
                 <th>Last Modified</th>
                 <td title="<?= date('d-m-Y H:i:s',
-                    $document->lastModificationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->lastModificationDate) ?></td>
+                    $document->lastModificationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->lastModificationDate) ?> ago</td>
             </tr>
             <tr>
                 <td colspan="2">&nbsp;</td>
                 <th>Published</th>
                 <?php if ($document->state === 'published') : ?>
                     <td title="<?= date('d-m-Y H:i:s',
-                        $document->publicationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->publicationDate) ?></td>
+                        $document->publicationDate) ?>"><?= \CloudControl\Cms\util\StringUtil::timeElapsedString($document->publicationDate) ?> ago</td>
                 <?php else : ?>
                     <td>Not yet</td>
                 <?php endif ?>

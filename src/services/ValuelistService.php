@@ -10,13 +10,9 @@ namespace CloudControl\Cms\services;
 use CloudControl\Cms\storage\entities\Valuelist;
 use CloudControl\Cms\storage\Storage;
 
-class ValuelistService
+class ValuelistService extends AbstractStorageService
 {
     private static $instance;
-    /**
-     * @var Storage
-     */
-    protected $storage;
 
     /**
      * FileService constructor.
@@ -46,13 +42,5 @@ class ValuelistService
         $valuelist = $instance->storage->getValuelists()->getValuelistBySlug($slug);
         return $valuelist === null ? null : new Valuelist($valuelist);
 
-    }
-
-    /**
-     * @param Storage $storage
-     */
-    public function init(Storage $storage)
-    {
-        $this->storage = $storage;
     }
 }

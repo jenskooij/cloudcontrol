@@ -14,13 +14,9 @@ use CloudControl\Cms\storage\Storage;
  *
  * @package CloudControl\Cms\services
  */
-class FileService
+class FileService extends AbstractStorageService
 {
     private static $instance;
-    /**
-     * @var Storage
-     */
-    protected $storage;
 
     /**
      * FileService constructor.
@@ -66,14 +62,6 @@ class FileService
     {
         $file = $this->storage->getFiles()->getFileByName($filePath);
         return $file === null ? null : new File($file);
-    }
-
-    /**
-     * @param Storage $storage
-     */
-    public function init(Storage $storage)
-    {
-        $this->storage = $storage;
     }
 
 

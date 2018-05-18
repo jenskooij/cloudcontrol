@@ -130,7 +130,7 @@ class StringUtil
             if ($d >= 1) {
                 $r = round($d);
 
-                return $r . ' ' . ($r > 1 ? $a_plural[$str] : $str) . ' ago';
+                return $r . ' ' . ($r > 1 ? $a_plural[$str] : $str);
             }
         }
 

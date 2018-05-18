@@ -14,13 +14,9 @@ use CloudControl\Cms\storage\Storage;
  * Singleton
  * @package CloudControl\Cms\services
  */
-class ImageService
+class ImageService extends AbstractStorageService
 {
     private static $instance;
-    /**
-     * @var Storage
-     */
-    protected $storage;
 
     /**
      * ImageService constructor.
@@ -66,13 +62,5 @@ class ImageService
     {
         $image = $this->storage->getImages()->getImageByName($imagePath);
         return $image === null ? null : new Image($image);
-    }
-
-    /**
-     * @param Storage $storage
-     */
-    public function init(Storage $storage)
-    {
-        $this->storage = $storage;
     }
 }
