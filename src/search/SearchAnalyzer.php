@@ -118,10 +118,10 @@ class SearchAnalyzer extends SearchDbConnected
         $sql = $this->getStoreSearchHistoryItemSql();
 
         $parameters = array(
-            ':sessionId', $searchSession->getSessionId(),
-            ':timestamp', time(),
-            ':requestUri', $searchHistoryItem->getRequestUri(),
-            ':conversion', $searchHistoryItem->getConversion()
+            ':sessionId' => $searchSession->getSessionId(),
+            ':timestamp' => time(),
+            ':requestUri' => $searchHistoryItem->getRequestUri(),
+            ':conversion' => $searchHistoryItem->getConversion()
         );
 
         return $this->executeInsertQuery($sql, $parameters);
@@ -175,7 +175,7 @@ class SearchAnalyzer extends SearchDbConnected
 
         if ($stmt->execute($parameters) === false) {
             $errorInfo = $stmt->errorInfo();
-            throw new \RuntimeException($errorInfo[2]);
+            throw new \RuntimeException($errorInfo[2] . ' for sql: ' . $sql . ' with parameters: ' . print_r($parameters, true));
         }
         return $db->lastInsertId();
     }
