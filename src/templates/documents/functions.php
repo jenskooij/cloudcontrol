@@ -14,14 +14,20 @@ function getDeleteDocumentLink($request, $cmsPrefix, $path, $document)
     return $request::$subfolders . $cmsPrefix . '/documents/delete-document?slug=' . getDocumentSlug($path, $document);
 }
 
+function getPublishDocumentBaseLink($request, $cmsPrefix)
+{
+    return $request::$subfolders . $cmsPrefix . '/documents/publish-document';
+}
+
 function getPublishDocumentLink($request, $cmsPrefix, $path, $document)
 {
-    return $request::$subfolders . $cmsPrefix . '/documents/publish-document?slug=' . getDocumentSlug($path, $document);
+    return getPublishDocumentBaseLink($request, $cmsPrefix) . '?slug=' . getDocumentSlug($path, $document);
 }
 
 function getUnpublishDocumentLink($request, $cmsPrefix, $path, $document)
 {
-    return $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . getDocumentSlug($path, $document);
+    return $request::$subfolders . $cmsPrefix . '/documents/unpublish-document?slug=' . getDocumentSlug($path,
+            $document);
 }
 
 function getFolderPath($path, $document)

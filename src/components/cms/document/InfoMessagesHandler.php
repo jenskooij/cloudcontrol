@@ -77,4 +77,13 @@ class InfoMessagesHandler
             '<i class="fa fa-exclamation-circle"></i> No document types defined yet. Please do so first, <a href="' . $documentTypesLink . '">here</a>.');
     }
 
+    /**
+     * @param CmsComponent $cmsComponent
+     */
+    public static function scheduled(CmsComponent $cmsComponent)
+    {
+        $cmsComponent->setParameter(self::PARAMETER_INFO_MESSAGE,
+            '<i class="fa fa-clock-o"></i> Document ' . $_GET[PublicationRouting::GET_PARAMETER_SCHEDULED] . ' is scheduled for publication');
+    }
+
 }

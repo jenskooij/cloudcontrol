@@ -82,4 +82,14 @@
             </tr>
         <?php endif ?>
     </table>
+  <div class="schedule-publication">
+    <form action="<?= getPublishDocumentBaseLink($request, $cmsPrefix) ?>">
+      <input type="text" name="slug" />
+      <input placeholder="<?=date('Y-m-d')?>" value="<?=date('Y-m-d')?>" type="date" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" oninvalid="this.setCustomValidity('Please fill in a date. Use this format: YYYY-MM-DD.');"
+             onchange="this.setCustomValidity('');" name="date" required />
+      <input type="time" pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])" oninvalid="this.setCustomValidity('Please fill in a time. Use this format: HH:MM (24 hour notation).');"
+             onchange="this.setCustomValidity('');" placeholder="<?=date('H:i')?>" name="time" required />
+      <input class="btn" type="submit" />
+    </form>
+  </div>
 </section>
