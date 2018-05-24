@@ -61,15 +61,19 @@
           Edit
         </a>
       </li>
-        <?php if ($document->state === 'unpublished' || $document->unpublishedChanges) : ?>
+        <?php if ($document->state === 'unpublished' || $document->unpublishedChanges || ($document->state === 'published' && $document->publicationDate >= time() && !$document->unpublishedChanges))  : ?>
           <li>
             <a href="<?= getPublishDocumentLink($request, $cmsPrefix, $path, $document) ?>">
               <i class="fa fa-check"></i>
               Publish now
             </a>
           </li>
+        <?php endif ?>
+        <?php if ($document->state === 'unpublished'
+            || ($document->state === 'published' && $document->publicationDate >= time() && !$document->unpublishedChanges)
+        ) : ?>
           <li>
-            <a href="<?= getPublishDocumentLink($request, $cmsPrefix, $path, $document) ?>">
+            <a href="#" onclick="return showSchedulePublicationModal('<?=getDocumentSlug($path, $document)?>');">
               <i class="fa fa-clock-o"></i>
               Schedule publication
             </a>
