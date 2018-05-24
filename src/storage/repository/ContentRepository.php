@@ -120,6 +120,7 @@ namespace CloudControl\Cms\storage\repository {
              WHERE `path` LIKE ' . $db->quote($folderPathWithWildcard) . '
                AND instr(substr(`path`, ' . (strlen($folderPath) + 2) . '), \'/\') = 0
                AND path != ' . $db->quote($folderPath) . '
+               AND publicationDate <= ' . time() . '
           ORDER BY `type` DESC, `path` ASC';
             $stmt = $this->getDbStatement($sql);
 
@@ -228,7 +229,7 @@ namespace CloudControl\Cms\storage\repository {
             if (!is_array($result)) {
                 return 0;
             }
-            return (int)current($result);
+            return (int) current($result);
         }
 
         /**
@@ -255,11 +256,11 @@ namespace CloudControl\Cms\storage\repository {
 
         /**
          * @param $path
-         * @throws \Exception
+         * @param null $publicationDate
          */
-        public function publishDocumentByPath($path)
+        public function publishDocumentByPath($path, $publicationDate = null)
         {
-            $this->publishOrUnpublishDocumentByPath($path);
+            $this->publishOrUnpublishDocumentByPath($path, true, $publicationDate);
         }
 
         /**
@@ -274,17 +275,18 @@ namespace CloudControl\Cms\storage\repository {
         /**
          * @param $path
          * @param bool $publish
-         * @throws \Exception
+         * @param int $publicationDate
          */
-        public function publishOrUnpublishDocumentByPath($path, $publish = true)
+        public function publishOrUnpublishDocumentByPath($path, $publish = true, $publicationDate = null)
         {
+            $publicationDate = $publicationDate !== null ? intval($publicationDate) : time();
             $sql = 'DELETE FROM documents_published
 					  WHERE `path` = :path';
             if ($publish) {
                 $sql = '
 				INSERT OR REPLACE INTO documents_published 
 					  (`id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,`state`,`lastModificationDate`,`creationDate`,`publicationDate`,`lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`)
-				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" AS state,`lastModificationDate`,`creationDate`,' . time() . ' AS publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
+				SELECT `id`,`path`,`title`,`slug`,`type`,`documentType`,`documentTypeSlug`,"published" AS state,`lastModificationDate`,`creationDate`,' . $publicationDate . ' AS publicationDate, `lastModifiedBy`,`fields`,`bricks`,`dynamicBricks`
 				  FROM documents_unpublished
 				 WHERE `path` = :path
 			';
@@ -431,19 +433,29 @@ namespace CloudControl\Cms\storage\repository {
         }
 
         /**
-         * @param $path
-         * @param $state
-         * @param $db
-         * @return mixed
+         * @param string $path
+         * @param string $state
+         * @param \PDO $db
+         * @return Document
          * @throws \Exception
          */
         private function fetchDocumentForDocumentByPath($path, $state, $db)
         {
-            $document = $this->fetchDocument('
-            SELECT *
-              FROM documents_' . $state . '
-             WHERE path = ' . $db->quote($path) . '
-        ');
+            $sql = '
+                SELECT *
+                  FROM documents_unpublished
+                 WHERE path = ' . $db->quote($path) . '
+            ';
+            if ($state === 'published') {
+                $sql = '
+                SELECT *
+                  FROM documents_published
+                 WHERE path = ' . $db->quote($path) . '
+                   AND `publicationDate` <= ' . time() . '
+            ';
+            }
+
+            $document = $this->fetchDocument($sql);
             return $document;
         }
     }

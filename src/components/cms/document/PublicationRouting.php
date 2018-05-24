@@ -42,7 +42,8 @@ class PublicationRouting extends CmsRouting
      */
     protected function publishDocumentRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
+        $publicationDate = isset($_GET['publicationDate']) ? intval($_GET['publicationDate']) : time();
+        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG], $publicationDate);
         $this->clearCacheAndLogActivity($request, $cmsComponent);
         $this->doAfterPublishRedirect($request, $cmsComponent);
     }
