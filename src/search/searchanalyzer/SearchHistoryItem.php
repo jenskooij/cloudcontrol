@@ -66,5 +66,8 @@ class SearchHistoryItem
         return $this->rowId;
     }
 
-
+    public function setConversionNewQuery()
+    {
+        $this->conversion = 'new query';
+    }
 }

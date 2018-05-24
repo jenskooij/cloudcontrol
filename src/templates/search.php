@@ -24,6 +24,8 @@
   <table class="documents">
     <tr>
       <th>Query</th>
+      <th>Conversion</th>
+      <th>Last Action</th>
       <th>Results</th>
     </tr>
       <?php foreach ($searchAnalysis as $row) : ?>
@@ -37,6 +39,12 @@
                 </tr>
               </table>
             </div>
+          </td>
+          <td>
+            <?=$row->conversion?>
+          </td>
+          <td>
+            <?=\CloudControl\Cms\util\StringUtil::timeElapsedString($row->timestamp)?> ago
           </td>
           <td>
               <?php if ($row->resultCount === '0') : ?>

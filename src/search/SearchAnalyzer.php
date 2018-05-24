@@ -28,6 +28,7 @@ class SearchAnalyzer extends SearchDbConnected
             if ($searchSession instanceof SearchSession) {
                 $searchHistoryItem = new SearchHistoryItem(Request::$requestUri);
                 if ($this->backOnResults()) {
+                    $searchHistoryItem->setConversionFalse();
                     $this->previousRequestDidntConvert($searchSession);
                 }
                 $lastInsertId = $this->storeSearchHistoryItem($searchSession, $searchHistoryItem);
@@ -52,8 +53,9 @@ class SearchAnalyzer extends SearchDbConnected
     /**
      * Set conversion of previous request to false
      * @param SearchSession $searchSession
+     * @param bool $newSearch
      */
-    private function previousRequestDidntConvert($searchSession)
+    private function previousRequestDidntConvert($searchSession, $newSearch = false)
     {
         $searchHistoryItem = $searchSession->getPreviousHistoryItem();
         if ($searchHistoryItem === null) {
@@ -61,12 +63,26 @@ class SearchAnalyzer extends SearchDbConnected
         }
 
         $searchHistoryItem->setConversionFalse();
+        if ($newSearch) {
+            $searchHistoryItem->setConversionNewQuery();
+        }
         $this->updateSearchHistoryItem($searchHistoryItem);
     }
 
     public static function isSearchAnalysisInProgress()
     {
         return isset($_SESSION[self::class]);
+    }
+
+    public static function getConversionTrueLink()
+    {
+        /** @var SearchSession $searchSession */
+        $searchSession = $_SESSION[self::class];
+
+        $link = Request::$requestUri;
+        $link .= strpos($link, '?') === false ? '?' : '&';
+        $link .= 'conversion=' . $searchSession->getSessionId();
+        return self::isSearchAnalysisInProgress() ? $link : '';
     }
 
     private function endPreviousSearchSession($query)
@@ -76,7 +92,7 @@ class SearchAnalyzer extends SearchDbConnected
             $searchSession = $_SESSION[self::class];
 
             if ($searchSession->getQuery() !== $query) {
-                $this->previousRequestDidntConvert($searchSession);
+                $this->previousRequestDidntConvert($searchSession, true);
             }
         }
     }
@@ -121,7 +137,9 @@ class SearchAnalyzer extends SearchDbConnected
             ':sessionId' => $searchSession->getSessionId(),
             ':timestamp' => time(),
             ':requestUri' => $searchHistoryItem->getRequestUri(),
-            ':conversion' => $searchHistoryItem->getConversion()
+            ':conversion' => $searchHistoryItem->getConversion(),
+            ':query' => $searchSession->getQuery(),
+            ':resultCount' => $searchSession->getResultCount()
         );
 
         return $this->executeInsertQuery($sql, $parameters);
@@ -130,11 +148,13 @@ class SearchAnalyzer extends SearchDbConnected
     private function getStoreSearchHistoryItemSql()
     {
         return '
-        INSERT INTO search_analysis (`sessionId`, `timestamp`, `requestUri`, `conversion`) VALUES (
+        INSERT INTO search_analysis (`sessionId`, `timestamp`, `requestUri`, `conversion`, `query`, `resultCount`) VALUES (
           :sessionId,
           :timestamp,
           :requestUri,
-          :conversion
+          :conversion,
+          :query,
+          :resultCount
         );
         ';
     }
@@ -151,7 +171,9 @@ class SearchAnalyzer extends SearchDbConnected
             ':sessionId' => $searchSession->getSessionId(),
             ':timestamp' => time(),
             ':query' => $searchSession->getQuery(),
-            ':resultCount' => $searchSession->getResultCount()
+            ':resultCount' => $searchSession->getResultCount(),
+            ':requestUri' => Request::$requestUri,
+            ':conversion' => 'false'
         );
 
         return $this->executeInsertQuery($sql, $parameters);
@@ -174,8 +196,9 @@ class SearchAnalyzer extends SearchDbConnected
         }
 
         if ($stmt->execute($parameters) === false) {
-            $errorInfo = $stmt->errorInfo();
-            throw new \RuntimeException($errorInfo[2] . ' for sql: ' . $sql . ' with parameters: ' . print_r($parameters, true));
+            $errorInfo = $db->errorInfo();
+            throw new \RuntimeException($errorInfo[2] . ' for sql: ' . $sql . ' with parameters: ' . print_r($parameters,
+                    true));
         }
         return $db->lastInsertId();
     }
@@ -183,11 +206,13 @@ class SearchAnalyzer extends SearchDbConnected
     private function getStoreSearchSessionSql()
     {
         return '
-        INSERT INTO search_analysis (`sessionId`, `timestamp`, `query`, `resultCount`) VALUES (
+        INSERT INTO search_analysis (`sessionId`, `timestamp`, `query`, `resultCount`, `requestUri`, `conversion`) VALUES (
           :sessionId,
           :timestamp,
           :query,
-          :resultCount
+          :resultCount,
+          :requestUri,
+          :conversion
         );
         ';
     }
@@ -210,9 +235,19 @@ class SearchAnalyzer extends SearchDbConnected
 
     public function getSearchAnalysis()
     {
-        $stmt = $this->getSearchDbHandle()->query('
-            SELECT `rowid`, * FROM `search_analysis` WHERE `query` != "" ORDER BY `timestamp` DESC
-        ');
+        $db = $this->getSearchDbHandle();
+        $sql = '
+            SELECT *,
+                   `rowid`
+              FROM `search_analysis`
+          GROUP BY `sessionId`
+          ORDER BY `timestamp` DESC
+        ';
+        $stmt = $db->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $db->errorInfo();
+            throw new \RuntimeException($errorInfo[2] . ' for sql: ' . $sql);
+        }
         return $stmt->fetchAll(\PDO::FETCH_CLASS);
     }
 }
