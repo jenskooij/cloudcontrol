@@ -179,7 +179,7 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @param string $slug
-     * @param null $publicationDate
+     * @param int $publicationDate
      */
     public function publishDocumentBySlug($slug, $publicationDate = null)
     {

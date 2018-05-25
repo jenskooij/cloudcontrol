@@ -256,7 +256,7 @@ namespace CloudControl\Cms\storage\repository {
 
         /**
          * @param $path
-         * @param null $publicationDate
+         * @param int $publicationDate
          */
         public function publishDocumentByPath($path, $publicationDate = null)
         {

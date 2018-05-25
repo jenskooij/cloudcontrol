@@ -97,6 +97,9 @@ class PublicationRouting extends CmsRouting
             $icon);
     }
 
+    /**
+     * @return int
+     */
     private function getPublicationDate()
     {
         if (isset($_GET['publicationDate'])) {
@@ -109,6 +112,11 @@ class PublicationRouting extends CmsRouting
         }
     }
 
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @param bool $scheduled
+     */
     private function logPublicationActivity($request, $cmsComponent, $scheduled)
     {
         if ($scheduled) {
