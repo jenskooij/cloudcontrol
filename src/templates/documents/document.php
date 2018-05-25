@@ -73,7 +73,7 @@
             || ($document->state === 'published' && $document->publicationDate >= time() && !$document->unpublishedChanges)
         ) : ?>
           <li>
-            <a href="#" onclick="return showSchedulePublicationModal('<?=getDocumentSlug($path, $document)?>');">
+            <a href="#" onclick="return showSchedulePublicationModal('<?= getDocumentSlug($path, $document) ?>');">
               <i class="fa fa-clock-o"></i>
               Schedule publication
             </a>
@@ -83,14 +83,16 @@
           <li>
             <a href="<?= getUnpublishDocumentLink($request, $cmsPrefix, $path, $document) ?>">
               <i class="fa fa-times"></i>
-              <?=$document->publicationDate <= time() ? 'Unpublish now' : 'Cancel publication' ?>
+                <?= $document->publicationDate <= time() ? 'Unpublish now' : 'Cancel publication' ?>
             </a>
           </li>
         <?php endif ?>
         <?php if ($document->state === 'unpublished') : ?>
           <li>
             <a href="<?= getDeleteDocumentLink($request, $cmsPrefix, $path, $document) ?>"
-               onclick="return confirm('Are you sure you want to delete this document?');">
+               data-confirm="Are you sure you want to delete document '<?= $document->title ?>'?"
+               data-confirm-text="Delete"
+               data-decline-text="Cancel">
               <i class="fa fa-trash"></i>
               Delete
             </a>

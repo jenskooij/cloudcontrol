@@ -34,7 +34,10 @@
                 <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/image-set/edit?slug=<?= $currentSet->slug ?>" title="Edit">
                   <i class="fa fa-pencil"></i>
                 </a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/image-set/delete?slug=<?= $currentSet->slug ?>" title="Delete">
+                <a data-confirm="Are you sure you want to delete the image set '<?= $currentSet->title ?>'?"
+                   data-confirm-text="Delete"
+                   data-decline-text="Cancel"
+                   class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/image-set/delete?slug=<?= $currentSet->slug ?>" title="Delete">
                   <i class="fa fa-trash"></i>
                 </a>
               </div>

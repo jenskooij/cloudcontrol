@@ -11,7 +11,9 @@
         <ul>
             <li>
                 <a href="<?= getDeleteFolderLink($request, $cmsPrefix, $path, $document) ?>"
-                   onclick="return confirm('Are you sure you want to delete this folder?');">
+                   data-confirm="Are you sure you want to delete the folder '<?= $document->title ?>'?"
+                   data-confirm-text="Delete"
+                   data-decline-text="Cancel">
                     <i class="fa fa-trash"></i>
                     Delete
                 </a>

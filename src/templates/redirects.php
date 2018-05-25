@@ -21,7 +21,10 @@
             <span class="url"><?= $redirect->toUrl ?></span>
           </div>
           <div class="grid-box-4 documentActions">
-            <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects/delete?slug=<?= $redirect->slug ?>" title="Delete">
+            <a data-confirm="Are you sure you want to delete the redirect '<?= $redirect->title ?>'?"
+               data-confirm-text="Delete"
+               data-decline-text="Cancel"
+               class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects/delete?slug=<?= $redirect->slug ?>" title="Delete">
               <i class="fa fa-trash"></i>
             </a>
             <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/redirects/edit?slug=<?= $redirect->slug ?>" title="Edit">

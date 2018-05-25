@@ -25,7 +25,10 @@
               </h3>
             </div>
             <div class="documentActions grid-box-2">
-              <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists/delete?slug=<?= $valuelist->slug ?>" title="Delete">
+              <a data-confirm="Are you sure you want to delete the valuelist '<?= $valuelist->title ?>'?"
+                 data-confirm-text="Delete"
+                 data-decline-text="Cancel"
+                 class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/valuelists/delete?slug=<?= $valuelist->slug ?>" title="Delete">
                 <i class="fa fa-trash"></i>
               </a>
             </div>
