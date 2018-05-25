@@ -451,7 +451,7 @@ namespace CloudControl\Cms\storage\repository {
                 SELECT *
                   FROM documents_published
                  WHERE path = ' . $db->quote($path) . '
-                   AND `publicationDate` <= ' . time() . '
+                   AND (`publicationDate` <= ' . time() . ' OR `type` = "folder")
             ';
             }
 
