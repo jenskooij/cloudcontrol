@@ -7,7 +7,7 @@
            onchange="this.setCustomValidity('');" name="date" required/>
     <input type="time" value="<?= date('H:i') ?>" pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])" oninvalid="this.setCustomValidity('Please fill in a time. Use this format: HH:MM (24 hour notation).');"
            onchange="this.setCustomValidity('');" placeholder="<?= date('H:i') ?>" name="time" required/>
-    <button type="submit" class="btn">Schedule Publication</button>
     <a class="btn reset" onclick="toggleSchedulePublicationModal();">Cancel</a>
+    <button type="submit" class="btn">Schedule Publication</button>
   </form>
 </div>
