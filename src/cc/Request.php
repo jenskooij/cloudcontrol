@@ -97,14 +97,14 @@ namespace CloudControl\Cms\cc {
         {
             return
                 (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                || $_SERVER['SERVER_PORT'] == 443
+                || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] === 443)
                 || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
         }
 
         public static function isLocalhost()
         {
             $ipchecklist = array("localhost", "127.0.0.1", "::1");
-            return in_array($_SERVER['REMOTE_ADDR'], $ipchecklist, true);
+            return (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], $ipchecklist, true));
         }
     }
 }
