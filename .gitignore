@@ -1,7 +1,6 @@
 #intellij
 .idea
 
-composer.lock
 vendor
 
 #dev
