@@ -25,7 +25,10 @@
                 <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/users/edit?slug=<?= $user->slug ?>" title="Edit">
                   <i class="fa fa-pencil"></i>
                 </a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/users/delete?slug=<?= $user->slug ?>" title="Delete">
+                <a data-confirm="Are you sure you want to delete the user '<?= $user->username ?>'?"
+                   data-confirm-text="Delete"
+                   data-decline-text="Cancel"
+                   class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/users/delete?slug=<?= $user->slug ?>" title="Delete">
                   <i class="fa fa-trash"></i>
                 </a>
               </div>

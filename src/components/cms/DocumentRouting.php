@@ -39,6 +39,7 @@ class DocumentRouting extends CmsRouting
         self::GET_PARAMETER_NO_DOCUMENT_TYPES => 'noDocumentTypes',
         PublicationRouting::GET_PARAMETER_PUBLISHED => 'published',
         PublicationRouting::GET_PARAMETER_UNPUBLISHED => 'unpublished',
+        PublicationRouting::GET_PARAMETER_SCHEDULED => 'scheduled',
     );
 
     /**

@@ -21,6 +21,7 @@ class PublicationRouting extends CmsRouting
 
     const GET_PARAMETER_PUBLISHED = 'published';
     const GET_PARAMETER_UNPUBLISHED = 'unpublished';
+    const GET_PARAMETER_SCHEDULED = 'scheduled';
 
     /**
      * CmsRouting constructor.
@@ -42,9 +43,12 @@ class PublicationRouting extends CmsRouting
      */
     protected function publishDocumentRoute($request, $cmsComponent)
     {
-        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG]);
-        $this->clearCacheAndLogActivity($request, $cmsComponent);
-        $this->doAfterPublishRedirect($request, $cmsComponent);
+        $publicationDate = $this->getPublicationDate();
+        $cmsComponent->storage->getDocuments()->publishDocumentBySlug($request::$get[CmsConstants::GET_PARAMETER_SLUG],
+            $publicationDate);
+        $scheduled = $publicationDate > time();
+        $this->logPublicationActivity($request, $cmsComponent, $scheduled);
+        $this->doAfterPublishRedirect($request, $cmsComponent, $scheduled ? self::GET_PARAMETER_SCHEDULED : self::GET_PARAMETER_PUBLISHED);
     }
 
     /**
@@ -85,12 +89,40 @@ class PublicationRouting extends CmsRouting
         $cmsComponent,
         $icon = 'check-circle-o',
         $activity = 'published'
-    )
-    {
+    ) {
         Cache::getInstance()->clearCache();
         $path = $request::$get[CmsConstants::GET_PARAMETER_SLUG];
         $docLink = $request::$subfolders . $cmsComponent->getParameter(CmsConstants::PARAMETER_CMS_PREFIX) . '/documents/edit-document?slug=' . $path;
         $cmsComponent->storage->getActivityLog()->add($activity . ' document <a href="' . $docLink . '">' . $request::$get[CmsConstants::GET_PARAMETER_SLUG] . '</a>',
             $icon);
+    }
+
+    /**
+     * @return int
+     */
+    private function getPublicationDate()
+    {
+        if (isset($_GET['publicationDate'])) {
+            return intval($_GET['publicationDate']);
+        }
+
+        if (isset($_GET['date'], $_GET['time'])) {
+            $time = strtotime($_GET['date'] . ' ' . $_GET['time']);
+            return $time === false ? time() : $time;
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param CmsComponent $cmsComponent
+     * @param bool $scheduled
+     */
+    private function logPublicationActivity($request, $cmsComponent, $scheduled)
+    {
+        if ($scheduled) {
+            $this->clearCacheAndLogActivity($request, $cmsComponent, 'clock-o', 'scheduled publication for');
+        } else {
+            $this->clearCacheAndLogActivity($request, $cmsComponent);
+        }
     }
 }

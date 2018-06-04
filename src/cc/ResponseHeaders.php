@@ -20,9 +20,9 @@ class ResponseHeaders
     const HEADER_CONTENT_DISPOSITION = 'Content-Disposition';
     const HEADER_CONTENT_LENGTH = 'Content-Length';
     const HEADER_CONTENT_SECURITY_POLICY = 'Content-Security-Policy';
-    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE = 'default-src \'self\' https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_INSECURE = 'default-src \'self\' https: data: \'unsafe-inline\' \'unsafe-eval\'';
     const HEADER_CONTENT_SECURITY_POLICY_CONTENT_LOCALHOST = 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:';
-    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE = 'default-src https: \'unsafe-inline\' \'unsafe-eval\'';
+    const HEADER_CONTENT_SECURITY_POLICY_CONTENT_SECURE = 'default-src https: data: \'unsafe-inline\' \'unsafe-eval\'';
     const HEADER_CONTENT_TRANSFER_ENCODING = 'Content-Transfer-Encoding';
     const HEADER_CONTENT_TRANSFER_ENCODING_CONTENT_BINARY = 'binary';
     const HEADER_CONTENT_TYPE = 'Content-Type';

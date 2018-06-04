@@ -1,6 +1,8 @@
 <?php
 /**
- * Created by jensk on 15-8-2017.
+ * Cloud Control Bootstrap / Router script
+ * Editing this is not recommended, as it gets overwritten
+ * everytime composer update / install is ran.
  */
 require_once(__DIR__ . '/../vendor/autoload.php');
 

@@ -42,8 +42,10 @@ class SearchResult
             return $this->document;
         } else {
             $this->document = $this->storage->getDocuments()->getDocumentBySlug(substr($this->documentPath, 1));
-            $this->document->dbHandle = $this->storage->getContentDbHandle();
-            $this->document->documentStorage = $this->storage->getDocuments();
+            if ($this->document !== false) {
+                $this->document->dbHandle = $this->storage->getContentDbHandle();
+                $this->document->documentStorage = $this->storage->getDocuments();
+            }
 
             return $this->document;
         }

@@ -21,7 +21,10 @@
                 <a class="btn move" title="Move">
                   <i class="fa fa-arrows-v"></i>
                 </a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/delete?slug=<?= $sitemapItem->slug ?>" title="Delete">
+                <a data-confirm="Are you sure you want to delete the sitemapitem '<?= $sitemapItem->title ?>'?"
+                   data-confirm-text="Delete"
+                   data-decline-text="Cancel"
+                   class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/delete?slug=<?= $sitemapItem->slug ?>" title="Delete">
                   <i class="fa fa-trash"></i>
                 </a>
                 <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/sitemap/edit?slug=<?= $sitemapItem->slug ?>" title="Edit">

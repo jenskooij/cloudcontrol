@@ -19,6 +19,7 @@ class SearchComponent extends CachableBaseComponent
 
     /**
      * @param \CloudControl\Cms\storage\Storage $storage
+     * @throws \Exception
      */
     public function run(Storage $storage)
     {
@@ -28,7 +29,7 @@ class SearchComponent extends CachableBaseComponent
 
         $request = $this->request;
         if (isset($request::$get[$this->searchParameterName])) {
-            $query = $request::$get[$this->searchParameterName];
+            $query = $_GET[$this->searchParameterName];
             $filteredQuery = new CharacterFilter($query);
             $tokenizer = new Tokenizer($filteredQuery);
             $search = new Search($storage);

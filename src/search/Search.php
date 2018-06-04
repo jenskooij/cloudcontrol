@@ -140,6 +140,8 @@ class Search extends SearchDbConnected
     public function getResultsForToken($token, $queryNorm)
     {
         $db = $this->getSearchDbHandle();
+        $contentDbPath = $this->storageDir . DIRECTORY_SEPARATOR . 'content.db';
+        $db->exec('ATTACH ' . $db->quote($contentDbPath) . ' as `content_db`;');
         $sql = '
 			SELECT (:queryNorm * 
 						(SUM(term_frequency.frequency) --TF
@@ -154,7 +156,10 @@ class Search extends SearchDbConnected
 			  FROM term_frequency
 		 LEFT JOIN inverse_document_frequency
 		 		ON inverse_document_frequency.term = term_frequency.term
+		 LEFT JOIN documents_published
+		        ON documents_published.path = term_frequency.documentPath
 			 WHERE term_frequency.term = :query
+			   AND documents_published.publicationDate <= ' . time() . '
 		  GROUP BY term_frequency.documentPath, term_frequency.term
 		  ORDER BY score DESC
 		';

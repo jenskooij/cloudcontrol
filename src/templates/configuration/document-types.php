@@ -25,7 +25,10 @@
                 <a class="btn" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/document-types/edit?slug=<?= $documentType->slug ?>" title="Edit">
                   <i class="fa fa-pencil"></i>
                 </a>
-                <a onclick="return confirm('Are you sure you want to delete this item?');" class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/document-types/delete?slug=<?= $documentType->slug ?>" title="Delete">
+                <a data-confirm="Are you sure you want to delete the document type '<?= $documentType->title ?>'?"
+                   data-confirm-text="Delete"
+                   data-decline-text="Cancel"
+                   class="btn error" href="<?= $request::$subfolders ?><?= $cmsPrefix ?>/configuration/document-types/delete?slug=<?= $documentType->slug ?>" title="Delete">
                   <i class="fa fa-trash"></i>
                 </a>
               </div>

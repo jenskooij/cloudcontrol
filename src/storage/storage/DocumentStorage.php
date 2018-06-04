@@ -179,12 +179,12 @@ class DocumentStorage extends AbstractStorage
 
     /**
      * @param string $slug
-     * @throws \Exception
+     * @param int $publicationDate
      */
-    public function publishDocumentBySlug($slug)
+    public function publishDocumentBySlug($slug, $publicationDate = null)
     {
         $path = '/' . $slug;
-        $this->repository->getContentRepository()->publishDocumentByPath($path);
+        $this->repository->getContentRepository()->publishDocumentByPath($path, $publicationDate);
     }
 
     /**
