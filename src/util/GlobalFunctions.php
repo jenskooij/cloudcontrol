@@ -106,8 +106,9 @@ END;
     public static function cliDump($debug_backtrace)
     {
         echo 'Dump: ' . $debug_backtrace['file'] . ':' . $debug_backtrace['line'] . "\n";
-        foreach (func_get_args() as $data) {
+        foreach ($debug_backtrace['args'] as $data) {
             var_dump($data);
         }
+        exit;
     }
 }
