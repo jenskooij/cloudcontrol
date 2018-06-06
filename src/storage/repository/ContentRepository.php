@@ -120,7 +120,7 @@ namespace CloudControl\Cms\storage\repository {
              WHERE `path` LIKE ' . $db->quote($folderPathWithWildcard) . '
                AND instr(substr(`path`, ' . (strlen($folderPath) + 2) . '), \'/\') = 0
                AND path != ' . $db->quote($folderPath) . '
-               AND publicationDate <= ' . time() . '
+               AND (publicationDate <= ' . time() . ' OR `type` = "folder")
           ORDER BY `type` DESC, `path` ASC';
             $stmt = $this->getDbStatement($sql);
 

@@ -18,12 +18,15 @@ namespace CloudControl\Cms\components {
     class DocumentComponent extends NotFoundComponent
     {
         protected $documentParameterName = self::PARAMETER_DOCUMENT;
+        protected $matchIndex = '1';
+
         const DOCUMENT_STATE_UNPUBLISHED = 'unpublished';
         const DOCUMENT_STATE_PUBLISHED = 'published';
         const DOCUMENT_TYPE_FOLDER = 'folder';
 
         const PARAMETER_DOCUMENT = 'document';
         const PARAMETER_DOCUMENT_PARAMETER_NAME = 'documentParameterName';
+        const PARAMETER_MATCH_INDEX = 'matchIndex';
 
 
         /**
@@ -52,6 +55,10 @@ namespace CloudControl\Cms\components {
         {
             if (isset($this->parameters[self::PARAMETER_DOCUMENT_PARAMETER_NAME])) {
                 $this->documentParameterName = $this->parameters[self::PARAMETER_DOCUMENT_PARAMETER_NAME];
+            }
+
+            if (isset($this->parameters[self::PARAMETER_MATCH_INDEX])) {
+                $this->matchIndex = $this->parameters[self::PARAMETER_MATCH_INDEX];
             }
         }
 
@@ -140,7 +147,7 @@ namespace CloudControl\Cms\components {
          */
         protected function checkForSpecificFolder()
         {
-            $relativeDocumentUri = current($this->matchedSitemapItem->matches[1]);
+            $relativeDocumentUri = current($this->matchedSitemapItem->matches[$this->matchIndex]);
             if (isset($this->parameters[self::DOCUMENT_TYPE_FOLDER])) {
                 if (substr($this->parameters[self::DOCUMENT_TYPE_FOLDER], -1) !== '/') {
                     $this->parameters[self::DOCUMENT_TYPE_FOLDER] .= '/';
