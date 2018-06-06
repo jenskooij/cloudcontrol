@@ -18,15 +18,18 @@ namespace CloudControl\Cms\components {
     class DocumentComponent extends NotFoundComponent
     {
         protected $documentParameterName = self::PARAMETER_DOCUMENT;
-        protected $matchIndex = '1';
+        private $matchIndex = '1';
 
         const DOCUMENT_STATE_UNPUBLISHED = 'unpublished';
         const DOCUMENT_STATE_PUBLISHED = 'published';
+
         const DOCUMENT_TYPE_FOLDER = 'folder';
 
         const PARAMETER_DOCUMENT = 'document';
-        const PARAMETER_DOCUMENT_PARAMETER_NAME = 'documentParameterName';
         const PARAMETER_MATCH_INDEX = 'matchIndex';
+        const PARAMETER_DOCUMENT_PARAMETER_NAME = 'documentParameterName';
+
+
 
 
         /**
