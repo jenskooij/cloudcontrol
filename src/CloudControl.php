@@ -46,7 +46,7 @@ class CloudControl
     public static function cliServerServeResource($dir)
     {
         if (PHP_SAPI === 'cli-server') {
-            if (preg_match('/\.(?:js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3|xml|map|scss)$/',
+            if (preg_match('/\.(?:js|ico|txt|gif|jpg|jpeg|png|bmp|css|html|htm|php|pdf|exe|eot|svg|ttf|woff|ogg|mp3|xml|map|scss|json)$/',
                 $_SERVER['REQUEST_URI'])) {
                 if (file_exists($dir . $_SERVER["REQUEST_URI"])) {
                     return true;    // serve the requested resource as-is.
