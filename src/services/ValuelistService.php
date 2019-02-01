@@ -44,7 +44,7 @@ class ValuelistService
     {
         $instance = self::getInstance();
         $valuelist = $instance->storage->getValuelists()->getValuelistBySlug($slug);
-        return $valuelist === null ? new Valuelist(null) : new Valuelist($valuelist);
+        return $valuelist === null ? new Valuelist(new \stdClass()) : new Valuelist($valuelist);
 
     }
 
