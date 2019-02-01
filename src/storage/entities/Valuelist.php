@@ -19,14 +19,15 @@ class Valuelist
      */
     public function __construct(\stdClass $valuelist)
     {
-        $this->title = $valuelist->title;
-        $this->slug = $valuelist->slug;
-        $this->pairs = $valuelist->pairs;
+        $this->title = isset($valuelist->title) ? $valuelist->title : '';
+        $this->slug = isset($valuelist->slug) ? $valuelist->slug : '';
+        $this->pairs = isset($valuelist->pairs) ? $valuelist->pairs : new \stdClass();
     }
 
     public function get($key)
     {
-        return $this->pairs->{$key};
+
+        return isset($this->pairs->{$key}) ? $this->pairs->{$key} : '';
     }
 
     /**
