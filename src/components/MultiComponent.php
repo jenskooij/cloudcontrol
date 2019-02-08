@@ -13,6 +13,8 @@ use CloudControl\Cms\storage\Storage;
 
 class MultiComponent extends CachableBaseComponent
 {
+    const PARAMETER_MULTI_COMPONENT = 'multiComponent';
+
     /**
      * MultiComponent constructor.
      * Applies parameters in the namespace "self" to parent
@@ -72,6 +74,7 @@ class MultiComponent extends CachableBaseComponent
     private function runComponent($namespace, $fullyQualifiedComponent)
     {
         $parameters = $this->getParametersForNameSpace($namespace);
+        $parameters[self::PARAMETER_MULTI_COMPONENT] = $this;
         $component = new $fullyQualifiedComponent('', $this->request, $parameters, $this->matchedSitemapItem);
         if ($component instanceof components\Component) {
             $component->run($this->storage);

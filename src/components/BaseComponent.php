@@ -213,5 +213,18 @@ namespace CloudControl\Cms\components {
             }
             return include($templatePath);
         }
+
+        protected function ranFromMultiComponent()
+        {
+            return isset($this->parameters[MultiComponent::PARAMETER_MULTI_COMPONENT]) && $this->parameters[MultiComponent::PARAMETER_MULTI_COMPONENT] instanceof MultiComponent;
+        }
+
+        protected function getMultiComponent()
+        {
+            if ($this->ranFromMultiComponent()) {
+                return $this->parameters[MultiComponent::PARAMETER_MULTI_COMPONENT];
+            }
+            return null;
+        }
     }
 }
