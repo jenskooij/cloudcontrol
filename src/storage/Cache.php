@@ -86,6 +86,31 @@ class Cache
     }
 
     /**
+     * Clears the cache for path
+     *
+     * @param $path string
+     * @return mixed
+     */
+    public function clearCacheForPath($path)
+    {
+        $dbInstace = $this->getDbInstance();
+        $sql = '
+       DELETE FROM `cache`
+             WHERE `path` = :path
+             LIMIT 1
+        ';
+        $stmt = $dbInstace->prepare($sql);
+        $stmt->bindParam(':path', $path);
+        if ($stmt->execute()) {
+            return $stmt->fetch(\PDO::FETCH_OBJ);
+        } else {
+            $error = $stmt->errorInfo();
+            $errorMsg = $error[2];
+            throw new \RuntimeException('SQLite Exception: ' . $errorMsg . ' in SQL: <br /><pre>' . $sql . '</pre>');
+        }
+    }
+
+    /**
      * @param $storagePath
      */
     public function setStoragePath($storagePath)
