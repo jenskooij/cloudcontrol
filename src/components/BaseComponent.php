@@ -214,11 +214,22 @@ namespace CloudControl\Cms\components {
             return include($templatePath);
         }
 
+        /**
+         * Wheter or not this component is beeing run from a MultiComponent
+         *
+         * @return bool
+         */
         protected function ranFromMultiComponent()
         {
             return isset($this->parameters[MultiComponent::PARAMETER_MULTI_COMPONENT]) && $this->parameters[MultiComponent::PARAMETER_MULTI_COMPONENT] instanceof MultiComponent;
         }
 
+        /**
+         * If this component is beeing run from a MultiComponent
+         * returns that MultiComponent. Otherwise will return null
+         *
+         * @return MultiComponent|null
+         */
         protected function getMultiComponent()
         {
             if ($this->ranFromMultiComponent()) {
