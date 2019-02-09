@@ -96,8 +96,7 @@ class Cache
         $dbInstace = $this->getDbInstance();
         $sql = '
        DELETE FROM `cache`
-             WHERE `path` = :path
-             LIMIT 1
+             WHERE `path` = :path;
         ';
         $stmt = $dbInstace->prepare($sql);
         $stmt->bindParam(':path', $path);
