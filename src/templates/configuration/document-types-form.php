@@ -30,6 +30,7 @@
                   <option<?= $field->type == 'Image' ? ' selected="selected"' : '' ?>>Image</option>
                   <option<?= $field->type == 'File' ? ' selected="selected"' : '' ?>>File</option>
                   <option<?= $field->type == 'Document' ? ' selected="selected"' : '' ?>>Document</option>
+                  <option<?= $field->type == 'Markdown' ? ' selected="selected"' : '' ?>>Markdown</option>
                 </select>
                 <select name="fieldRequired[]">
                   <option<?= $field->required ? '' : ' selected="selected"' ?> value="false">Not Required</option>
@@ -105,6 +106,7 @@
     <option>Image</option>
     <option>File</option>
     <option>Document</option>
+    <option>Markdown</option>
   </select>
   <select name="fieldRequired[]">
     <option value="false">Not Required</option>
